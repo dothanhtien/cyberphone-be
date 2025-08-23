@@ -1,0 +1,17 @@
+services:
+  api:
+    build:
+      context: .
+      target: ${TARGET:-dev}
+      dockerfile: Dockerfile
+    container_name: api
+    ports:
+      - '8080:3000'
+    volumes:
+      - .:/usr/src/app
+      - api-node-modules:/usr/src/app/node_modules
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+
+volumes:
+  api-node-modules:
