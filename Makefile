@@ -1,14 +1,18 @@
-up:
-  docker compose up -d
+.PHONY: up up-rebuild down down-clean prod-up ensure-env
 
-up-rebuild:
-  docker compose up -d --build
+ensure-env:
+	@test -f .docker.env || { echo "Missing .docker.env. Copy .docker.env.example and set values."; exit 1; }
 
-down:
-  docker compose down
+up: ensure-env
+	docker compose --env-file .docker.env up -d
 
-down-clean:
-  docker compose down --volumes --rmi all --remove-orphans
+up-rebuild: ensure-env
+	docker compose --env-file .docker.env up -d --build
 
-prod-up:
-  TARGET=prod NODE_ENV=production docker compose up --build -d
+down: ensure-env
+	docker compose --env-file .docker.env down
+
+down-clean: ensure-env
+	docker compose --env-file .docker.env down --volumes --rmi all --remove-orphans
+prod-up: ensure-env
+	TARGET=prod NODE_ENV=production docker compose --env-file .docker.env up --build -d
