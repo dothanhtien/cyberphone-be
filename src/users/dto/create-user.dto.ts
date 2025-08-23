@@ -9,7 +9,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { UserRoles } from '../entities/user.entity';
-import { Match } from 'src/validation/decorators/match.decorator';
+import { Match } from '../../validation/decorators/match.decorator';
 
 export class CreateUserDto {
   @MaxLength(255, { message: 'Email has exceeded 255 characters' })

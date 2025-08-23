@@ -10,7 +10,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { UserRoles } from '../entities/user.entity';
-import { Match } from 'src/validation/decorators/match.decorator';
+import { Match } from '../../validation/decorators/match.decorator';
 
 export class UpdateUserDto {
   @MaxLength(255, { message: 'Email has exceeded 255 characters' })
@@ -47,5 +47,5 @@ export class UpdateUserDto {
 
   @IsBoolean({ message: 'isActive must be a boolean' })
   @IsOptional()
-  isActive: boolean;
+  isActive?: boolean;
 }

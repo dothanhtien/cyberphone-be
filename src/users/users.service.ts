@@ -21,14 +21,23 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const emailExists = await this.userRepository.existsBy({
-      email: createUserDto.email,
-    });
+    const email = createUserDto.email.trim().toLowerCase();
+    const emailExists = await this.userRepository.existsBy({ email });
     if (emailExists) {
       throw new BadRequestException('Email already exists');
     }
 
+    if (createUserDto.phone) {
+      const phoneExists = await this.userRepository.existsBy({
+        phone: createUserDto.phone,
+      });
+      if (phoneExists) {
+        throw new BadRequestException('Phone already exists');
+      }
+    }
+
     const newUser = plainToInstance(User, createUserDto);
+    newUser.email = email;
     newUser.passwordHash = await this.passwordService.hashPassword(
       createUserDto.password,
     );
@@ -68,11 +77,22 @@ export class UsersService {
     });
     if (!user) throw new NotFoundException('User not found');
 
+    if (updateUserDto.email) {
+      updateUserDto.email = updateUserDto.email.trim().toLowerCase();
+    }
+
     if (updateUserDto.email && updateUserDto.email !== user.email) {
       const exists = await this.userRepository.existsBy({
         email: updateUserDto.email,
       });
       if (exists) throw new BadRequestException('Email already exists');
+    }
+
+    if (updateUserDto.phone && updateUserDto.phone !== user.phone) {
+      const phoneExists = await this.userRepository.existsBy({
+        phone: updateUserDto.phone,
+      });
+      if (phoneExists) throw new BadRequestException('Phone already exists');
     }
 
     if (updateUserDto.password) {
@@ -87,6 +107,8 @@ export class UsersService {
 
     Object.assign(user, updates);
 
-    return this.userRepository.save(user);
+    const dataToUpdate = plainToInstance(User, user);
+
+    return this.userRepository.save(dataToUpdate);
   }
 }
