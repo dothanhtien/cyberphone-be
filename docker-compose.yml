@@ -12,6 +12,40 @@ services:
       - api-node-modules:/usr/src/app/node_modules
     environment:
       NODE_ENV: ${NODE_ENV:-development}
+    depends_on:
+      - postgresql
+
+  postgresql:
+    image: postgres:17.6
+    container_name: postgresql
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4:9.7.0
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - '15432:80'
+    depends_on:
+      - postgresql
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
 
 volumes:
+  postgresql-data:
+  pgadmin-data:
   api-node-modules:
