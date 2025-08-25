@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import {
   BeforeInsert,
   Column,
@@ -18,22 +18,27 @@ export enum UserRoles {
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
+  @Expose()
   id: string;
 
   @Column({ type: 'varchar', length: 255, unique: true })
+  @Expose()
   email: string;
 
   @Column({ type: 'varchar', length: 30, nullable: true, unique: true })
+  @Expose()
   phone?: string;
 
-  @Exclude()
   @Column({ type: 'text', name: 'password_hash' })
+  @Exclude()
   passwordHash: string;
 
   @Column({ type: 'varchar', name: 'full_name', length: 255 })
+  @Expose()
   fullName: string;
 
   @Column({ type: 'text', name: 'avatar_url', nullable: true })
+  @Expose()
   avatarUrl?: string;
 
   @Column({
@@ -42,12 +47,15 @@ export class User {
     enumName: 'user_roles_enum',
     default: UserRoles.CUSTOMER,
   })
+  @Expose()
   role: UserRoles;
 
   @Column({ type: 'timestamp', name: 'last_login', nullable: true })
+  @Expose()
   lastLogin?: Date;
 
   @Column({ type: 'boolean', name: 'is_active', default: true })
+  @Expose()
   isActive: boolean;
 
   @CreateDateColumn({
@@ -55,9 +63,11 @@ export class User {
     name: 'created_at',
     default: () => 'now()',
   })
+  @Expose()
   createdAt: Date;
 
   @Column({ type: 'varchar', name: 'created_by', length: 100, nullable: true })
+  @Expose()
   createdBy?: string;
 
   @UpdateDateColumn({
@@ -65,9 +75,11 @@ export class User {
     name: 'updated_at',
     nullable: true,
   })
+  @Expose()
   updatedAt?: Date | null;
 
   @Column({ type: 'varchar', name: 'updated_by', length: 100, nullable: true })
+  @Expose()
   updatedBy?: string;
 
   @BeforeInsert()

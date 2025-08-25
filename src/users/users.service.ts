@@ -36,7 +36,9 @@ export class UsersService {
       }
     }
 
-    const newUser = plainToInstance(User, createUserDto);
+    const newUser = plainToInstance(User, createUserDto, {
+      excludeExtraneousValues: true,
+    });
     newUser.email = email;
     newUser.passwordHash = await this.passwordService.hashPassword(
       createUserDto.password,
@@ -107,7 +109,9 @@ export class UsersService {
 
     Object.assign(user, updates);
 
-    const dataToUpdate = plainToInstance(User, user);
+    const dataToUpdate = plainToInstance(User, user, {
+      excludeExtraneousValues: true,
+    });
 
     return this.userRepository.save(dataToUpdate);
   }
