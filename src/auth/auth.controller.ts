@@ -27,6 +27,8 @@ export class AuthController {
   @Post('register')
   @Public()
   register(@Body() createUserDto: CreateUserDto) {
+    createUserDto.role = undefined;
+    createUserDto.createdBy = undefined;
     return this.usersService.create(createUserDto);
   }
 
