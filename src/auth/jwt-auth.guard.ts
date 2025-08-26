@@ -26,6 +26,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         if (info.name === 'NotBeforeError') {
           throw new UnauthorizedException('Token not active yet');
         }
+        throw new UnauthorizedException(info.message);
       }
       throw new UnauthorizedException('Unauthorized');
     }

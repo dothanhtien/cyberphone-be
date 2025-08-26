@@ -10,7 +10,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(identifier: string, password: string): Promise<any> {
-    console.log({ identifier, password });
     if (!identifier || !password) {
       return null;
     }

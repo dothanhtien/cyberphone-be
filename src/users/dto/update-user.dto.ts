@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsEmpty,
   IsEnum,
   IsOptional,
   IsString,
@@ -45,9 +46,12 @@ export class UpdateUserDto {
   @IsOptional()
   role?: UserRoles;
 
-  @Exclude()
+  @IsEmpty({ message: 'You cannot set isActive' })
   isActive?: boolean;
 
-  @Exclude()
+  @IsEmpty({ message: 'You cannot set lastLogin' })
   lastLogin?: string;
+
+  @IsEmpty({ message: 'You cannot set updatedBy' })
+  updatedBy?: string;
 }

@@ -14,13 +14,19 @@ import { NonEmptyBodyPipe } from 'src/validation/non-empty-body.pipe';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersDto } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body(new NonEmptyBodyPipe()) createUserDto: CreateUserDto) {
+  create(
+    @Body(new NonEmptyBodyPipe()) createUserDto: CreateUserDto,
+    @CurrentUser() user: User,
+  ) {
+    createUserDto.createdBy = user.id;
     return this.usersService.create(createUserDto);
   }
 
@@ -37,16 +43,19 @@ export class UsersController {
   @Patch(':id')
   update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body(new NonEmptyBodyPipe()) dto: UpdateUserDto,
+    @Body(new NonEmptyBodyPipe()) updateUserDto: UpdateUserDto,
+    @CurrentUser() user: User,
   ) {
-    return this.usersService.update(id, dto);
+    updateUserDto.updatedBy = user.id;
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   async deactiveUser(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @CurrentUser() user: User,
   ) {
-    await this.usersService.update(id, { isActive: false });
+    await this.usersService.update(id, { isActive: false, updatedBy: user.id });
     return true;
   }
 }
