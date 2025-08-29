@@ -1,6 +1,6 @@
 import {
-  IsBoolean,
   IsEmail,
+  IsEmpty,
   IsEnum,
   IsOptional,
   IsString,
@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 import { UserRoles } from '../entities/user.entity';
 import { Match } from '../../validation/decorators/match.decorator';
+import { Exclude } from 'class-transformer';
 
 export class UpdateUserDto {
   @MaxLength(255, { message: 'Email has exceeded 255 characters' })
@@ -45,7 +46,12 @@ export class UpdateUserDto {
   @IsOptional()
   role?: UserRoles;
 
-  @IsBoolean({ message: 'isActive must be a boolean' })
-  @IsOptional()
+  @IsEmpty({ message: 'You cannot set isActive' })
   isActive?: boolean;
+
+  @IsEmpty({ message: 'You cannot set lastLogin' })
+  lastLogin?: string;
+
+  @IsEmpty({ message: 'You cannot set updatedBy' })
+  updatedBy?: string;
 }

@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsEmpty,
   IsEnum,
   IsNotEmpty,
   IsOptional,
@@ -45,4 +46,7 @@ export class CreateUserDto {
   @IsEnum(UserRoles, { message: 'Role is invalid' })
   @IsOptional()
   role?: UserRoles;
+
+  @IsEmpty({ message: 'You cannot set createdBy' })
+  createdBy?: string;
 }
