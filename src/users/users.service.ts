@@ -9,9 +9,9 @@ import { Repository } from 'typeorm';
 import { PasswordService } from 'src/common/password/password.service';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { GetUsersDto } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PaginatedEntity } from 'src/interfaces';
+import { PaginatedEntity } from 'src/common/interfaces';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
 @Injectable()
 export class UsersService {
@@ -46,7 +46,9 @@ export class UsersService {
     return this.userRepository.save(newUser);
   }
 
-  async findAll(getUsersDto: GetUsersDto): Promise<PaginatedEntity<User>> {
+  async findAll(
+    getUsersDto: PaginationQueryDto,
+  ): Promise<PaginatedEntity<User>> {
     const page = getUsersDto.page || 1;
     const limit = getUsersDto.limit || 10;
 

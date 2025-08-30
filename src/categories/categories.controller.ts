@@ -9,48 +9,48 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { BrandsService } from './brands.service';
 import { NonEmptyBodyPipe } from 'src/validation/non-empty-body.pipe';
+import { CreateCategoryDto } from './dto/create-category.dto';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { User } from 'src/users/entities/user.entity';
-import { CreateBrandDto } from './dto/create-brand.dto';
-import { UpdateBrandDto } from './dto/update-brand.dto';
+import { CategoriesService } from './categories.service';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { Public } from 'src/auth/decorators/public.decorator';
 
-@Controller('brands')
-export class BrandsController {
-  constructor(private readonly brandsService: BrandsService) {}
+@Controller('categories')
+export class CategoriesController {
+  constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
   create(
-    @Body(new NonEmptyBodyPipe()) createBrandDto: CreateBrandDto,
+    @Body(new NonEmptyBodyPipe()) createCategoryDto: CreateCategoryDto,
     @CurrentUser() user: User,
   ) {
-    createBrandDto.createdBy = user.id;
-    return this.brandsService.create(createBrandDto);
+    createCategoryDto.createdBy = user.id;
+    return this.categoriesService.create(createCategoryDto);
   }
 
   @Get()
   @Public()
   findAll(@Query() query: PaginationQueryDto) {
-    return this.brandsService.findAll(query);
+    return this.categoriesService.findAll(query);
   }
 
   @Get(':id')
   @Public()
   findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.brandsService.findOne(id);
+    return this.categoriesService.findOne(id);
   }
 
   @Patch(':id')
   update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body(new NonEmptyBodyPipe()) updateBrandDto: UpdateBrandDto,
+    @Body(new NonEmptyBodyPipe()) updateCategoryDto: UpdateCategoryDto,
     @CurrentUser() user: User,
   ) {
-    updateBrandDto.updatedBy = user.id;
-    return this.brandsService.update(id, updateBrandDto);
+    updateCategoryDto.updatedBy = user.id;
+    return this.categoriesService.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
@@ -58,7 +58,7 @@ export class BrandsController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @CurrentUser() user: User,
   ) {
-    await this.brandsService.update(id, {
+    await this.categoriesService.update(id, {
       isActive: false,
       updatedBy: user.id,
     });
