@@ -23,7 +23,7 @@ export class CategoriesService {
     createCategoryDto.slug = createCategoryDto.slug.toLowerCase();
     const category = await this.categoryRepository.findOne({
       where: { slug: createCategoryDto.slug },
-      select: ['isActive'],
+      select: { id: true, isActive: true },
     });
 
     if (category && category.isActive) {
@@ -70,7 +70,7 @@ export class CategoriesService {
     };
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<Category | null> {
     const selectedFields = [
       { raw: 'id', alias: 'id' },
       { raw: 'name', alias: 'name' },

@@ -27,10 +27,10 @@ export class CreateCategoryDto {
   @IsOptional()
   description?: string;
 
-  @IsUrl({}, { message: 'Image URL must be a valid URL' })
-  @MaxLength(512, { message: 'Image URL must not exceed 512 characters' })
+  @IsUrl({}, { message: 'Logo URL must be a valid URL' })
+  @MaxLength(512, { message: 'Logo URL must not exceed 512 characters' })
   @IsOptional()
-  imageUrl?: string;
+  logoUrl?: string;
 
   @IsEmpty({ message: 'You cannot set createdBy' })
   createdBy?: string;

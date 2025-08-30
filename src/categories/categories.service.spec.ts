@@ -62,9 +62,10 @@ describe('CategoriesService', () => {
         slug: 'test-category',
         isActive: false,
       } as Category);
-      categoryRepository.save.mockImplementation((cat) =>
-        Promise.resolve(cat as Category),
-      );
+
+      const saveSpy = jest
+        .spyOn(categoryRepository, 'save')
+        .mockImplementation((cat) => Promise.resolve(cat as Category));
 
       const createCategoryDto: CreateCategoryDto = {
         name: 'Test Category',
@@ -75,6 +76,8 @@ describe('CategoriesService', () => {
       expect(result.name).toBe('Test Category');
       expect(result.slug).toBe('test-category');
       expect(result.isActive).toBe(true);
+      expect(result.id).toBe(id);
+      expect(saveSpy).toHaveBeenCalledWith(expect.objectContaining({ id }));
     });
 
     it('should throw BadRequestException if slug exists and active', async () => {

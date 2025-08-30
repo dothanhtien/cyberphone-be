@@ -54,7 +54,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
-  async deactiveBrand(
+  async deactiveCategory(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @CurrentUser() user: User,
   ) {
