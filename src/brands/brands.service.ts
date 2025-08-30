@@ -20,9 +20,27 @@ export class BrandsService {
   ) {}
 
   async create(createBrandDto: CreateBrandDto): Promise<Brand> {
-    const newBrand = plainToInstance(Brand, createBrandDto, {
-      excludeExtraneousValues: true,
+    const slug = createBrandDto.slug.toLowerCase();
+
+    const brand = await this.brandRepository.findOne({
+      where: { slug },
+      select: { isActive: true },
     });
+
+    if (brand && brand.isActive) {
+      throw new BadRequestException('Slug already exists');
+    }
+    // in case a brand is inactive, add the property isActive = true
+    // if it is null, it can still be assigned to the object without error
+
+    const newBrand = plainToInstance(
+      Brand,
+      { ...brand, isActive: true, ...createBrandDto },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
+
     return this.brandRepository.save(newBrand);
   }
 
@@ -49,7 +67,11 @@ export class BrandsService {
     const brand = await this.brandRepository.findOne({
       where: { id, isActive: true },
     });
-    if (!brand) throw new NotFoundException(`Brand not found`);
+
+    if (!brand) {
+      throw new NotFoundException(`Brand not found`);
+    }
+
     return brand;
   }
 
@@ -57,14 +79,25 @@ export class BrandsService {
     const brand = await this.brandRepository.findOne({
       where: { id },
     });
-    if (!brand) throw new NotFoundException(`Brand not found`);
 
-    if (updateBrandDto.slug && updateBrandDto.slug !== brand.slug) {
-      const exists = await this.brandRepository.existsBy({
-        slug: updateBrandDto.slug,
-      });
-      if (exists) throw new BadRequestException('Slug already exists');
+    if (!brand) {
+      throw new NotFoundException(`Brand not found`);
     }
+
+    if (updateBrandDto.slug) {
+      updateBrandDto.slug = updateBrandDto.slug.toLowerCase();
+
+      if (updateBrandDto.slug !== brand.slug) {
+        const exists = await this.brandRepository.existsBy({
+          slug: updateBrandDto.slug,
+        });
+
+        if (exists) {
+          throw new BadRequestException('Slug already exists');
+        }
+      }
+    }
+
     const updates = Object.fromEntries(
       Object.entries(updateBrandDto).filter(([, value]) => value !== undefined),
     );
