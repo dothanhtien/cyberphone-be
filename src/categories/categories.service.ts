@@ -20,10 +20,10 @@ export class CategoriesService {
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
-    const slug = createCategoryDto.slug.toLowerCase();
+    createCategoryDto.slug = createCategoryDto.slug.toLowerCase();
     const category = await this.categoryRepository.findOne({
-      where: { slug },
-      select: { isActive: true },
+      where: { slug: createCategoryDto.slug },
+      select: ['isActive'],
     });
 
     if (category && category.isActive) {
