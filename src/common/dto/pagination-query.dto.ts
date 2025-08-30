@@ -1,7 +1,7 @@
 import { IsOptional, IsNumber, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class GetUsersDto {
+export class PaginationQueryDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber({}, { message: 'Page must be a number' })

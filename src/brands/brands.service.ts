@@ -8,9 +8,9 @@ import { plainToInstance } from 'class-transformer';
 import { Repository } from 'typeorm';
 import { Brand } from './entities/brand.entity';
 import { CreateBrandDto } from './dto/create-brand.dto';
-import { GetBrandsDto } from './dto/get-brands.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
-import { PaginatedEntity } from 'src/interfaces';
+import { PaginatedEntity } from 'src/common/interfaces';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
 @Injectable()
 export class BrandsService {
@@ -44,7 +44,9 @@ export class BrandsService {
     return this.brandRepository.save(newBrand);
   }
 
-  async findAll(getBrandsDto: GetBrandsDto): Promise<PaginatedEntity<Brand>> {
+  async findAll(
+    getBrandsDto: PaginationQueryDto,
+  ): Promise<PaginatedEntity<Brand>> {
     const page = getBrandsDto.page || 1;
     const limit = getBrandsDto.limit || 10;
 

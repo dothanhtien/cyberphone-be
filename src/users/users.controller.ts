@@ -12,10 +12,10 @@ import {
 import { UsersService } from './users.service';
 import { NonEmptyBodyPipe } from 'src/validation/non-empty-body.pipe';
 import { CreateUserDto } from './dto/create-user.dto';
-import { GetUsersDto } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { User } from './entities/user.entity';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
 @Controller('users')
 export class UsersController {
@@ -31,7 +31,7 @@ export class UsersController {
   }
 
   @Get()
-  findAll(@Query() query: GetUsersDto) {
+  findAll(@Query() query: PaginationQueryDto) {
     return this.usersService.findAll(query);
   }
 
