@@ -8,10 +8,10 @@ import { plainToInstance } from 'class-transformer';
 import { Repository } from 'typeorm';
 import { PasswordService } from 'src/common/password/password.service';
 import { User } from './entities/user.entity';
-import { PaginatedUsers } from './interfaces';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersDto } from './dto/get-users.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PaginatedEntity } from 'src/interfaces';
 
 @Injectable()
 export class UsersService {
@@ -46,7 +46,7 @@ export class UsersService {
     return this.userRepository.save(newUser);
   }
 
-  async findAll(getUsersDto: GetUsersDto): Promise<PaginatedUsers> {
+  async findAll(getUsersDto: GetUsersDto): Promise<PaginatedEntity<User>> {
     const page = getUsersDto.page || 1;
     const limit = getUsersDto.limit || 10;
 

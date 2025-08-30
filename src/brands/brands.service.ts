@@ -1,11 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brand } from './entities/brand.entity';
-import { Repository } from 'typeorm';
-import { CreateBrandDto } from './dto/create-brand.dto';
 import { plainToInstance } from 'class-transformer';
-import { PaginatedBrands } from './interfaces';
+import { Repository } from 'typeorm';
+import { Brand } from './entities/brand.entity';
+import { CreateBrandDto } from './dto/create-brand.dto';
 import { GetBrandsDto } from './dto/get-brands.dto';
+import { UpdateBrandDto } from './dto/update-brand.dto';
+import { PaginatedEntity } from 'src/interfaces';
 
 @Injectable()
 export class BrandsService {
@@ -21,7 +26,7 @@ export class BrandsService {
     return this.brandRepository.save(newBrand);
   }
 
-  async findAll(getBrandsDto: GetBrandsDto): Promise<PaginatedBrands> {
+  async findAll(getBrandsDto: GetBrandsDto): Promise<PaginatedEntity<Brand>> {
     const page = getBrandsDto.page || 1;
     const limit = getBrandsDto.limit || 10;
 
@@ -46,5 +51,30 @@ export class BrandsService {
     });
     if (!brand) throw new NotFoundException(`Brand not found`);
     return brand;
+  }
+
+  async update(id: string, updateBrandDto: UpdateBrandDto) {
+    const brand = await this.brandRepository.findOne({
+      where: { id },
+    });
+    if (!brand) throw new NotFoundException(`Brand not found`);
+
+    if (updateBrandDto.slug && updateBrandDto.slug !== brand.slug) {
+      const exists = await this.brandRepository.existsBy({
+        slug: updateBrandDto.slug,
+      });
+      if (exists) throw new BadRequestException('Slug already exists');
+    }
+    const updates = Object.fromEntries(
+      Object.entries(updateBrandDto).filter(([, value]) => value !== undefined),
+    );
+
+    Object.assign(brand, updates);
+
+    const dataToUpdate = plainToInstance(Brand, brand, {
+      excludeExtraneousValues: true,
+    });
+
+    return this.brandRepository.save(dataToUpdate);
   }
 }
