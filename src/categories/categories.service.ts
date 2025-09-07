@@ -32,6 +32,16 @@ export class CategoriesService {
     // in case a category is inactive, add the property isActive = true
     // if it is null, it can still be assigned to the object without error
 
+    if (createCategoryDto.parentId) {
+      const isParentCategoryExist = await this.categoryRepository.existsBy({
+        id: createCategoryDto.parentId,
+      });
+
+      if (!isParentCategoryExist) {
+        throw new BadRequestException('Parent category not found');
+      }
+    }
+
     const newCategory = plainToInstance(
       Category,
       {

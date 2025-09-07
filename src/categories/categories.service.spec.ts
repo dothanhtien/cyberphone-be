@@ -23,6 +23,7 @@ describe('CategoriesService', () => {
             findAndCount: jest.fn(),
             save: jest.fn(),
             query: jest.fn(),
+            existsBy: jest.fn(),
           },
         },
       ],
@@ -93,6 +94,31 @@ describe('CategoriesService', () => {
       await expect(categoriesService.create(createCategoryDto)).rejects.toThrow(
         BadRequestException,
       );
+    });
+
+    it('should throw BadRequestException if parentId does not exist', async () => {
+      const existsBySpy = jest
+        .spyOn(categoryRepository, 'existsBy')
+        .mockImplementation((where) => {
+          if ('id' in where) {
+            return Promise.resolve(false);
+          }
+          return Promise.resolve(true);
+        });
+
+      const dto: CreateCategoryDto = {
+        name: 'Test Category',
+        slug: 'test-category',
+        parentId: uuidv4(),
+      };
+
+      await expect(categoriesService.create(dto)).rejects.toThrow(
+        BadRequestException,
+      );
+
+      expect(existsBySpy).toHaveBeenCalledWith({
+        id: dto.parentId,
+      });
     });
   });
 
