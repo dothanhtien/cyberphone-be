@@ -165,6 +165,42 @@ describe('CategoriesService', () => {
       expect(result.children[0].id).toBe('2');
       expect(result.children[0].children[0].id).toBe('3');
     });
+
+    it('should return a category tree with requested node as root', async () => {
+      categoryRepository.query.mockResolvedValue([
+        {
+          id: '1',
+          name: 'Root',
+          slug: 'root',
+          parentId: null,
+          isActive: true,
+          children: [],
+        },
+        {
+          id: '2',
+          name: 'Child',
+          slug: 'child',
+          parentId: '1',
+          isActive: true,
+          children: [],
+        },
+        {
+          id: '3',
+          name: 'Grandchild',
+          slug: 'grandchild',
+          parentId: '2',
+          isActive: true,
+          children: [],
+        },
+      ]);
+
+      const result: Category = (await categoriesService.findOne('2'))!;
+
+      expect(result.id).toBe('2');
+      expect(result.children).toHaveLength(1);
+      expect(result.children[0].id).toBe('3');
+      expect(result.children[0].children).toHaveLength(0);
+    });
   });
 
   describe('update', () => {

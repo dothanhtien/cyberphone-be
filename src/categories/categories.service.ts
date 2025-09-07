@@ -84,23 +84,24 @@ export class CategoriesService {
       { raw: 'updated_at', alias: 'updatedAt' },
       { raw: 'updated_by', alias: 'updatedBy' },
     ];
+
     const rows = await this.categoryRepository.query<Category[]>(
       `
-      WITH RECURSIVE category_tree AS (
+        WITH RECURSIVE category_tree AS (
+          SELECT
+            ${selectedFields.map((f) => f.raw).join(', ')}
+          FROM categories
+          WHERE id = $1
+          UNION ALL
+          SELECT 
+            ${selectedFields.map((f) => `c.${f.raw}`).join(', ')}
+          FROM categories c
+          INNER JOIN category_tree ct ON ct.id = c.parent_id
+        )
         SELECT
-          ${selectedFields.map((f) => f.raw).join(', ')}
-        FROM categories
-        WHERE id = $1
-        UNION ALL
-        SELECT 
-          ${selectedFields.map((f) => `c.${f.raw}`).join(', ')}
-        FROM categories c
-        INNER JOIN category_tree ct ON ct.id = c.parent_id
-      )
-      SELECT
-        ${selectedFields.map((f) => `${f.raw} AS "${f.alias}"`).join(', ')}
-      FROM category_tree;
-    `,
+          ${selectedFields.map((f) => `${f.raw} AS "${f.alias}"`).join(', ')}
+        FROM category_tree;
+      `,
       [id],
     );
 
@@ -109,31 +110,27 @@ export class CategoriesService {
     }
 
     const map = new Map<string, Category>();
-    let rootCategory: Category | null = null;
 
     rows.forEach((row) => {
       const category = plainToInstance(
         Category,
         { ...row, children: [] },
-        {
-          excludeExtraneousValues: true,
-        },
+        { excludeExtraneousValues: true },
       );
-
       map.set(category.id, category);
     });
 
     rows.forEach((row) => {
       const cat = map.get(row.id)!;
       if (row.parentId) {
-        const parent = map.get(row.parentId)!;
-        parent.children.push(cat);
-      } else {
-        rootCategory = map.get(row.id)!;
+        const parent = map.get(row.parentId);
+        if (parent) {
+          parent.children.push(cat);
+        }
       }
     });
 
-    return rootCategory;
+    return map.get(id)!;
   }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
