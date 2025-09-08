@@ -95,21 +95,23 @@ export class CategoriesService {
       { raw: 'updated_by', alias: 'updatedBy' },
     ];
 
+    const rawColumns = selectedFields.map((f) => f.raw).join(', ');
+    const aliasedColumns = selectedFields
+      .map((f) => `${f.raw} AS "${f.alias}"`)
+      .join(', ');
+
     const rows = await this.categoryRepository.query<Category[]>(
       `
         WITH RECURSIVE category_tree AS (
-          SELECT
-            ${selectedFields.map((f) => f.raw).join(', ')}
+          SELECT ${rawColumns}
           FROM categories
           WHERE id = $1
           UNION ALL
-          SELECT 
-            ${selectedFields.map((f) => `c.${f.raw}`).join(', ')}
+          SELECT ${selectedFields.map((f) => `c.${f.raw}`).join(', ')}
           FROM categories c
           INNER JOIN category_tree ct ON ct.id = c.parent_id
         )
-        SELECT
-          ${selectedFields.map((f) => `${f.raw} AS "${f.alias}"`).join(', ')}
+        SELECT ${aliasedColumns}
         FROM category_tree;
       `,
       [id],
@@ -120,27 +122,34 @@ export class CategoriesService {
     }
 
     const map = new Map<string, Category>();
-
-    rows.forEach((row) => {
+    for (const row of rows) {
       const category = plainToInstance(
         Category,
         { ...row, children: [] },
         { excludeExtraneousValues: true },
       );
       map.set(category.id, category);
-    });
+    }
 
-    rows.forEach((row) => {
-      const cat = map.get(row.id)!;
-      if (row.parentId) {
-        const parent = map.get(row.parentId);
-        if (parent) {
-          parent.children.push(cat);
-        }
+    for (const row of rows) {
+      if (!row.parentId) continue;
+      const child = map.get(row.id);
+      const parent = map.get(row.parentId);
+      if (child && parent) {
+        parent.children.push(child);
       }
-    });
+    }
 
-    return map.get(id)!;
+    const result = map.get(id)!;
+
+    if (result.parentId) {
+      result.parent =
+        (await this.categoryRepository.findOne({
+          where: { id: result.parentId },
+        })) ?? undefined;
+    }
+
+    return result;
   }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
