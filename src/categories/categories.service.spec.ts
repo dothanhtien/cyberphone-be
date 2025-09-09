@@ -1,7 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Category } from './entities/category.entity';
 import { CategoriesService } from './categories.service';
@@ -23,6 +23,7 @@ describe('CategoriesService', () => {
             findAndCount: jest.fn(),
             save: jest.fn(),
             query: jest.fn(),
+            existsBy: jest.fn(),
           },
         },
       ],
@@ -94,6 +95,36 @@ describe('CategoriesService', () => {
         BadRequestException,
       );
     });
+
+    it('should throw BadRequestException if parentId does not exist', async () => {
+      const findOneSpy = jest
+        .spyOn(categoryRepository, 'findOne')
+        .mockImplementation((options: FindOneOptions<Category>) => {
+          if ('id' in (options.where as any)) {
+            return Promise.resolve(null);
+          }
+          return Promise.resolve(null);
+        });
+
+      const dto: CreateCategoryDto = {
+        name: 'Test Category',
+        slug: 'test-category',
+        parentId: uuidv4(),
+      };
+
+      await expect(categoriesService.create(dto)).rejects.toThrow(
+        BadRequestException,
+      );
+
+      expect(findOneSpy).toHaveBeenCalledWith({
+        where: { slug: dto.slug },
+        select: { id: true, isActive: true },
+      });
+
+      expect(findOneSpy).toHaveBeenCalledWith({
+        where: { id: dto.parentId, isActive: true },
+      });
+    });
   });
 
   describe('findAll', () => {
@@ -164,6 +195,42 @@ describe('CategoriesService', () => {
       expect(result.children).toHaveLength(1);
       expect(result.children[0].id).toBe('2');
       expect(result.children[0].children[0].id).toBe('3');
+    });
+
+    it('should return a category tree with requested node as root', async () => {
+      categoryRepository.query.mockResolvedValue([
+        {
+          id: '1',
+          name: 'Root',
+          slug: 'root',
+          parentId: null,
+          isActive: true,
+          children: [],
+        },
+        {
+          id: '2',
+          name: 'Child',
+          slug: 'child',
+          parentId: '1',
+          isActive: true,
+          children: [],
+        },
+        {
+          id: '3',
+          name: 'Grandchild',
+          slug: 'grandchild',
+          parentId: '2',
+          isActive: true,
+          children: [],
+        },
+      ]);
+
+      const result: Category = (await categoriesService.findOne('2'))!;
+
+      expect(result.id).toBe('2');
+      expect(result.children).toHaveLength(1);
+      expect(result.children[0].id).toBe('3');
+      expect(result.children[0].children).toHaveLength(0);
     });
   });
 
