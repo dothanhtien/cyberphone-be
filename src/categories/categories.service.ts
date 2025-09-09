@@ -32,6 +32,15 @@ export class CategoriesService {
     // in case a category is inactive, add the property isActive = true
     // if it is null, it can still be assigned to the object without error
 
+    if (createCategoryDto.parentId) {
+      const parentExists = await this.categoryRepository.findOne({
+        where: { id: createCategoryDto.parentId, isActive: true },
+      });
+      if (!parentExists) {
+        throw new BadRequestException('Parent category not found');
+      }
+    }
+
     const newCategory = plainToInstance(
       Category,
       {
@@ -84,23 +93,26 @@ export class CategoriesService {
       { raw: 'updated_at', alias: 'updatedAt' },
       { raw: 'updated_by', alias: 'updatedBy' },
     ];
+
+    const rawColumns = selectedFields.map((f) => f.raw).join(', ');
+    const aliasedColumns = selectedFields
+      .map((f) => `${f.raw} AS "${f.alias}"`)
+      .join(', ');
+
     const rows = await this.categoryRepository.query<Category[]>(
       `
-      WITH RECURSIVE category_tree AS (
-        SELECT
-          ${selectedFields.map((f) => f.raw).join(', ')}
-        FROM categories
-        WHERE id = $1
-        UNION ALL
-        SELECT 
-          ${selectedFields.map((f) => `c.${f.raw}`).join(', ')}
-        FROM categories c
-        INNER JOIN category_tree ct ON ct.id = c.parent_id
-      )
-      SELECT
-        ${selectedFields.map((f) => `${f.raw} AS "${f.alias}"`).join(', ')}
-      FROM category_tree;
-    `,
+        WITH RECURSIVE category_tree AS (
+          SELECT ${rawColumns}
+          FROM categories
+          WHERE id = $1
+          UNION ALL
+          SELECT ${selectedFields.map((f) => `c.${f.raw}`).join(', ')}
+          FROM categories c
+          INNER JOIN category_tree ct ON ct.id = c.parent_id
+        )
+        SELECT ${aliasedColumns}
+        FROM category_tree;
+      `,
       [id],
     );
 
@@ -109,31 +121,34 @@ export class CategoriesService {
     }
 
     const map = new Map<string, Category>();
-    let rootCategory: Category | null = null;
-
-    rows.forEach((row) => {
+    for (const row of rows) {
       const category = plainToInstance(
         Category,
         { ...row, children: [] },
-        {
-          excludeExtraneousValues: true,
-        },
+        { excludeExtraneousValues: true },
       );
-
       map.set(category.id, category);
-    });
+    }
 
-    rows.forEach((row) => {
-      const cat = map.get(row.id)!;
-      if (row.parentId) {
-        const parent = map.get(row.parentId)!;
-        parent.children.push(cat);
-      } else {
-        rootCategory = map.get(row.id)!;
+    for (const row of rows) {
+      if (!row.parentId) continue;
+      const child = map.get(row.id);
+      const parent = map.get(row.parentId);
+      if (child && parent) {
+        parent.children.push(child);
       }
-    });
+    }
 
-    return rootCategory;
+    const result = map.get(id)!;
+
+    if (result.parentId) {
+      result.parent =
+        (await this.categoryRepository.findOne({
+          where: { id: result.parentId },
+        })) ?? undefined;
+    }
+
+    return result;
   }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
