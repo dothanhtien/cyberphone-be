@@ -1,7 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Category } from './entities/category.entity';
 import { CategoriesService } from './categories.service';
@@ -97,13 +97,13 @@ describe('CategoriesService', () => {
     });
 
     it('should throw BadRequestException if parentId does not exist', async () => {
-      const existsBySpy = jest
-        .spyOn(categoryRepository, 'existsBy')
-        .mockImplementation((where) => {
-          if ('id' in where) {
-            return Promise.resolve(false);
+      const findOneSpy = jest
+        .spyOn(categoryRepository, 'findOne')
+        .mockImplementation((options: FindOneOptions<Category>) => {
+          if ('id' in (options.where as any)) {
+            return Promise.resolve(null);
           }
-          return Promise.resolve(true);
+          return Promise.resolve(null);
         });
 
       const dto: CreateCategoryDto = {
@@ -116,8 +116,13 @@ describe('CategoriesService', () => {
         BadRequestException,
       );
 
-      expect(existsBySpy).toHaveBeenCalledWith({
-        id: dto.parentId,
+      expect(findOneSpy).toHaveBeenCalledWith({
+        where: { slug: dto.slug },
+        select: { id: true, isActive: true },
+      });
+
+      expect(findOneSpy).toHaveBeenCalledWith({
+        where: { id: dto.parentId, isActive: true },
       });
     });
   });

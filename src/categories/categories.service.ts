@@ -33,11 +33,10 @@ export class CategoriesService {
     // if it is null, it can still be assigned to the object without error
 
     if (createCategoryDto.parentId) {
-      const isParentCategoryExist = await this.categoryRepository.existsBy({
-        id: createCategoryDto.parentId,
+      const parentExists = await this.categoryRepository.findOne({
+        where: { id: createCategoryDto.parentId, isActive: true },
       });
-
-      if (!isParentCategoryExist) {
+      if (!parentExists) {
         throw new BadRequestException('Parent category not found');
       }
     }
