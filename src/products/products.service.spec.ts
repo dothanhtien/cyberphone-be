@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
 import { ProductsService } from './products.service';
 import { Product } from './entities/product.entity';
 import { Brand } from 'src/brands/entities/brand.entity';
@@ -145,6 +146,60 @@ describe('ProductsService', () => {
 
       expect(saveSpy).toHaveBeenCalled();
       expect(result).toEqual(savedProduct);
+    });
+  });
+
+  describe('findAll', () => {
+    it('should return paginated categories', async () => {
+      jest
+        .spyOn(productRepository, 'findAndCount')
+        .mockResolvedValue([[{ id: uuidv4() } as Product], 1]);
+      const result = await productsService.findAll({ page: 1, limit: 10 });
+
+      expect(result.items).toHaveLength(1);
+      expect(result.totalCount).toBe(1);
+      expect(result.currentPage).toBe(1);
+      expect(result.itemsPerPage).toBe(10);
+    });
+
+    it('should use default page/limit if not provided', async () => {
+      jest
+        .spyOn(productRepository, 'findAndCount')
+        .mockResolvedValue([[{ id: uuidv4() } as Product], 1]);
+      const result = await productsService.findAll({});
+
+      expect(result.currentPage).toBe(1);
+      expect(result.itemsPerPage).toBe(10);
+    });
+  });
+
+  describe('findOne', () => {
+    it('should return a product if found', async () => {
+      const productId = uuidv4();
+      const product = {
+        id: productId,
+        name: 'Test Product',
+        isActive: true,
+      } as Product;
+
+      const findOneSpy = jest
+        .spyOn(productRepository, 'findOne')
+        .mockResolvedValue(product);
+
+      const result = await productsService.findOne(productId);
+
+      expect(findOneSpy).toHaveBeenCalledWith({
+        where: { id: productId, isActive: true },
+      });
+      expect(result).toEqual(product);
+    });
+
+    it('should throw NotFoundException if product not found', async () => {
+      jest.spyOn(productRepository, 'findOne').mockResolvedValue(null);
+
+      await expect(productsService.findOne('missing-id')).rejects.toThrow(
+        'Product not found',
+      );
     });
   });
 });

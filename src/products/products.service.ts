@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
@@ -6,6 +10,8 @@ import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Brand } from 'src/brands/entities/brand.entity';
 import { Category } from 'src/categories/entities/category.entity';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginatedEntity } from 'src/common/interfaces';
 
 @Injectable()
 export class ProductsService {
@@ -56,5 +62,34 @@ export class ProductsService {
     });
 
     return this.productRepository.save(newProduct);
+  }
+
+  async findAll(
+    getProductsDto: PaginationQueryDto,
+  ): Promise<PaginatedEntity<Product>> {
+    const page = getProductsDto.page || 1;
+    const limit = getProductsDto.limit || 10;
+
+    const [products, totalCount] = await this.productRepository.findAndCount({
+      where: { isActive: true },
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+
+    return {
+      items: products,
+      totalCount,
+      currentPage: page,
+      itemsPerPage: limit,
+    };
+  }
+
+  async findOne(id: string) {
+    const product = await this.productRepository.findOne({
+      where: { id, isActive: true },
+    });
+    if (!product) throw new NotFoundException('Product not found');
+    return product;
   }
 }

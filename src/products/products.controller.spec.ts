@@ -4,6 +4,7 @@ import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Product } from './entities/product.entity';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
 describe('ProductsController', () => {
   let productsController: ProductsController;
@@ -17,6 +18,7 @@ describe('ProductsController', () => {
           provide: ProductsService,
           useValue: {
             create: jest.fn(),
+            findAll: jest.fn(),
           },
         },
       ],
@@ -55,6 +57,27 @@ describe('ProductsController', () => {
         ...createProductDto,
         createdBy: mockUser.id,
       });
+      expect(result).toEqual(returned);
+    });
+  });
+
+  describe('findAll', () => {
+    it('should call productsService.findAll with query', async () => {
+      const query: PaginationQueryDto = { page: 1, limit: 10 };
+      const returned = {
+        items: [],
+        totalCount: 0,
+        currentPage: 1,
+        itemsPerPage: 10,
+      };
+
+      const productsServiceFindAll = jest
+        .spyOn(productsService, 'findAll')
+        .mockImplementation(() => Promise.resolve(returned));
+
+      const result = await productsController.findAll(query);
+
+      expect(productsServiceFindAll).toHaveBeenCalledWith(query);
       expect(result).toEqual(returned);
     });
   });
