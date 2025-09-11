@@ -4,19 +4,21 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
-import { CreateCategoryDto } from './dto/create-category.dto';
+import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
+import { Category } from './entities/category.entity';
 import { PaginatedEntity } from 'src/common/interfaces';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
