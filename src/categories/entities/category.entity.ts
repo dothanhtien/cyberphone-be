@@ -26,6 +26,7 @@ export class Category {
   slug: string;
 
   @Column({ type: 'text', nullable: true })
+  @Expose()
   description?: string;
 
   @Column({ type: 'varchar', name: 'logo_url', length: 512, nullable: true })
@@ -90,5 +91,9 @@ export class Category {
 
   set logoUrl(path: string | null) {
     this.logoPath = path ?? null;
+  }
+
+  getLogoPath(): string | null {
+    return this.logoPath;
   }
 }

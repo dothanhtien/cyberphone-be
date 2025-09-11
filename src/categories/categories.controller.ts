@@ -12,7 +12,10 @@ import {
   UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
+import { join } from 'path';
+import { unlink } from 'fs/promises';
 import { MulterExceptionFilter } from 'src/common/filters/multer-exception.filter';
+import { withFileTransaction } from 'src/common/helpers';
 import { NonEmptyBodyPipe } from 'src/validation/non-empty-body.pipe';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
@@ -41,7 +44,10 @@ export class CategoriesController {
       createCategoryDto.logoUrl = `/uploads/categories/${logo.filename}`;
     }
 
-    return this.categoriesService.create(createCategoryDto);
+    return withFileTransaction(
+      () => this.categoriesService.create(createCategoryDto),
+      logo ? `/uploads/categories/${logo.filename}` : undefined,
+    );
   }
 
   @Get()
@@ -57,13 +63,34 @@ export class CategoriesController {
   }
 
   @Patch(':id')
-  update(
+  @UseInterceptors(CategoryLogoInterceptor())
+  @UseFilters(MulterExceptionFilter)
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body(new NonEmptyBodyPipe()) updateCategoryDto: UpdateCategoryDto,
+    @UploadedFile() logo: Express.Multer.File,
     @CurrentUser() user: User,
   ) {
+    const oldLogoPath = await this.categoriesService.getLogoPath(id);
+
+    if (logo) {
+      updateCategoryDto.logoUrl = `/uploads/categories/${logo.filename}`;
+    }
+
     updateCategoryDto.updatedBy = user.id;
-    return this.categoriesService.update(id, updateCategoryDto);
+
+    return withFileTransaction(
+      () => this.categoriesService.update(id, updateCategoryDto),
+      logo ? `/uploads/categories/${logo.filename}` : undefined,
+    ).then((savedCategory) => {
+      if (updateCategoryDto.removeLogo && oldLogoPath) {
+        const filePath = join(process.cwd(), 'public', oldLogoPath);
+        unlink(filePath).catch((err) =>
+          console.error('Failed to delete old logo:', err),
+        );
+      }
+      return savedCategory;
+    });
   }
 
   @Delete(':id')

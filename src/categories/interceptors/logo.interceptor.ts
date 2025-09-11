@@ -19,7 +19,7 @@ export function CategoryLogoInterceptor() {
           .toLowerCase();
 
         const fileExt = extname(file.originalname);
-        const finalName = `${safeSlug}-${Date.now()}${fileExt}`;
+        const finalName = `${Date.now()}-${safeSlug}${fileExt}`;
         callback(null, finalName);
       },
     }),
