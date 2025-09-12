@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import {
   BeforeInsert,
   Column,
@@ -26,11 +26,12 @@ export class Category {
   slug: string;
 
   @Column({ type: 'text', nullable: true })
+  @Expose()
   description?: string;
 
   @Column({ type: 'varchar', name: 'logo_url', length: 512, nullable: true })
-  @Expose()
-  logoUrl?: string;
+  @Exclude()
+  private logoPath: string | null;
 
   @Column({ type: 'uuid', name: 'parent_id', nullable: true })
   @Expose()
@@ -79,5 +80,20 @@ export class Category {
   @BeforeInsert()
   resetUpdatedAt() {
     this.updatedAt = null;
+  }
+
+  @Expose()
+  get logoUrl(): string | null {
+    const baseUrl = process.env.APP_URL;
+    if (!this.logoPath || !baseUrl) return null;
+    return `${baseUrl}/${this.logoPath.replace(/^\/?/, '')}`;
+  }
+
+  set logoUrl(path: string | null) {
+    this.logoPath = path ?? null;
+  }
+
+  getLogoPath(): string | null {
+    return this.logoPath;
   }
 }
