@@ -1,24 +1,36 @@
+import { BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
+import { mkdir } from 'fs/promises';
 import { CreateCategoryDto } from '../dto/create-category.dto';
-import { BadRequestException } from '@nestjs/common';
+import { UpdateCategoryDto } from '../dto/update-category.dto';
 
 export function CategoryLogoInterceptor() {
   return FileInterceptor('logo', {
     storage: diskStorage({
-      destination: './uploads/categories',
+      destination: (req, file, callback) => {
+        const dest = join(process.cwd(), 'uploads', 'categories');
+        mkdir(dest, { recursive: true })
+          .then(() => callback(null, dest))
+          .catch((err: unknown) => {
+            if (err instanceof Error) {
+              callback(err, dest);
+            } else {
+              callback(new Error(String(err)), dest);
+            }
+          });
+      },
       filename: (req, file, callback) => {
-        const body = req.body as CreateCategoryDto;
-        const slug = body.slug;
-
-        const safeSlug = slug
-          .toString()
+        const body = req.body as Partial<CreateCategoryDto & UpdateCategoryDto>;
+        const base = (body.slug ?? req.params?.id ?? 'category').toString();
+        const safeSlug = base
           .trim()
-          .replace(/\s+/g, '-')
-          .toLowerCase();
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
 
-        const fileExt = extname(file.originalname);
+        const fileExt = extname(file.originalname).toLowerCase();
         const finalName = `${Date.now()}-${safeSlug}${fileExt}`;
         callback(null, finalName);
       },

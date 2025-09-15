@@ -46,7 +46,7 @@ export class CategoriesController {
 
     return withFileTransaction(
       () => this.categoriesService.create(createCategoryDto),
-      logo ? `/uploads/categories/${logo.filename}` : undefined,
+      logo ? `uploads/categories/${logo.filename}` : undefined,
     );
   }
 
@@ -81,10 +81,11 @@ export class CategoriesController {
 
     return withFileTransaction(
       () => this.categoriesService.update(id, updateCategoryDto),
-      logo ? `/uploads/categories/${logo.filename}` : undefined,
+      logo ? `uploads/categories/${logo.filename}` : undefined,
     ).then((savedCategory) => {
-      if (updateCategoryDto.removeLogo && oldLogoPath) {
-        const filePath = join(process.cwd(), 'public', oldLogoPath);
+      if ((updateCategoryDto.removeLogo || !!logo) && oldLogoPath) {
+        const relativeOld = oldLogoPath.replace(/^\/+/, '');
+        const filePath = join(process.cwd(), relativeOld);
         unlink(filePath).catch((err) =>
           console.error('Failed to delete old logo:', err),
         );

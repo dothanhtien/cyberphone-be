@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { unlink } from 'fs/promises';
 import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
@@ -8,10 +9,8 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 jest.mock('fs/promises', () => ({
-  unlink: jest.fn(),
+  unlink: jest.fn().mockResolvedValue(undefined),
 }));
-
-import { unlink } from 'fs/promises';
 
 describe('CategoriesController', () => {
   let categoriesController: CategoriesController;
@@ -40,7 +39,7 @@ describe('CategoriesController', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   const mockUser: User = { id: 'user-1' } as User;
@@ -57,7 +56,7 @@ describe('CategoriesController', () => {
         createdBy: mockUser.id,
       } as Category;
 
-      const categoryServiceCreateSpy = jest
+      const categoriesServiceCreateSpy = jest
         .spyOn(categoriesService, 'create')
         .mockResolvedValue(returned);
 
@@ -67,10 +66,12 @@ describe('CategoriesController', () => {
         mockUser,
       );
 
-      expect(categoryServiceCreateSpy).toHaveBeenCalledWith({
-        ...createCategoryDto,
-        createdBy: mockUser.id,
-      });
+      expect(categoriesServiceCreateSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ...createCategoryDto,
+          createdBy: mockUser.id,
+        }),
+      );
       expect(result).toEqual(returned);
     });
 
@@ -87,7 +88,7 @@ describe('CategoriesController', () => {
         logoUrl: `/uploads/categories/${mockLogo.filename}`,
       } as Category;
 
-      const categoryServiceCreateSpy = jest
+      const categoriesServiceCreateSpy = jest
         .spyOn(categoriesService, 'create')
         .mockResolvedValue(returned);
 
@@ -97,7 +98,7 @@ describe('CategoriesController', () => {
         mockUser,
       );
 
-      expect(categoryServiceCreateSpy).toHaveBeenCalledWith({
+      expect(categoriesServiceCreateSpy).toHaveBeenCalledWith({
         ...createCategoryDto,
         createdBy: mockUser.id,
         logoUrl: `/uploads/categories/${mockLogo.filename}`,
@@ -116,13 +117,13 @@ describe('CategoriesController', () => {
         itemsPerPage: 10,
       };
 
-      const categoryServiceFindAllSpy = jest
+      const categoriesServiceFindAllSpy = jest
         .spyOn(categoriesService, 'findAll')
         .mockResolvedValue(returned);
 
       const result = await categoriesController.findAll(query);
 
-      expect(categoryServiceFindAllSpy).toHaveBeenCalledWith(query);
+      expect(categoriesServiceFindAllSpy).toHaveBeenCalledWith(query);
       expect(result).toEqual(returned);
     });
   });
@@ -131,13 +132,13 @@ describe('CategoriesController', () => {
     it('should call categoriesService.findOne with id', async () => {
       const returned = { id: 'cat-1', name: 'Category' };
 
-      const categoryServiceFindOneSpy = jest
+      const categoriesServiceFindOneSpy = jest
         .spyOn(categoriesService, 'findOne')
         .mockResolvedValue(returned as Category);
 
       const result = await categoriesController.findOne('cat-1');
 
-      expect(categoryServiceFindOneSpy).toHaveBeenCalledWith('cat-1');
+      expect(categoriesServiceFindOneSpy).toHaveBeenCalledWith('cat-1');
       expect(result).toEqual(returned);
     });
   });
@@ -147,8 +148,10 @@ describe('CategoriesController', () => {
       const dto: UpdateCategoryDto = { name: 'Updated' };
       const returned = { ...dto, updatedBy: mockUser.id };
 
-      jest.spyOn(categoriesService, 'getLogoPath').mockResolvedValue(null);
-      const categoryServiceUpdateSpy = jest
+      const categoriesServiceGetLogoPathSpy = jest
+        .spyOn(categoriesService, 'getLogoPath')
+        .mockResolvedValue(null);
+      const categoriesServiceUpdateSpy = jest
         .spyOn(categoriesService, 'update')
         .mockResolvedValue(returned as Category);
 
@@ -159,11 +162,13 @@ describe('CategoriesController', () => {
         mockUser,
       );
 
-      expect(categoryServiceUpdateSpy).toHaveBeenCalledWith('cat-1', {
+      expect(categoriesServiceUpdateSpy).toHaveBeenCalledWith('cat-1', {
         ...dto,
         updatedBy: mockUser.id,
       });
       expect(result).toEqual(returned);
+      expect(categoriesServiceGetLogoPathSpy).toHaveBeenCalledWith('cat-1');
+      expect(unlink).not.toHaveBeenCalled();
     });
 
     it('should set logoUrl when logo is provided', async () => {
@@ -177,7 +182,7 @@ describe('CategoriesController', () => {
         logoUrl: `/uploads/categories/${mockLogo.filename}`,
       };
 
-      const categoryServiceUpdateSpy = jest
+      const categoriesServiceUpdateSpy = jest
         .spyOn(categoriesService, 'update')
         .mockResolvedValue(returned as Category);
 
@@ -188,7 +193,7 @@ describe('CategoriesController', () => {
         mockUser,
       );
 
-      expect(categoryServiceUpdateSpy).toHaveBeenCalledWith('cat-1', {
+      expect(categoriesServiceUpdateSpy).toHaveBeenCalledWith('cat-1', {
         ...dto,
         updatedBy: mockUser.id,
         logoUrl: `/uploads/categories/${mockLogo.filename}`,
@@ -207,7 +212,7 @@ describe('CategoriesController', () => {
         updatedBy: mockUser.id,
       } as Category);
 
-      (unlink as jest.Mock).mockResolvedValue(undefined);
+      jest.mocked(unlink).mockResolvedValue(undefined);
 
       await categoriesController.update('cat-1', dto, undefined, mockUser);
 
@@ -219,7 +224,7 @@ describe('CategoriesController', () => {
 
   describe('deactiveCategory', () => {
     it('should call categoriesService.update to set isActive false and return true', async () => {
-      const categoryServiceUpdateSpy = jest
+      const categoriesServiceUpdateSpy = jest
         .spyOn(categoriesService, 'update')
         .mockResolvedValue({
           isActive: false,
@@ -230,7 +235,7 @@ describe('CategoriesController', () => {
         mockUser,
       );
 
-      expect(categoryServiceUpdateSpy).toHaveBeenCalledWith('cat-1', {
+      expect(categoriesServiceUpdateSpy).toHaveBeenCalledWith('cat-1', {
         isActive: false,
         updatedBy: mockUser.id,
       });

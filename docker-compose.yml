@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/usr/src/app
       - api-node-modules:/usr/src/app/node_modules
-      - ./uploads:/usr/src/app/public/uploads
+      - ./uploads:/usr/src/app/uploads
     environment:
       NODE_ENV: ${NODE_ENV:-development}
     depends_on:
