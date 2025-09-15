@@ -9,7 +9,7 @@ services:
       - '8080:3000'
     volumes:
       - .:/usr/src/app
-      - ./node-modules:/usr/src/app/node_modules
+      - api-node-modules:/usr/src/app/node_modules
       - ./uploads:/usr/src/app/public/uploads
     environment:
       NODE_ENV: ${NODE_ENV:-development}

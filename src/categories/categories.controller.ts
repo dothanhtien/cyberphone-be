@@ -35,7 +35,7 @@ export class CategoriesController {
   @UseFilters(MulterExceptionFilter)
   create(
     @Body() createCategoryDto: CreateCategoryDto,
-    @UploadedFile() logo: Express.Multer.File,
+    @UploadedFile() logo: Express.Multer.File | undefined,
     @CurrentUser() user: User,
   ) {
     createCategoryDto.createdBy = user.id;
@@ -68,7 +68,7 @@ export class CategoriesController {
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body(new NonEmptyBodyPipe()) updateCategoryDto: UpdateCategoryDto,
-    @UploadedFile() logo: Express.Multer.File,
+    @UploadedFile() logo: Express.Multer.File | undefined,
     @CurrentUser() user: User,
   ) {
     const oldLogoPath = await this.categoriesService.getLogoPath(id);
