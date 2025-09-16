@@ -4,13 +4,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
-import { CreateCategoryDto } from './dto/create-category.dto';
 import { plainToInstance } from 'class-transformer';
 import { PaginatedEntity } from 'src/common/interfaces';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { Category } from './entities/category.entity';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -18,6 +18,11 @@ export class CategoriesService {
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
   ) {}
+
+  async getLogoPath(id: string): Promise<string | null> {
+    const category = await this.categoryRepository.findOne({ where: { id } });
+    return category?.getLogoPath() ?? null;
+  }
 
   async create(createCategoryDto: CreateCategoryDto) {
     createCategoryDto.slug = createCategoryDto.slug.toLowerCase();
@@ -171,28 +176,24 @@ export class CategoriesService {
       });
 
       if (existing && existing.id !== id) {
-        if (existing.isActive) {
-          throw new BadRequestException('Slug already exists');
-        } else {
-          throw new BadRequestException(
-            'Slug already exists in an inactive category',
-          );
-        }
+        throw new BadRequestException(
+          existing.isActive
+            ? 'Slug already exists'
+            : 'Slug already exists in an inactive category',
+        );
       }
     }
 
     const parentId = updateCategoryDto.parentId;
     if (parentId && parentId !== category.parentId) {
+      if (parentId === id) {
+        throw new BadRequestException('Category cannot be its own parent');
+      }
       const parentCategory = await this.categoryRepository.findOne({
         where: { id: parentId, isActive: true },
       });
-
       if (!parentCategory) {
         throw new BadRequestException('Parent category not found');
-      }
-
-      if (parentId === id) {
-        throw new BadRequestException('Category cannot be its own parent');
       }
 
       const descendants = await this.getDescendants(id);
@@ -205,14 +206,8 @@ export class CategoriesService {
 
     const updatedCategory = plainToInstance(
       Category,
-      {
-        ...category,
-        isActive: true,
-        ...updateCategoryDto,
-      },
-      {
-        excludeExtraneousValues: true,
-      },
+      { ...category, isActive: true, ...updateCategoryDto },
+      { excludeExtraneousValues: true },
     );
 
     return this.categoryRepository.save(updatedCategory);
