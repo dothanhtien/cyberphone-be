@@ -12,6 +12,7 @@ import { Brand } from 'src/brands/entities/brand.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { PaginatedEntity } from 'src/common/interfaces';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -91,5 +92,42 @@ export class ProductsService {
     });
     if (!product) throw new NotFoundException('Product not found');
     return product;
+  }
+
+  async update(id: string, updateProductDto: UpdateProductDto) {
+    const product = await this.productRepository.findOne({
+      where: { id },
+    });
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    if (updateProductDto.slug) {
+      updateProductDto.slug = updateProductDto.slug.toLowerCase();
+    }
+
+    if (updateProductDto.slug && updateProductDto.slug !== product.slug) {
+      const existing = await this.productRepository.findOne({
+        where: { slug: updateProductDto.slug },
+        select: ['id', 'isActive'],
+      });
+
+      if (existing && existing.id !== id) {
+        throw new BadRequestException(
+          existing.isActive
+            ? 'Slug already exists'
+            : 'Slug already exists in an inactive product',
+        );
+      }
+    }
+
+    const updateProduct = plainToInstance(
+      Product,
+      { ...product, isActive: true, ...updateProductDto },
+      { excludeExtraneousValues: true },
+    );
+
+    return this.productRepository.save(updateProduct);
   }
 }
