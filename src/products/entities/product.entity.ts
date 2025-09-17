@@ -13,10 +13,14 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Index(['name'])
-@Index(['isActive'])
-@Index(['createdAt'])
 @Entity('products')
+@Index('idx_products_slug', ['slug'], {
+  unique: true,
+  where: `"is_active" = true`,
+})
+@Index('idx_products_name', ['name'])
+@Index('idx_products_is_active', ['isActive'])
+@Index('idx_products_created_at', ['createdAt'])
 export class Product {
   @PrimaryGeneratedColumn('uuid')
   @Expose()
@@ -26,7 +30,7 @@ export class Product {
   @Expose()
   name: string;
 
-  @Column({ length: 255, unique: true })
+  @Column({ length: 255 })
   @Expose()
   slug: string;
 
