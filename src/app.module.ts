@@ -11,6 +11,7 @@ import { UsersModule } from './users/users.module';
 import { BrandsModule } from './brands/brands.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
+import { ProductVariantsModule } from './product-variants/product-variants.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ProductsModule } from './products/products.module';
     BrandsModule,
     CategoriesModule,
     ProductsModule,
+    ProductVariantsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
