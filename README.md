@@ -38,6 +38,19 @@ docker compose --env-file docker.env down
 docker compose --env-file docker.env down --volumes --rmi all --remove-orphans
 ```
 
+## TypeORM CLI
+
+```bash
+# generate
+npm run migration:generate src/database/migrations/CreateUsersTable
+
+# run
+npm run migration:run
+
+# revert
+npm run migration:revert
+```
+
 ## Run tests
 
 ```bash
