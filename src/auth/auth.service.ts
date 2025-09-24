@@ -13,7 +13,11 @@ export class AuthService {
   ) {}
 
   async validateUser(identifier: string, password: string) {
-    const user = await this.usersService.findOneByEmailOrPhone(identifier);
+    const normalizedIdentifier = identifier?.includes('@')
+      ? identifier.trim().toLowerCase()
+      : identifier?.trim();
+    const user =
+      await this.usersService.findOneByEmailOrPhone(normalizedIdentifier);
 
     if (user && user.passwordHash) {
       const doesPasswordMatch = await this.passwordService.comparePassword(

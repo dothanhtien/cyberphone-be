@@ -17,12 +17,25 @@ import { JwtAuthGuard } from './jwt-auth.guard';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET'),
-        signOptions: {
-          expiresIn: `${configService.get('JWT_TOKEN_EXPIRATION')}s`,
-        },
-      }),
+      useFactory: (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET');
+        const expRaw = configService.get<string>('JWT_TOKEN_EXPIRATION');
+        const expNum = Number(expRaw);
+        if (!secret) {
+          throw new Error('JWT_SECRET is not configured');
+        }
+        if (!Number.isFinite(expNum) || expNum <= 0) {
+          throw new Error(
+            'JWT_TOKEN_EXPIRATION must be a positive number (seconds)',
+          );
+        }
+        return {
+          secret,
+          signOptions: {
+            expiresIn: `${expNum}s`,
+          },
+        };
+      },
     }),
   ],
   providers: [
