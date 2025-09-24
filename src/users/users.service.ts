@@ -6,10 +6,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { Repository } from 'typeorm';
-import { PasswordService } from 'src/common/password/password.service';
+import { PasswordService } from '@/common/password/password.service';
 import { User } from './entities/user.entity';
-import { PaginatedEntity } from 'src/common/interfaces/pagination.interface';
-import { PaginationQueryDto } from 'src/common/dto/pagination.dto';
+import { PaginatedEntity } from '@/common/interfaces/pagination.interface';
+import { PaginationQueryDto } from '@/common/dto/pagination.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -29,7 +29,7 @@ export class UsersService {
     });
 
     if (isEmailExist) {
-      throw new BadRequestException('Email or Phone already exists');
+      throw new BadRequestException('Email already exists');
     }
 
     if (createUserDto.phone) {

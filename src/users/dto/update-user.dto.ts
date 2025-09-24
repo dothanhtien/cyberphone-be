@@ -9,7 +9,7 @@ import {
   MinLength,
   ValidateIf,
 } from 'class-validator';
-import { Match } from 'src/common/decorators/match.decorator';
+import { Match } from '@/common/decorators/match.decorator';
 import { UserRoles } from '../entities/user.entity';
 
 export class UpdateUserDto {
