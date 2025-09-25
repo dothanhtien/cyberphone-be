@@ -88,6 +88,15 @@ export class UsersService {
     return user;
   }
 
+  async findOneByEmailOrPhone(identifier: string) {
+    return this.userRepository.findOne({
+      where: [
+        { email: identifier, isActive: true },
+        { phone: identifier, isActive: true },
+      ],
+    });
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id);
 
