@@ -1,4 +1,6 @@
+import { Transform } from 'class-transformer';
 import {
+  IsBoolean,
   IsEmpty,
   IsNotEmpty,
   IsOptional,
@@ -36,4 +38,9 @@ export class UpdateCategoryDto {
 
   @IsEmpty({ message: 'You cannot set updatedBy' })
   updatedBy?: string;
+
+  @IsBoolean({ message: 'Remove logo must be a boolean' })
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsOptional()
+  removeLogo?: boolean;
 }

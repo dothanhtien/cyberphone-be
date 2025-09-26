@@ -11,6 +11,7 @@ import { PaginatedEntity } from '@/common/interfaces/pagination.interface';
 import { PaginationQueryDto } from '@/common/dto/pagination.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { extractPaginationParams } from '@/common/utils/paginations.util';
 
 @Injectable()
 export class CategoriesService {
@@ -26,7 +27,7 @@ export class CategoriesService {
     });
 
     if (isSlugExist) {
-      throw new BadRequestException('Slug alreadt exists');
+      throw new BadRequestException('Slug already exists');
     }
 
     const newCategory = plainToInstance(Category, createCategoryDto, {
@@ -39,8 +40,7 @@ export class CategoriesService {
   async findAll(
     getCategoriesDto: PaginationQueryDto,
   ): Promise<PaginatedEntity<Category>> {
-    const page = getCategoriesDto.page || 1;
-    const limit = getCategoriesDto.limit || 10;
+    const { page, limit } = extractPaginationParams(getCategoriesDto);
 
     const [categories, totalCount] = await this.categoryRepository.findAndCount(
       {
@@ -202,5 +202,12 @@ export class CategoriesService {
     );
 
     return categories;
+  }
+
+  async getLogoPath(id: string): Promise<string | null> {
+    const category = await this.categoryRepository.findOne({
+      where: { id, isActive: true },
+    });
+    return category?.getLogoPath() ?? null;
   }
 }

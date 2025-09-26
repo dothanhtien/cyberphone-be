@@ -12,6 +12,7 @@ import { PaginatedEntity } from '@/common/interfaces/pagination.interface';
 import { PaginationQueryDto } from '@/common/dto/pagination.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { extractPaginationParams } from '@/common/utils/paginations.util';
 
 @Injectable()
 export class UsersService {
@@ -58,8 +59,7 @@ export class UsersService {
   async findAll(
     getUsersDto: PaginationQueryDto,
   ): Promise<PaginatedEntity<User>> {
-    const page = getUsersDto.page || 1;
-    const limit = getUsersDto.limit || 10;
+    const { page, limit } = extractPaginationParams(getUsersDto);
 
     const [users, totalCount] = await this.userRepository.findAndCount({
       where: { isActive: true },
