@@ -51,7 +51,7 @@ export class Category {
     name: 'parent_id',
     foreignKeyConstraintName: 'fk_categories_parent_id',
   })
-  @Expose()
+  @Exclude()
   parent?: Category;
 
   @OneToMany(() => Category, (category) => category.parent)

@@ -12,18 +12,19 @@ import {
   UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
-import { CategoriesService } from './categories.service';
+import { relative, resolve } from 'path';
+import { unlink } from 'fs/promises';
 import { NonEmptyBodyPipe } from '@/common/pipes/non-empty-body.pipe';
 import { CurrentUser } from '@/auth/decorators/current-user.decorator';
 import { User } from '@/users/entities/user.entity';
 import { PaginationQueryDto } from '@/common/dto/pagination.dto';
+import { MulterExceptionFilter } from '@/common/filters/multer-exception.filter';
+import { withFileTransaction } from '@/common/helpers/with-file-transaction.helper';
+import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryLogoInterceptor } from './interceptors/category-logo.interceptor';
-import { MulterExceptionFilter } from '@/common/filters/multer-exception.filter';
-import { withFileTransaction } from '@/common/helpers/with-file-transaction.helper';
-import { join } from 'path';
-import { unlink } from 'fs/promises';
+import { UPLOADS_ROOT } from '@/common/constants/path';
 
 @Controller('categories')
 export class CategoriesController {
@@ -37,11 +38,14 @@ export class CategoriesController {
     @UploadedFile() logo: Express.Multer.File | undefined,
     @CurrentUser() user: User,
   ) {
+    if (logo) {
+      createCategoryDto.logoUrl = `/uploads/categories/${logo.filename}`;
+    }
     createCategoryDto.createdBy = user.id;
 
     return withFileTransaction(
       () => this.categoriesService.create(createCategoryDto),
-      logo ? `uploads/categories/${logo.filename}` : undefined,
+      createCategoryDto.logoUrl,
     );
   }
 
@@ -66,21 +70,34 @@ export class CategoriesController {
   ) {
     const oldLogoPath = await this.categoriesService.getLogoPath(id);
 
+    if (logo) {
+      updateCategoryDto.logoUrl = `/uploads/categories/${logo.filename}`;
+    }
+
     updateCategoryDto.updatedBy = user.id;
 
-    return withFileTransaction(
+    const savedCategory = await withFileTransaction(
       () => this.categoriesService.update(id, updateCategoryDto),
-      logo ? `uploads/categories/${logo.filename}` : undefined,
-    ).then((savedCategory) => {
-      if ((updateCategoryDto.removeLogo || !!logo) && oldLogoPath) {
-        const relativeOld = oldLogoPath.replace(/^\/+/, '');
-        const filePath = join(process.cwd(), relativeOld);
-        unlink(filePath).catch((err) =>
+      updateCategoryDto.logoUrl,
+    );
+    if ((updateCategoryDto.removeLogo || !!logo) && oldLogoPath) {
+      const sanitized = oldLogoPath
+        .replace(/^[/\\]+/, '')
+        .replace(/^uploads[/\\]?/i, '');
+      const fullPath = resolve(UPLOADS_ROOT, sanitized);
+      const relativePath = relative(UPLOADS_ROOT, fullPath);
+      if (!relativePath.startsWith('..') && relativePath !== '') {
+        unlink(fullPath).catch((err) =>
           console.error('Failed to delete old logo:', err),
         );
+      } else {
+        console.error(
+          'Refusing to delete file outside uploads root:',
+          fullPath,
+        );
       }
-      return savedCategory;
-    });
+    }
+    return savedCategory;
   }
 
   @Delete(':id')

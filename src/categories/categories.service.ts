@@ -6,12 +6,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
-import { Category } from './entities/category.entity';
 import { PaginatedEntity } from '@/common/interfaces/pagination.interface';
 import { PaginationQueryDto } from '@/common/dto/pagination.dto';
+import { extractPaginationParams } from '@/common/utils/paginations.util';
+import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { extractPaginationParams } from '@/common/utils/paginations.util';
 
 @Injectable()
 export class CategoriesService {
@@ -74,7 +74,6 @@ export class CategoriesService {
       { raw: 'updated_by', alias: 'updatedBy' },
     ];
 
-    const rawColumns = selectedFields.map((f) => f.raw).join(', ');
     const aliasedColumns = selectedFields
       .map((f) => `${f.raw} AS "${f.alias}"`)
       .join(', ');
@@ -82,13 +81,14 @@ export class CategoriesService {
     const rows = await this.categoryRepository.query<Category[]>(
       `
         WITH RECURSIVE category_tree AS (
-          SELECT ${rawColumns}
+          SELECT ${selectedFields.map((f) => f.raw).join(', ')}
           FROM categories
           WHERE id = $1 AND is_active = TRUE
           UNION ALL
           SELECT ${selectedFields.map((f) => `c.${f.raw}`).join(', ')}
           FROM categories c
           INNER JOIN category_tree ct ON ct.id = c.parent_id
+          WHERE c.is_active = TRUE
         )
         SELECT ${aliasedColumns}
         FROM category_tree;
@@ -124,7 +124,7 @@ export class CategoriesService {
     if (result.parentId) {
       result.parent =
         (await this.categoryRepository.findOne({
-          where: { id: result.parentId },
+          where: { id: result.parentId, isActive: true },
         })) ?? undefined;
     }
 
@@ -153,6 +153,12 @@ export class CategoriesService {
       if (existingCategory && existingCategory.id !== id) {
         throw new BadRequestException('Slug already exists');
       }
+    }
+
+    if (updateCategoryDto.removeLogo) {
+      updateCategoryDto.logoUrl = null;
+    } else if (updateCategoryDto.logoUrl === undefined) {
+      updateCategoryDto.logoUrl = category.getLogoPath();
     }
 
     const parentId = updateCategoryDto.parentId;
@@ -195,6 +201,7 @@ export class CategoriesService {
         UNION ALL
         SELECT c.id, c.parent_id FROM categories c
         INNER JOIN category_tree ct ON ct.id = c.parent_id
+        WHERE c.is_active = TRUE
       )
       SELECT id, parent_id AS "parentId" FROM category_tree WHERE id != $1;
     `,

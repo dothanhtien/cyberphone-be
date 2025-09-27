@@ -2,12 +2,18 @@ import { BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { v4 as uuid } from 'uuid';
-import { extname } from 'path';
+import { extname, join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
+import { UPLOADS_ROOT } from '@/common/constants/path';
 
 export function CategoryLogoInterceptor() {
   return FileInterceptor('logo', {
     storage: diskStorage({
-      destination: './uploads/categories',
+      destination: (req, file, callback) => {
+        const dest = join(UPLOADS_ROOT, 'categories');
+        if (!existsSync(dest)) mkdirSync(dest, { recursive: true });
+        callback(null, dest);
+      },
       filename: (req, file, callback) => {
         const fileName = uuid();
         const fileExt = extname(file.originalname).toLowerCase();
