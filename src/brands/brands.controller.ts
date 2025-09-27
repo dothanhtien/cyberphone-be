@@ -14,83 +14,80 @@ import {
 } from '@nestjs/common';
 import { relative, resolve } from 'path';
 import { unlink } from 'fs/promises';
-import { NonEmptyBodyPipe } from '@/common/pipes/non-empty-body.pipe';
-import { CurrentUser } from '@/auth/decorators/current-user.decorator';
-import { User } from '@/users/entities/user.entity';
-import { PaginationQueryDto } from '@/common/dto/pagination.dto';
 import { MulterExceptionFilter } from '@/common/filters/multer-exception.filter';
 import { withFileTransaction } from '@/common/helpers/with-file-transaction.helper';
-import { CategoriesService } from './categories.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
-import { UPLOADS_ROOT } from '@/common/constants/path';
 import { UploadFileInterceptor } from '@/common/interceptors/upload-file.interceptor';
+import { NonEmptyBodyPipe } from '@/common/pipes/non-empty-body.pipe';
+import { CurrentUser } from '@/auth/decorators/current-user.decorator';
+import { PaginationQueryDto } from '@/common/dto/pagination.dto';
+import { UPLOADS_ROOT } from '@/common/constants/path';
+import { User } from '@/users/entities/user.entity';
+import { BrandsService } from './brands.service';
+import { CreateBrandDto } from './dto/create-brand.dto';
+import { UpdateBrandDto } from './dto/update-brand.dto';
 
-@Controller('categories')
-export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) {}
+@Controller('brands')
+export class BrandsController {
+  constructor(private readonly brandsService: BrandsService) {}
 
   @Post()
   @UseInterceptors(
-    UploadFileInterceptor({
-      fieldName: 'logo',
-      folder: 'categories',
-    }),
+    UploadFileInterceptor({ fieldName: 'logo', folder: 'brands' }),
   )
   @UseFilters(MulterExceptionFilter)
   create(
-    @Body(new NonEmptyBodyPipe()) createCategoryDto: CreateCategoryDto,
+    @Body(new NonEmptyBodyPipe()) createBrandDto: CreateBrandDto,
     @UploadedFile() logo: Express.Multer.File | undefined,
     @CurrentUser() user: User,
   ) {
     if (logo) {
-      createCategoryDto.logoUrl = `/uploads/categories/${logo.filename}`;
+      createBrandDto.logoUrl = `/uploads/brands/${logo.filename}`;
     }
-    createCategoryDto.createdBy = user.id;
+    createBrandDto.createdBy = user.id;
 
     return withFileTransaction(
-      () => this.categoriesService.create(createCategoryDto),
-      createCategoryDto.logoUrl,
+      () => this.brandsService.create(createBrandDto),
+      createBrandDto.logoUrl,
     );
   }
 
   @Get()
   findAll(@Query() query: PaginationQueryDto) {
-    return this.categoriesService.findAll(query);
+    return this.brandsService.findAll(query);
   }
 
   @Get(':id')
   findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
-    return this.categoriesService.findOne(id);
+    return this.brandsService.findOne(id);
   }
 
   @Patch(':id')
   @UseInterceptors(
     UploadFileInterceptor({
       fieldName: 'logo',
-      folder: 'categories',
+      folder: 'brands',
     }),
   )
   @UseFilters(MulterExceptionFilter)
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body(new NonEmptyBodyPipe()) updateCategoryDto: UpdateCategoryDto,
+    @Body(new NonEmptyBodyPipe()) updateBrandDto: UpdateBrandDto,
     @UploadedFile() logo: Express.Multer.File | undefined,
     @CurrentUser() user: User,
   ) {
-    const oldLogoPath = await this.categoriesService.getLogoPath(id);
+    const oldLogoPath = await this.brandsService.getLogoPath(id);
 
     if (logo) {
-      updateCategoryDto.logoUrl = `/uploads/categories/${logo.filename}`;
+      updateBrandDto.logoUrl = `/uploads/brands/${logo.filename}`;
     }
 
-    updateCategoryDto.updatedBy = user.id;
+    updateBrandDto.updatedBy = user.id;
 
-    const savedCategory = await withFileTransaction(
-      () => this.categoriesService.update(id, updateCategoryDto),
-      updateCategoryDto.logoUrl,
+    const savedBrand = await withFileTransaction(
+      () => this.brandsService.update(id, updateBrandDto),
+      updateBrandDto.logoUrl,
     );
-    if ((updateCategoryDto.removeLogo || !!logo) && oldLogoPath) {
+    if ((updateBrandDto.removeLogo || !!logo) && oldLogoPath) {
       const sanitized = oldLogoPath
         .replace(/^[/\\]+/, '')
         .replace(/^uploads[/\\]?/i, '');
@@ -107,7 +104,7 @@ export class CategoriesController {
         );
       }
     }
-    return savedCategory;
+    return savedBrand;
   }
 
   @Delete(':id')
@@ -115,7 +112,7 @@ export class CategoriesController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @CurrentUser() user: User,
   ) {
-    await this.categoriesService.update(id, {
+    await this.brandsService.update(id, {
       isActive: false,
       updatedBy: user.id,
     });
