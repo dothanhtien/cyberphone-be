@@ -14,6 +14,7 @@ import { extractPaginationParams } from '@/common/utils/paginations.util';
 import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductVariant } from '@/product-variants/entities/product-variant.entity';
 
 @Injectable()
 export class ProductsService {
@@ -24,6 +25,8 @@ export class ProductsService {
     private readonly brandRepository: Repository<Brand>,
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(ProductVariant)
+    private readonly productVariantRepository: Repository<ProductVariant>,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -150,5 +153,11 @@ export class ProductsService {
     );
 
     return this.productRepository.save(updateProduct);
+  }
+
+  async findVariants(productId: string) {
+    return this.productVariantRepository.find({
+      where: { productId, isActive: true },
+    });
   }
 }
