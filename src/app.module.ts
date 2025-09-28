@@ -8,8 +8,9 @@ import { PasswordModule } from './common/password/password.module';
 import { UPLOADS_ROOT } from './common/constants/path';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { CategoriesModule } from './categories/categories.module';
 import { BrandsModule } from './brands/brands.module';
+import { CategoriesModule } from './categories/categories.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -22,8 +23,9 @@ import { BrandsModule } from './brands/brands.module';
     PasswordModule,
     AuthModule,
     UsersModule,
-    CategoriesModule,
     BrandsModule,
+    CategoriesModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
