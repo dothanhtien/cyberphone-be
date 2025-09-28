@@ -56,6 +56,6 @@ export class UpdateProductDto {
   @IsEmpty({ message: 'You cannot set isActive' })
   isActive?: boolean;
 
-  @IsEmpty({ message: 'You cannot set createdBy' })
+  @IsEmpty({ message: 'You cannot set updatedBy' })
   updatedBy?: string;
 }
