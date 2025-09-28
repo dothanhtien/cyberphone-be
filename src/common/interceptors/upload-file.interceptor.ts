@@ -6,11 +6,17 @@ import { extname, join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { UPLOADS_ROOT } from '@/common/constants/path';
 
-export function CategoryLogoInterceptor() {
-  return FileInterceptor('logo', {
+export function UploadFileInterceptor({
+  fieldName,
+  folder,
+}: {
+  fieldName: string;
+  folder: string;
+}) {
+  return FileInterceptor(fieldName, {
     storage: diskStorage({
       destination: (req, file, callback) => {
-        const dest = join(UPLOADS_ROOT, 'categories');
+        const dest = join(UPLOADS_ROOT, folder);
         if (!existsSync(dest)) mkdirSync(dest, { recursive: true });
         callback(null, dest);
       },

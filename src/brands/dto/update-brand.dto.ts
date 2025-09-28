@@ -5,14 +5,14 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUUID,
+  IsUrl,
   MaxLength,
 } from 'class-validator';
 
-export class UpdateCategoryDto {
-  @MaxLength(255, { message: 'Category name must not exceed 255 characters' })
-  @IsString({ message: 'Category name must be a string' })
-  @IsNotEmpty({ message: 'Category name is required' })
+export class UpdateBrandDto {
+  @MaxLength(255, { message: 'Brand name must not exceed 255 characters' })
+  @IsString({ message: 'Brand name must be a string' })
+  @IsNotEmpty({ message: 'Brand name is required' })
   @IsOptional()
   name?: string;
 
@@ -22,13 +22,14 @@ export class UpdateCategoryDto {
   @IsOptional()
   slug?: string;
 
-  @IsUUID('4', { message: 'Parent ID must be a valid UUID (v4)' })
-  @IsOptional()
-  parentId?: string;
-
   @IsString({ message: 'Description must be a string' })
   @IsOptional()
   description?: string;
+
+  @MaxLength(512, { message: 'Website URL must not exceed 512 characters' })
+  @IsUrl({}, { message: 'Website URL must be a valid URL' })
+  @IsOptional()
+  websiteUrl?: string;
 
   @IsEmpty({ message: 'You cannot set logoUrl' })
   logoUrl?: string | null;
