@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -78,6 +79,13 @@ export class CategoriesController {
     @UploadedFile() logo: Express.Multer.File | undefined,
     @CurrentUser() user: User,
   ) {
+    if (logo && updateCategoryDto.removeLogo) {
+      await unlink(logo.path).catch(() => {});
+      throw new BadRequestException(
+        'You cannot upload a logo and set removeLogo at the same time',
+      );
+    }
+
     const oldLogoPath = await this.categoriesService.getLogoPath(id);
 
     if (logo) {

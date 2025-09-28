@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -75,6 +76,13 @@ export class BrandsController {
     @UploadedFile() logo: Express.Multer.File | undefined,
     @CurrentUser() user: User,
   ) {
+    if (logo && updateBrandDto.removeLogo) {
+      await unlink(logo.path).catch(() => {});
+      throw new BadRequestException(
+        'You cannot upload a logo and set removeLogo at the same time',
+      );
+    }
+
     const oldLogoPath = await this.brandsService.getLogoPath(id);
 
     if (logo) {

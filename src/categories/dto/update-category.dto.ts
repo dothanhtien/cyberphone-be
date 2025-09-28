@@ -31,7 +31,7 @@ export class UpdateCategoryDto {
   description?: string;
 
   @IsEmpty({ message: 'You cannot set logoUrl' })
-  logoUrl?: string | undefined | null;
+  logoUrl?: string | null;
 
   @IsEmpty({ message: 'You cannot set isActive' })
   isActive?: boolean;

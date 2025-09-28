@@ -94,10 +94,13 @@ export class BrandsService {
       }
     }
 
-    if (updateBrandDto.removeLogo) {
-      updateBrandDto.logoUrl = null;
-    } else if (updateBrandDto.logoUrl === undefined) {
-      updateBrandDto.logoUrl = brand.getLogoPath();
+    const hasNewLogo = updateBrandDto.logoUrl !== undefined;
+    if (!hasNewLogo) {
+      if (updateBrandDto.removeLogo) {
+        updateBrandDto.logoUrl = null;
+      } else {
+        updateBrandDto.logoUrl = brand.getLogoPath();
+      }
     }
 
     const updatedBrand = plainToInstance(

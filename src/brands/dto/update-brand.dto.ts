@@ -31,9 +31,7 @@ export class UpdateBrandDto {
   @IsOptional()
   websiteUrl?: string;
 
-  @MaxLength(512, { message: 'Logo URL must not exceed 512 characters' })
-  @IsUrl({}, { message: 'Logo URL must be a valid URL' })
-  @IsOptional()
+  @IsEmpty({ message: 'You cannot set logoUrl' })
   logoUrl?: string | null;
 
   @IsEmpty({ message: 'You cannot set isActive' })
