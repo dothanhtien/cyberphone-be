@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductVariant } from './entities/product-variant.entity';
 import { Repository } from 'typeorm';
@@ -24,6 +28,7 @@ export class ProductVariantsService {
       id: createProductVariantDto.productId,
       isActive: true,
     });
+
     if (!productExists) {
       throw new BadRequestException(`Product not found`);
     }
@@ -34,6 +39,7 @@ export class ProductVariantsService {
         { sku: createProductVariantDto.sku, isActive: true },
       ],
     });
+
     if (productVariantExists) {
       throw new BadRequestException('Slug or SKU already exists');
     }
@@ -53,13 +59,15 @@ export class ProductVariantsService {
     const variant = await this.productVariantRepository.findOne({
       where: { id, isActive: true },
     });
+
     if (!variant) {
-      throw new BadRequestException('Product variant not found');
+      throw new NotFoundException('Product variant not found');
     }
 
     if (updateProductVariantDto.sku) {
       updateProductVariantDto.sku = updateProductVariantDto.sku.toLowerCase();
     }
+
     if (updateProductVariantDto.slug) {
       updateProductVariantDto.slug = updateProductVariantDto.slug.toLowerCase();
     }
@@ -72,8 +80,9 @@ export class ProductVariantsService {
         id: updateProductVariantDto.productId,
         isActive: true,
       });
+
       if (!productExists) {
-        throw new BadRequestException('Product not found');
+        throw new NotFoundException('Product not found');
       }
     }
 
@@ -85,6 +94,7 @@ export class ProductVariantsService {
         sku: updateProductVariantDto.sku,
         isActive: true,
       });
+
       if (variantExists) {
         throw new BadRequestException('SKU already exists');
       }
@@ -98,6 +108,7 @@ export class ProductVariantsService {
         slug: updateProductVariantDto.slug,
         isActive: true,
       });
+
       if (variantExists) {
         throw new BadRequestException('Slug already exists');
       }
@@ -116,10 +127,15 @@ export class ProductVariantsService {
   }
 
   async remove(id: string, data: { updatedBy: string }) {
-    const existing = await this.productVariantRepository.existsBy({ id });
+    const existing = await this.productVariantRepository.existsBy({
+      id,
+      isActive: true,
+    });
+
     if (!existing) {
-      throw new BadRequestException('Product variant not found');
+      throw new NotFoundException('Product variant not found');
     }
+
     const result = await this.productVariantRepository.update(id, {
       isActive: false,
       updatedBy: data.updatedBy,

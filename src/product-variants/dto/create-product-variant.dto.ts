@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { IsLessThan } from '@/common/decorators/is-less-than.decorator';
 import {
   IsNotEmpty,
   IsOptional,
@@ -32,38 +32,38 @@ export class CreateProductVariantDto {
   @IsNotEmpty({ message: 'Slug must not be empty' })
   slug: string;
 
+  @Min(0, { message: 'Base price must be greater than or equal to 0' })
   @IsNumber({}, { message: 'Base price must be a number' })
   @IsNotEmpty({ message: 'Base price must not be empty' })
-  @Type(() => Number)
   basePrice: number;
 
+  @IsLessThan('basePrice', {
+    message: 'Sale price must be less than base price',
+  })
+  @Min(0, { message: 'Sale price must be greater than or equal to 0' })
   @IsNumber({}, { message: 'Sale price must be a number' })
-  @Type(() => Number)
   @IsOptional()
   salePrice?: number;
 
+  @Min(0, { message: 'Cost price must be greater than or equal to 0' })
   @IsNumber({}, { message: 'Cost price must be a number' })
-  @Type(() => Number)
   @IsOptional()
   costPrice?: number;
 
-  @IsNumber({}, { message: 'Weight (kg) must be a number' })
   @Min(0, { message: 'Weight (kg) must be greater than or equal to 0' })
-  @Type(() => Number)
+  @IsNumber({}, { message: 'Weight (kg) must be a number' })
   @IsOptional()
   weightKg?: number;
 
-  @IsInt({ message: 'Stock quantity must be an integer' })
   @Min(0, { message: 'Stock quantity must be greater than or equal to 0' })
-  @Type(() => Number)
+  @IsInt({ message: 'Stock quantity must be an integer' })
   @IsOptional()
   stockQuantity?: number;
 
-  @IsInt({ message: 'Low stock threshold must be an integer' })
   @Min(0, {
     message: 'Low stock threshold must be greater than or equal to 0',
   })
-  @Type(() => Number)
+  @IsInt({ message: 'Low stock threshold must be an integer' })
   @IsOptional()
   lowStockThreshold?: number;
 
