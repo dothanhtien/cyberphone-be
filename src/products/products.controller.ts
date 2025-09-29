@@ -61,4 +61,9 @@ export class ProductsController {
     });
     return true;
   }
+
+  @Get(':id/variants')
+  findVariants(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    return this.productsService.findVariants(id);
+  }
 }
