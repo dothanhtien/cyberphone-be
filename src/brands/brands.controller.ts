@@ -48,7 +48,7 @@ export class BrandsController {
 
     return withFileTransaction(
       () => this.brandsService.create(createBrandDto),
-      createBrandDto.logoUrl,
+      createBrandDto.logoUrl ? [createBrandDto.logoUrl] : [],
     );
   }
 
@@ -93,7 +93,7 @@ export class BrandsController {
 
     const savedBrand = await withFileTransaction(
       () => this.brandsService.update(id, updateBrandDto),
-      updateBrandDto.logoUrl,
+      updateBrandDto.logoUrl ? [updateBrandDto.logoUrl] : [],
     );
     if ((updateBrandDto.removeLogo || !!logo) && oldLogoPath) {
       const sanitized = oldLogoPath

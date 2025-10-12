@@ -156,8 +156,17 @@ export class ProductsService {
   }
 
   async findVariants(productId: string) {
-    return this.productVariantRepository.find({
-      where: { productId, isActive: true },
-    });
+    return this.productVariantRepository
+      .createQueryBuilder('productVariants')
+      .leftJoinAndSelect('productVariants.assets', 'assets')
+      .where('productVariants.productId = :productId', { productId })
+      .andWhere('productVariants.isActive = true')
+      .select([
+        'productVariants',
+        'assets.id',
+        'assets.privateUrl',
+        'assets.altText',
+      ])
+      .getMany();
   }
 }

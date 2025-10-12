@@ -5,11 +5,13 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductVariant } from './entities/product-variant.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
 import { Product } from '@/products/entities/product.entity';
 import { CreateProductVariantDto } from './dto/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
+import { ProductAssetsService } from '@/product-assets/product-assets.service';
+import { ProductAsset } from '@/product-assets/entities/product-assets.entity';
 
 @Injectable()
 export class ProductVariantsService {
@@ -18,6 +20,8 @@ export class ProductVariantsService {
     private readonly productVariantRepository: Repository<ProductVariant>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    private readonly productAssetsService: ProductAssetsService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(createProductVariantDto: CreateProductVariantDto) {
@@ -44,15 +48,33 @@ export class ProductVariantsService {
       throw new BadRequestException('Slug or SKU already exists');
     }
 
-    const newProductVariant = plainToInstance(
-      ProductVariant,
-      createProductVariantDto,
-      {
-        excludeExtraneousValues: true,
-      },
-    );
+    return this.dataSource.transaction(async (tx) => {
+      const newVariant = plainToInstance(
+        ProductVariant,
+        createProductVariantDto,
+        {
+          excludeExtraneousValues: true,
+        },
+      );
 
-    return this.productVariantRepository.save(newProductVariant);
+      const savedVariant = await tx.save(ProductVariant, newVariant);
+
+      let { assetItems } = createProductVariantDto;
+      let savedAssets: ProductAsset[] = [];
+
+      if (assetItems.length > 0) {
+        assetItems = assetItems.map((asset) => ({
+          ...asset,
+          variantId: savedVariant.id,
+        }));
+        savedAssets = await this.productAssetsService.createMany(
+          assetItems,
+          tx,
+        );
+      }
+
+      return { ...savedVariant, assets: savedAssets };
+    });
   }
 
   async update(id: string, updateProductVariantDto: UpdateProductVariantDto) {

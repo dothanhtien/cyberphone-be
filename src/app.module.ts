@@ -12,6 +12,7 @@ import { BrandsModule } from './brands/brands.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { ProductVariantsModule } from './product-variants/product-variants.module';
+import { ProductAssetsModule } from './product-assets/product-assets.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ProductVariantsModule } from './product-variants/product-variants.modul
     CategoriesModule,
     ProductsModule,
     ProductVariantsModule,
+    ProductAssetsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

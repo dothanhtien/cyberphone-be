@@ -1,4 +1,6 @@
 import { IsLessThan } from '@/common/decorators/is-less-than.decorator';
+import { CreateProductAssetDto } from '@/product-assets/dto/create-product-asset.dto';
+import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsOptional,
@@ -35,6 +37,7 @@ export class CreateProductVariantDto {
   @Min(0, { message: 'Base price must be greater than or equal to 0' })
   @IsNumber({}, { message: 'Base price must be a number' })
   @IsNotEmpty({ message: 'Base price must not be empty' })
+  @Type(() => Number)
   basePrice: number;
 
   @IsLessThan('basePrice', {
@@ -42,21 +45,25 @@ export class CreateProductVariantDto {
   })
   @Min(0, { message: 'Sale price must be greater than or equal to 0' })
   @IsNumber({}, { message: 'Sale price must be a number' })
+  @Type(() => Number)
   @IsOptional()
   salePrice?: number;
 
   @Min(0, { message: 'Cost price must be greater than or equal to 0' })
   @IsNumber({}, { message: 'Cost price must be a number' })
+  @Type(() => Number)
   @IsOptional()
   costPrice?: number;
 
   @Min(0, { message: 'Weight (kg) must be greater than or equal to 0' })
   @IsNumber({}, { message: 'Weight (kg) must be a number' })
+  @Type(() => Number)
   @IsOptional()
   weightKg?: number;
 
   @Min(0, { message: 'Stock quantity must be greater than or equal to 0' })
   @IsInt({ message: 'Stock quantity must be an integer' })
+  @Type(() => Number)
   @IsOptional()
   stockQuantity?: number;
 
@@ -64,8 +71,12 @@ export class CreateProductVariantDto {
     message: 'Low stock threshold must be greater than or equal to 0',
   })
   @IsInt({ message: 'Low stock threshold must be an integer' })
+  @Type(() => Number)
   @IsOptional()
   lowStockThreshold?: number;
+
+  @IsOptional()
+  assetsMetaData: string;
 
   @IsBoolean({ message: 'isActive must be a boolean value' })
   @IsOptional()
@@ -73,4 +84,7 @@ export class CreateProductVariantDto {
 
   @IsEmpty({ message: 'You cannot set createdBy manually' })
   createdBy?: string;
+
+  @IsEmpty({ message: 'You cannot set assetItems manually' })
+  assetItems: CreateProductAssetDto[];
 }

@@ -51,7 +51,7 @@ export class CategoriesController {
 
     return withFileTransaction(
       () => this.categoriesService.create(createCategoryDto),
-      createCategoryDto.logoUrl,
+      createCategoryDto.logoUrl ? [createCategoryDto.logoUrl] : [],
     );
   }
 
@@ -96,7 +96,7 @@ export class CategoriesController {
 
     const savedCategory = await withFileTransaction(
       () => this.categoriesService.update(id, updateCategoryDto),
-      updateCategoryDto.logoUrl,
+      updateCategoryDto.logoUrl ? [updateCategoryDto.logoUrl] : [],
     );
     if ((updateCategoryDto.removeLogo || !!logo) && oldLogoPath) {
       const sanitized = oldLogoPath

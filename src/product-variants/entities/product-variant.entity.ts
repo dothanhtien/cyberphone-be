@@ -7,10 +7,12 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Product } from '../../products/entities/product.entity';
+import { ProductAsset } from '../../product-assets/entities/product-assets.entity';
 
 @Entity('product_variants')
 @Index('idx_product_variants_product_id', ['productId'])
@@ -128,4 +130,7 @@ export class ProductVariant {
   resetUpdatedAt() {
     this.updatedAt = null;
   }
+
+  @OneToMany(() => ProductAsset, (asset) => asset.variant)
+  assets: ProductAsset[];
 }
