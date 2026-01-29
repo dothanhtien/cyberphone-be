@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { DataSource } from 'typeorm';
 
 export default new DataSource({
@@ -8,6 +9,12 @@ export default new DataSource({
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
 
-  entities: ['dist/**/*.entity.js'],
-  migrations: ['dist/migrations/*.js'],
+  entities:
+    process.env.NODE_ENV === 'production'
+      ? ['dist/**/*.entity.js']
+      : ['src/**/*.entity.ts'],
+  migrations:
+    process.env.NODE_ENV === 'production'
+      ? ['dist/migrations/*.js']
+      : ['src/migrations/*.ts'],
 });
