@@ -7,23 +7,18 @@ import {
   MaxLength,
 } from 'class-validator';
 
-const MAX_NAME_LENGTH = 255;
-const MAX_SLUG_LENGTH = 255;
-
-export class CreateCategoryDto {
-  @MaxLength(MAX_NAME_LENGTH, {
-    message: `Category name must not exceed ${MAX_NAME_LENGTH} characters`,
-  })
+export class UpdateCategoryDto {
+  @MaxLength(255, { message: 'Category name must not exceed 255 characters' })
   @IsString({ message: 'Category name must be a string' })
   @IsNotEmpty({ message: 'Category name is required' })
-  name: string;
+  @IsOptional()
+  name?: string;
 
-  @MaxLength(MAX_SLUG_LENGTH, {
-    message: `Slug must not exceed ${MAX_SLUG_LENGTH} characters`,
-  })
+  @MaxLength(255, { message: 'Slug must not exceed 255 characters' })
   @IsString({ message: 'Slug must be a string' })
   @IsNotEmpty({ message: 'Slug is required' })
-  slug: string;
+  @IsOptional()
+  slug?: string;
 
   @IsUUID('4', { message: 'Parent ID must be a valid UUID (v4)' })
   @IsOptional()
@@ -33,7 +28,11 @@ export class CreateCategoryDto {
   @IsOptional()
   description?: string;
 
-  // server-controlled field – block mass assignment
-  @IsEmpty({ message: 'You cannot set createdBy' })
-  createdBy?: string;
+  // server-controlled fields
+
+  @IsEmpty({ message: 'isActive is not allowed to be set manually' })
+  isActive?: boolean;
+
+  @IsEmpty({ message: 'updatedBy is not allowed to be set manually' })
+  updatedBy?: string;
 }
