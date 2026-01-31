@@ -4,31 +4,84 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
-import { plainToInstance } from 'class-transformer';
+import { DataSource, Not, Repository } from 'typeorm';
+import { UploadApiResponse } from 'cloudinary';
 import { PaginationQueryDto } from '@/common/dtos/paginations.dto';
-import { extractPaginationParams } from '@/common/utils/paginations.util';
+import {
+  buildPaginationParams,
+  extractPaginationParams,
+} from '@/common/utils/paginations.util';
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dtos/create-category.dto';
 import { UpdateCategoryDto } from './dtos/update-category.dto';
+import { toEntity } from '@/common/utils/entities';
+import { MediaAssetsService } from '@/media-assets/media-assets.service';
+import { CloudinaryService } from '@/cloudinary/cloudinary.service';
+import {
+  MediaAsset,
+  MediaType,
+} from '@/media-assets/entities/media-asset.entity';
+import { MediaAssetRefTypeEnum } from '@/common/enums';
+import { CATEGORY_FOLDER } from '@/common/constants/paths';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    private readonly dataSource: DataSource,
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly mediaAssetService: MediaAssetsService,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto) {
+  async create(
+    createCategoryDto: CreateCategoryDto,
+    logo?: Express.Multer.File,
+  ) {
     createCategoryDto.slug = this.normalizeSlug(createCategoryDto.slug);
 
     if (await this.doesSlugExist(createCategoryDto.slug)) {
       throw new BadRequestException('Category with this slug already exists');
     }
 
-    const newCategory = this.toEntity(Category, createCategoryDto);
+    return this.dataSource.transaction(async (tx) => {
+      const category = toEntity(Category, createCategoryDto);
+      const savedCategory = await tx.save(category);
 
-    return this.categoryRepository.save(newCategory);
+      let uploadResult: UploadApiResponse | null = null;
+      let media: MediaAsset | null = null;
+
+      try {
+        if (logo) {
+          uploadResult = await this.cloudinaryService.uploadFile(
+            logo,
+            CATEGORY_FOLDER,
+          );
+
+          media = await this.mediaAssetService.create(
+            {
+              publicId: uploadResult.public_id,
+              url: uploadResult.secure_url,
+              resourceType: uploadResult.resource_type as MediaType,
+              refType: MediaAssetRefTypeEnum.CATEGORY,
+              refId: savedCategory.id,
+              createdBy: savedCategory.createdBy,
+            },
+            tx,
+          );
+        }
+
+        return {
+          ...savedCategory,
+          logo: media?.url ?? null,
+        };
+      } catch (error) {
+        if (uploadResult?.public_id) {
+          await this.cloudinaryService.deleteFile(uploadResult.public_id);
+        }
+        throw error;
+      }
+    });
   }
 
   async findAll(paginationQueryDto: PaginationQueryDto) {
@@ -36,13 +89,14 @@ export class CategoriesService {
 
     const [items, totalCount] = await this.categoryRepository.findAndCount({
       where: { isActive: true },
-      skip: (page - 1) * limit,
-      take: limit,
+      ...buildPaginationParams,
       order: { createdAt: 'DESC' },
     });
 
+    const itemsWithLogo = await this.attachCategoryLogos(items);
+
     return {
-      items,
+      items: itemsWithLogo,
       totalCount,
       currentPage: page,
       itemsPerPage: limit,
@@ -56,7 +110,7 @@ export class CategoriesService {
       throw new NotFoundException('Category not found');
     }
 
-    const result = this.buildCategoryTree(rows, id);
+    let result = this.buildCategoryTree(rows, id);
 
     if (result.parentId) {
       result.parent =
@@ -65,10 +119,14 @@ export class CategoriesService {
         })) ?? undefined;
     }
 
-    return result;
+    return this.attachLogosToTree(result);
   }
 
-  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+  async update(
+    id: string,
+    updateCategoryDto: UpdateCategoryDto,
+    logo?: Express.Multer.File,
+  ) {
     const category = await this.categoryRepository.findOne({
       where: {
         id,
@@ -105,9 +163,60 @@ export class CategoriesService {
       }
     }
 
-    return this.categoryRepository.save(
-      this.toEntity(Category, { ...category, ...updateCategoryDto }),
-    );
+    return this.dataSource.transaction(async (tx) => {
+      const updatedCategory = await tx.save(
+        toEntity(Category, { ...category, ...updateCategoryDto }),
+      );
+
+      let uploadResult: UploadApiResponse | null = null;
+
+      try {
+        if (logo) {
+          const oldMedia = await this.mediaAssetService.findByRefId(
+            MediaAssetRefTypeEnum.CATEGORY,
+            id,
+            tx,
+          );
+
+          uploadResult = await this.cloudinaryService.uploadFile(
+            logo,
+            CATEGORY_FOLDER,
+          );
+
+          const newMedia = await this.mediaAssetService.create(
+            {
+              publicId: uploadResult.public_id,
+              url: uploadResult.secure_url,
+              resourceType: uploadResult.resource_type as MediaType,
+              refType: MediaAssetRefTypeEnum.CATEGORY,
+              refId: id,
+              createdBy: updateCategoryDto.updatedBy,
+            },
+            tx,
+          );
+
+          if (oldMedia) {
+            await this.mediaAssetService.deleteById(oldMedia.id, tx);
+          }
+
+          if (oldMedia?.publicId) {
+            await this.cloudinaryService.deleteFile(oldMedia.publicId);
+          }
+
+          return {
+            ...updatedCategory,
+            logo: newMedia.url,
+          };
+        }
+
+        return (await this.attachCategoryLogos([updatedCategory]))[0];
+      } catch (error) {
+        if (uploadResult?.public_id) {
+          await this.cloudinaryService.deleteFile(uploadResult.public_id);
+        }
+        throw error;
+      }
+    });
   }
 
   private normalizeSlug(slug: string) {
@@ -124,38 +233,32 @@ export class CategoriesService {
     });
   }
 
-  private toEntity<T>(entityClass: new () => T, data: unknown): T {
-    return plainToInstance(entityClass, data, {
-      excludeExtraneousValues: true,
-    });
-  }
-
   private async fetchCategoryTree(id: string): Promise<Category[]> {
     return this.categoryRepository.query<Category[]>(
       `
-      WITH RECURSIVE category_tree AS (
-        SELECT
-          id, name, slug, description,
-          parent_id AS "parentId",
-          is_active AS "isActive",
-          created_at AS "createdAt",
-          created_by AS "createdBy",
-          updated_at AS "updatedAt",
-          updated_by AS "updatedBy"
-        FROM categories
-        WHERE id = $1 AND is_active = TRUE
-        UNION ALL
-        SELECT
-          c.id, c.name, c.slug, c.description,
-          c.parent_id, c.is_active,
-          c.created_at, c.created_by,
-          c.updated_at, c.updated_by
-        FROM categories c
-        INNER JOIN category_tree ct ON ct.id = c.parent_id
-        WHERE c.is_active = TRUE
-      )
-      SELECT * FROM category_tree;
-    `,
+        WITH RECURSIVE category_tree AS (
+          SELECT
+            id, name, slug, description,
+            parent_id AS "parentId",
+            is_active AS "isActive",
+            created_at AS "createdAt",
+            created_by AS "createdBy",
+            updated_at AS "updatedAt",
+            updated_by AS "updatedBy"
+          FROM categories
+          WHERE id = $1 AND is_active = TRUE
+          UNION ALL
+          SELECT
+            c.id, c.name, c.slug, c.description,
+            c.parent_id, c.is_active,
+            c.created_at, c.created_by,
+            c.updated_at, c.updated_by
+          FROM categories c
+          INNER JOIN category_tree ct ON ct.id = c.parent_id
+          WHERE c.is_active = TRUE
+        )
+        SELECT * FROM category_tree;
+      `,
       [id],
     );
   }
@@ -164,7 +267,7 @@ export class CategoriesService {
     const map = new Map<string, Category>();
 
     for (const row of rows) {
-      const category = this.toEntity(Category, { ...row, children: [] });
+      const category = toEntity(Category, { ...row, children: [] });
       map.set(category.id, category);
     }
 
@@ -226,5 +329,48 @@ export class CategoriesService {
       `,
       [id],
     );
+  }
+
+  private async attachCategoryLogos<T extends { id: string }>(
+    categories: T[],
+  ): Promise<(T & { logo: string | null })[]> {
+    if (!categories.length) return [];
+
+    const ids = categories.map((c) => c.id);
+
+    const medias = await this.mediaAssetService.findByRefIds(
+      MediaAssetRefTypeEnum.CATEGORY,
+      ids,
+    );
+
+    const mediaMap = new Map(medias.map((m) => [m.refId, m.url]));
+
+    return categories.map((c) => ({
+      ...c,
+      logo: mediaMap.get(c.id) ?? null,
+    }));
+  }
+
+  private async attachLogosToTree(
+    category: Category,
+  ): Promise<Category & { logo: string | null }> {
+    const flat: Category[] = [];
+
+    const collect = (node: Category) => {
+      flat.push(node);
+      node.children?.forEach(collect);
+    };
+
+    collect(category);
+
+    const withLogos = await this.attachCategoryLogos(flat);
+    const map = new Map(withLogos.map((c) => [c.id, c]));
+
+    const rebuild = (node: Category): any => ({
+      ...map.get(node.id),
+      children: node.children?.map(rebuild) ?? [],
+    });
+
+    return rebuild(category);
   }
 }

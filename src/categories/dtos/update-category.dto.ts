@@ -34,5 +34,5 @@ export class UpdateCategoryDto {
   isActive?: boolean;
 
   @IsEmpty({ message: 'updatedBy is not allowed to be set manually' })
-  updatedBy?: string;
+  updatedBy: string;
 }

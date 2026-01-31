@@ -6,3 +6,10 @@ export const extractPaginationParams = (input: PaginationQueryDto) => {
 
   return { page, limit };
 };
+
+export const buildPaginationParams = (page: number, limit: number) => {
+  return {
+    skip: (page - 1) * limit,
+    take: limit,
+  };
+};
