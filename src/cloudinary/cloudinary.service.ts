@@ -34,7 +34,7 @@ export class CloudinaryService {
             resource_type: 'auto',
           },
           (error, result) => {
-            if (error) return reject(error);
+            if (error) return reject(new Error(error.message));
             if (!result) return reject(new Error('Upload failed'));
             resolve(result);
           },
@@ -62,15 +62,15 @@ export class CloudinaryService {
     );
   }
 
-  async deleteFile(publicId: string): Promise<any> {
-    return this.cloudinaryClient.uploader.destroy(publicId);
+  async deleteFile(publicId: string): Promise<void> {
+    await this.cloudinaryClient.uploader.destroy(publicId);
   }
 
-  async deleteMultipleFiles(publicIds: string[]): Promise<any> {
-    return this.cloudinaryClient.api.delete_resources(publicIds);
+  async deleteMultipleFiles(publicIds: string[]): Promise<void> {
+    await this.cloudinaryClient.api.delete_resources(publicIds);
   }
 
-  async getFileDetails(publicId: string): Promise<any> {
-    return this.cloudinaryClient.api.resource(publicId);
+  async getFileDetails(publicId: string): Promise<void> {
+    await this.cloudinaryClient.api.resource(publicId);
   }
 }

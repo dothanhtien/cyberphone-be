@@ -27,6 +27,7 @@ import type {
   StorageProvider,
   StorageUploadResult,
 } from '@/storage/storage.provider';
+import { CategoryWithLogo } from '@/common/types/categories.type';
 
 @Injectable()
 export class CategoriesService {
@@ -92,7 +93,7 @@ export class CategoriesService {
 
     const [items, totalCount] = await this.categoryRepository.findAndCount({
       where: { isActive: true },
-      ...buildPaginationParams,
+      ...buildPaginationParams(page, limit),
       order: { createdAt: 'DESC' },
     });
 
@@ -113,7 +114,7 @@ export class CategoriesService {
       throw new NotFoundException('Category not found');
     }
 
-    let result = this.buildCategoryTree(rows, id);
+    const result = this.buildCategoryTree(rows, id);
 
     if (result.parentId) {
       result.parent =
@@ -355,7 +356,7 @@ export class CategoriesService {
 
   private async attachLogosToTree(
     category: Category,
-  ): Promise<Category & { logo: string | null }> {
+  ): Promise<CategoryWithLogo> {
     const flat: Category[] = [];
 
     const collect = (node: Category) => {
@@ -366,12 +367,25 @@ export class CategoriesService {
     collect(category);
 
     const withLogos = await this.attachCategoryLogos(flat);
-    const map = new Map(withLogos.map((c) => [c.id, c]));
+    const map = new Map<string, CategoryWithLogo>(
+      withLogos.map((c) => [
+        c.id,
+        { ...c, children: [] as CategoryWithLogo[] } as CategoryWithLogo,
+      ]),
+    );
 
-    const rebuild = (node: Category): any => ({
-      ...map.get(node.id),
-      children: node.children?.map(rebuild) ?? [],
-    });
+    const rebuild = (node: Category): CategoryWithLogo => {
+      const current = map.get(node.id);
+
+      if (!current) {
+        throw new Error(`Category ${node.id} not found in logo map`);
+      }
+
+      return {
+        ...current,
+        children: node.children?.map(rebuild) ?? [],
+      } as CategoryWithLogo;
+    };
 
     return rebuild(category);
   }

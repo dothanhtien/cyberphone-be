@@ -21,7 +21,7 @@ export class CloudinaryStorageProvider implements StorageProvider {
     };
   }
 
-  delete(key: string) {
-    return this.cloudinaryService.deleteFile(key);
+  async delete(key: string) {
+    await this.cloudinaryService.deleteFile(key);
   }
 }
