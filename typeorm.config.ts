@@ -13,8 +13,11 @@ export default new DataSource({
     process.env.NODE_ENV === 'production'
       ? ['dist/**/*.entity.js']
       : ['src/**/*.entity.ts'],
+
   migrations:
     process.env.NODE_ENV === 'production'
-      ? ['dist/migrations/*.js']
-      : ['src/migrations/*.ts'],
+      ? ['dist/database/migrations/*.js']
+      : ['src/database/migrations/*.ts'],
+
+  synchronize: false,
 });
