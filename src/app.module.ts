@@ -6,6 +6,7 @@ import { DatabaseModule } from './database/database.module';
 import { CategoriesModule } from './categories/categories.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MediaAssetsModule } from './media-assets/media-assets.module';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MediaAssetsModule } from './media-assets/media-assets.module';
     CategoriesModule,
     CloudinaryModule,
     MediaAssetsModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

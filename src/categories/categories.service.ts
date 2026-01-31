@@ -1,11 +1,11 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Not, Repository } from 'typeorm';
-import { UploadApiResponse } from 'cloudinary';
 import { PaginationQueryDto } from '@/common/dtos/paginations.dto';
 import {
   buildPaginationParams,
@@ -16,13 +16,17 @@ import { CreateCategoryDto } from './dtos/create-category.dto';
 import { UpdateCategoryDto } from './dtos/update-category.dto';
 import { toEntity } from '@/common/utils/entities';
 import { MediaAssetsService } from '@/media-assets/media-assets.service';
-import { CloudinaryService } from '@/cloudinary/cloudinary.service';
 import {
   MediaAsset,
   MediaType,
 } from '@/media-assets/entities/media-asset.entity';
 import { MediaAssetRefTypeEnum } from '@/common/enums';
 import { CATEGORY_FOLDER } from '@/common/constants/paths';
+import { STORAGE_PROVIDER } from '@/storage/storage.module';
+import type {
+  StorageProvider,
+  StorageUploadResult,
+} from '@/storage/storage.provider';
 
 @Injectable()
 export class CategoriesService {
@@ -30,8 +34,8 @@ export class CategoriesService {
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
     private readonly dataSource: DataSource,
-    private readonly cloudinaryService: CloudinaryService,
     private readonly mediaAssetService: MediaAssetsService,
+    @Inject(STORAGE_PROVIDER) private readonly storageProvider: StorageProvider,
   ) {}
 
   async create(
@@ -48,21 +52,20 @@ export class CategoriesService {
       const category = toEntity(Category, createCategoryDto);
       const savedCategory = await tx.save(category);
 
-      let uploadResult: UploadApiResponse | null = null;
+      let uploadResult: StorageUploadResult | null = null;
       let media: MediaAsset | null = null;
 
       try {
         if (logo) {
-          uploadResult = await this.cloudinaryService.uploadFile(
-            logo,
-            CATEGORY_FOLDER,
-          );
+          uploadResult = await this.storageProvider.upload(logo, {
+            folder: CATEGORY_FOLDER,
+          });
 
           media = await this.mediaAssetService.create(
             {
-              publicId: uploadResult.public_id,
-              url: uploadResult.secure_url,
-              resourceType: uploadResult.resource_type as MediaType,
+              publicId: uploadResult.key,
+              url: uploadResult.url,
+              resourceType: uploadResult.resourceType as MediaType,
               refType: MediaAssetRefTypeEnum.CATEGORY,
               refId: savedCategory.id,
               createdBy: savedCategory.createdBy,
@@ -76,8 +79,8 @@ export class CategoriesService {
           logo: media?.url ?? null,
         };
       } catch (error) {
-        if (uploadResult?.public_id) {
-          await this.cloudinaryService.deleteFile(uploadResult.public_id);
+        if (uploadResult?.key) {
+          await this.storageProvider.delete(uploadResult.key);
         }
         throw error;
       }
@@ -168,7 +171,7 @@ export class CategoriesService {
         toEntity(Category, { ...category, ...updateCategoryDto }),
       );
 
-      let uploadResult: UploadApiResponse | null = null;
+      let uploadResult: StorageUploadResult | null = null;
 
       try {
         if (logo) {
@@ -178,16 +181,15 @@ export class CategoriesService {
             tx,
           );
 
-          uploadResult = await this.cloudinaryService.uploadFile(
-            logo,
-            CATEGORY_FOLDER,
-          );
+          uploadResult = await this.storageProvider.upload(logo, {
+            folder: CATEGORY_FOLDER,
+          });
 
           const newMedia = await this.mediaAssetService.create(
             {
-              publicId: uploadResult.public_id,
-              url: uploadResult.secure_url,
-              resourceType: uploadResult.resource_type as MediaType,
+              publicId: uploadResult.key,
+              url: uploadResult.url,
+              resourceType: uploadResult.resourceType as MediaType,
               refType: MediaAssetRefTypeEnum.CATEGORY,
               refId: id,
               createdBy: updateCategoryDto.updatedBy,
@@ -200,7 +202,7 @@ export class CategoriesService {
           }
 
           if (oldMedia?.publicId) {
-            await this.cloudinaryService.deleteFile(oldMedia.publicId);
+            await this.storageProvider.delete(oldMedia.publicId);
           }
 
           return {
@@ -211,8 +213,8 @@ export class CategoriesService {
 
         return (await this.attachCategoryLogos([updatedCategory]))[0];
       } catch (error) {
-        if (uploadResult?.public_id) {
-          await this.cloudinaryService.deleteFile(uploadResult.public_id);
+        if (uploadResult?.key) {
+          await this.storageProvider.delete(uploadResult.key);
         }
         throw error;
       }

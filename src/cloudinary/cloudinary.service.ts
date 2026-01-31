@@ -1,25 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
+import { CLOUDINARY_CLIENT } from './cloudinary.client.provider';
 
 @Injectable()
 export class CloudinaryService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    @Inject(CLOUDINARY_CLIENT)
+    private readonly cloudinaryClient: typeof cloudinary,
+  ) {}
 
   async uploadFile(
     file: Express.Multer.File,
-    folder: string,
+    options: {
+      folder: string;
+      filename?: string;
+    },
   ): Promise<UploadApiResponse> {
+    const rootFolder =
+      this.configService.get<string>('CLOUDINARY_ROOT_FOLDER') ?? '';
+
+    const fullFolder = rootFolder
+      ? `${rootFolder}/${options.folder}`
+      : options.folder;
+
     return new Promise((resolve, reject) => {
-      cloudinary.uploader
+      this.cloudinaryClient.uploader
         .upload_stream(
           {
-            folder: `${this.configService.get<string>('CLOUDINARY_ROOT_FOLDER')}/${folder}`,
+            folder: fullFolder,
+            public_id: options.filename,
             resource_type: 'auto',
           },
           (error, result) => {
             if (error) return reject(error);
-            resolve(result as UploadApiResponse);
+            if (!result) return reject(new Error('Upload failed'));
+            resolve(result);
           },
         )
         .end(file.buffer);
@@ -28,21 +45,32 @@ export class CloudinaryService {
 
   async uploadMultipleFiles(
     files: Express.Multer.File[],
-    folder: string,
+    options: {
+      folder: string;
+      filenamePrefix?: string;
+    },
   ): Promise<UploadApiResponse[]> {
-    const uploadPromises = files.map((file) => this.uploadFile(file, folder));
-    return Promise.all(uploadPromises);
+    return Promise.all(
+      files.map((file, index) =>
+        this.uploadFile(file, {
+          folder: options.folder,
+          filename: options.filenamePrefix
+            ? `${options.filenamePrefix}-${index + 1}`
+            : undefined,
+        }),
+      ),
+    );
   }
 
   async deleteFile(publicId: string): Promise<any> {
-    return cloudinary.uploader.destroy(publicId);
+    return this.cloudinaryClient.uploader.destroy(publicId);
   }
 
   async deleteMultipleFiles(publicIds: string[]): Promise<any> {
-    return cloudinary.api.delete_resources(publicIds);
+    return this.cloudinaryClient.api.delete_resources(publicIds);
   }
 
   async getFileDetails(publicId: string): Promise<any> {
-    return cloudinary.api.resource(publicId);
+    return this.cloudinaryClient.api.resource(publicId);
   }
 }

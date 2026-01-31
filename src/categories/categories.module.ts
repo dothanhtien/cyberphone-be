@@ -3,14 +3,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
-import { CloudinaryModule } from '@/cloudinary/cloudinary.module';
 import { MediaAssetsModule } from '@/media-assets/media-assets.module';
+import { StorageModule } from '@/storage/storage.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Category]),
-    CloudinaryModule,
     MediaAssetsModule,
+    StorageModule,
   ],
   controllers: [CategoriesController],
   providers: [CategoriesService],
