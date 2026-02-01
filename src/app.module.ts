@@ -7,6 +7,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MediaAssetsModule } from './media-assets/media-assets.module';
 import { StorageModule } from './storage/storage.module';
+import { BrandsModule } from './brands/brands.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { StorageModule } from './storage/storage.module';
     CloudinaryModule,
     MediaAssetsModule,
     StorageModule,
+    BrandsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
