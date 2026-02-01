@@ -5,7 +5,6 @@ export const databaseConfig = (
   configService: ConfigService,
 ): TypeOrmModuleOptions => {
   const isProd = configService.get<string>('NODE_ENV') === 'production';
-  const syncEnv = configService.get<string>('DATABASE_SYNCHRONIZE');
   const loggingEnv = configService.get<string>('DATABASE_LOGGING');
   const retryAttemptsEnv = configService.get<string>('DATABASE_RETRY_ATTEMPTS');
   const retryDelayEnv = configService.get<string>('DATABASE_RETRY_DELAY');
@@ -17,7 +16,7 @@ export const databaseConfig = (
     password: configService.getOrThrow<string>('DATABASE_PASSWORD'),
     database: configService.getOrThrow<string>('DATABASE_NAME'),
     autoLoadEntities: true,
-    synchronize: syncEnv !== undefined ? syncEnv === 'true' : !isProd,
+    synchronize: false,
     logging: loggingEnv !== undefined ? loggingEnv === 'true' : !isProd,
     ssl: configService.get<string>('DATABASE_SSL') === 'true',
     retryAttempts: retryAttemptsEnv ? Number(retryAttemptsEnv) : 10,
