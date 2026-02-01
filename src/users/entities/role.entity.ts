@@ -3,10 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Expose } from 'class-transformer';
+import { User } from './user.entity';
 
 @Entity('roles')
 @Index('uq_roles_name_active', ['name', 'isActive'], { unique: true })
@@ -32,6 +34,9 @@ export class Role {
   @Column({ name: 'is_active', type: 'boolean', default: true })
   @Expose()
   isActive: boolean = true;
+
+  @OneToMany(() => User, (user) => user.role)
+  users: User[];
 
   @CreateDateColumn({
     name: 'created_at',

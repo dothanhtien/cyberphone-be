@@ -8,6 +8,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { MediaAssetsModule } from './media-assets/media-assets.module';
 import { StorageModule } from './storage/storage.module';
 import { BrandsModule } from './brands/brands.module';
+import { UsersModule } from './users/users.module';
+import { PasswordModule } from './password/password.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { BrandsModule } from './brands/brands.module';
     MediaAssetsModule,
     StorageModule,
     BrandsModule,
+    UsersModule,
+    PasswordModule,
   ],
   controllers: [AppController],
   providers: [AppService],
