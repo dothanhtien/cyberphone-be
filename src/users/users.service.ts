@@ -94,6 +94,17 @@ export class UsersService {
     return user;
   }
 
+  async findOneByEmailOrPhone(identifier: string) {
+    const normalizedIdentifier = identifier.trim().toLowerCase();
+
+    return this.userRepository.findOne({
+      where: [
+        { username: normalizedIdentifier, isActive: true },
+        { phone: normalizedIdentifier, isActive: true },
+      ],
+    });
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.findOne({
       where: { id, isActive: true },

@@ -10,5 +10,6 @@ import { PasswordModule } from '@/password/password.module';
   imports: [TypeOrmModule.forFeature([Role, User]), PasswordModule],
   providers: [UsersService],
   controllers: [UsersController],
+  exports: [UsersService],
 })
 export class UsersModule {}
