@@ -105,6 +105,7 @@ export class BrandsService {
         { refType: MediaAssetRefTypeEnum.BRAND },
       )
       .select(['b', 'm.url AS logo'])
+      .where('b.is_active = true')
       .orderBy('b.updated_at', 'DESC')
       .skip((page - 1) * limit)
       .limit(limit);
