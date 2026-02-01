@@ -142,7 +142,7 @@ export class UsersService {
       }
     }
 
-    if (updateUserDto.password !== undefined) {
+    if (updateUserDto.password) {
       if (!updateUserDto.currentPassword) {
         throw new BadRequestException('Current password is required');
       }
