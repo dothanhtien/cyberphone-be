@@ -35,7 +35,7 @@ export class AuthService {
     let updatedUser: User = user;
     try {
       updatedUser = await this.usersService.update(user.id, {
-        lastLogin: new Date().toISOString(),
+        lastLogin: new Date(),
       });
     } catch (err) {
       console.log(
