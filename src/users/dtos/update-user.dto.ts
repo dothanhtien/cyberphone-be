@@ -80,9 +80,12 @@ export class UpdateUserDto {
   @IsOptional()
   roleId?: string;
 
+  @IsEmpty({ message: 'lastLogin is not allowed to be set manually' })
+  lastLogin?: Date;
+
   @IsEmpty({ message: 'isActive is not allowed to be set manually' })
   isActive?: boolean;
 
   @IsEmpty({ message: 'updatedBy is not allowed to be set manually' })
-  updatedBy: string;
+  updatedBy?: string;
 }

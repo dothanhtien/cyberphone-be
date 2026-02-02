@@ -10,6 +10,7 @@ import { StorageModule } from './storage/storage.module';
 import { BrandsModule } from './brands/brands.module';
 import { UsersModule } from './users/users.module';
 import { PasswordModule } from './password/password.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { PasswordModule } from './password/password.module';
     BrandsModule,
     UsersModule,
     PasswordModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
