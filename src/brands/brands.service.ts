@@ -18,7 +18,7 @@ import {
   MediaAsset,
   MediaType,
 } from '@/media-assets/entities/media-asset.entity';
-import { MediaAssetRefTypeEnum } from '@/common/enums';
+import { MediaAssetRefType } from '@/common/enums';
 import { BRAND_FOLDER } from '@/common/constants/paths';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {
@@ -66,7 +66,7 @@ export class BrandsService {
               publicId: uploadResult.key,
               url: uploadResult.url,
               resourceType: uploadResult.resourceType as MediaType,
-              refType: MediaAssetRefTypeEnum.BRAND,
+              refType: MediaAssetRefType.BRAND,
               refId: savedBrand.id,
               createdBy: savedBrand.createdBy,
             },
@@ -102,7 +102,7 @@ export class BrandsService {
           AND m.ref_id::uuid = b.id
           -- AND m.is_active = true // TODO: consider to add is_active in the media_assets table
         `,
-        { refType: MediaAssetRefTypeEnum.BRAND },
+        { refType: MediaAssetRefType.BRAND },
       )
       .select(['b', 'm.url AS logo'])
       .where('b.is_active = true')
@@ -141,7 +141,7 @@ export class BrandsService {
           AND m.ref_id::uuid = b.id
           -- AND m.is_active = true // TODO: consider to add is_active in the media_assets table
         `,
-        { refType: MediaAssetRefTypeEnum.BRAND },
+        { refType: MediaAssetRefType.BRAND },
       )
       .select(['b', 'm.url AS logo'])
       .where('b.id = :id AND b.is_active = true', { id })
@@ -184,7 +184,7 @@ export class BrandsService {
       try {
         if (logo) {
           const oldMedia = await this.mediaAssetsService.findByRefId(
-            MediaAssetRefTypeEnum.BRAND,
+            MediaAssetRefType.BRAND,
             id,
             tx,
           );
@@ -198,7 +198,7 @@ export class BrandsService {
               publicId: uploadResult.key,
               url: uploadResult.url,
               resourceType: uploadResult.resourceType as MediaType,
-              refType: MediaAssetRefTypeEnum.BRAND,
+              refType: MediaAssetRefType.BRAND,
               refId: id,
               createdBy: updatedBrand.updatedBy!,
             },

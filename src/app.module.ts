@@ -11,6 +11,7 @@ import { BrandsModule } from './brands/brands.module';
 import { UsersModule } from './users/users.module';
 import { PasswordModule } from './password/password.module';
 import { AuthModule } from './auth/auth.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     PasswordModule,
     AuthModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

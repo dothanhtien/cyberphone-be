@@ -20,7 +20,7 @@ import {
   MediaAsset,
   MediaType,
 } from '@/media-assets/entities/media-asset.entity';
-import { MediaAssetRefTypeEnum } from '@/common/enums';
+import { MediaAssetRefType } from '@/common/enums';
 import { CATEGORY_FOLDER } from '@/common/constants/paths';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {
@@ -67,7 +67,7 @@ export class CategoriesService {
               publicId: uploadResult.key,
               url: uploadResult.url,
               resourceType: uploadResult.resourceType as MediaType,
-              refType: MediaAssetRefTypeEnum.CATEGORY,
+              refType: MediaAssetRefType.CATEGORY,
               refId: savedCategory.id,
               createdBy: savedCategory.createdBy,
             },
@@ -177,7 +177,7 @@ export class CategoriesService {
       try {
         if (logo) {
           const oldMedia = await this.mediaAssetService.findByRefId(
-            MediaAssetRefTypeEnum.CATEGORY,
+            MediaAssetRefType.CATEGORY,
             id,
             tx,
           );
@@ -191,7 +191,7 @@ export class CategoriesService {
               publicId: uploadResult.key,
               url: uploadResult.url,
               resourceType: uploadResult.resourceType as MediaType,
-              refType: MediaAssetRefTypeEnum.CATEGORY,
+              refType: MediaAssetRefType.CATEGORY,
               refId: id,
               createdBy: updateCategoryDto.updatedBy,
             },
@@ -342,7 +342,7 @@ export class CategoriesService {
     const ids = categories.map((c) => c.id);
 
     const medias = await this.mediaAssetService.findByRefIds(
-      MediaAssetRefTypeEnum.CATEGORY,
+      MediaAssetRefType.CATEGORY,
       ids,
     );
 
