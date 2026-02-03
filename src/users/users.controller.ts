@@ -10,9 +10,9 @@ import {
   Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { UpdateUserDto } from './dtos/update-user.dto';
-import { PaginationQueryDto } from '@/common/dtos/paginations.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import { NonEmptyBodyPipe } from '@/common/pipes/non-empty-body.pipe';
 
 @Controller('users')

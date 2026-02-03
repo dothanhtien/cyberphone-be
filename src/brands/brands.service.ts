@@ -7,9 +7,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Not, Repository } from 'typeorm';
 import { Brand } from './entities/brand.entity';
-import { CreateBrandDto } from './dtos/create-brand.dto';
-import { UpdateBrandDto } from './dtos/update-brand.dto';
-import { PaginationQueryDto } from '@/common/dtos/paginations.dto';
+import { CreateBrandDto } from './dto/create-brand.dto';
+import { UpdateBrandDto } from './dto/update-brand.dto';
+import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import { extractPaginationParams } from '@/common/utils/paginations.util';
 import { toEntity } from '@/common/utils/entities';
 import { normalizeSlug } from '@/common/utils/slugs';

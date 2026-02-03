@@ -6,17 +6,17 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { CreateUserDto } from './dtos/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { Role } from './entities/role.entity';
 import { PasswordService } from '@/password/password.service';
 import { toEntity } from '@/common/utils/entities';
-import { PaginationQueryDto } from '@/common/dtos/paginations.dto';
+import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import {
   buildPaginationParams,
   extractPaginationParams,
 } from '@/common/utils/paginations.util';
 import { PaginatedEntity } from '@/common/types/paginations.type';
-import { UpdateUserDto } from './dtos/update-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
