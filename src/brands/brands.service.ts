@@ -232,6 +232,15 @@ export class BrandsService {
     });
   }
 
+  async exists(id: string): Promise<boolean> {
+    return this.brandRepository.exists({
+      where: {
+        id,
+        isActive: true,
+      },
+    });
+  }
+
   private doesSlugExist(slug: string, excludeId?: string) {
     return this.brandRepository.exists({
       where: {

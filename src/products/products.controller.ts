@@ -1,4 +1,49 @@
-import { Controller } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { ProductsService } from './products.service';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { LoggedInUser } from '@/auth/decorators/logged-in-user.decorator';
+import { User } from '@/users/entities/user.entity';
+import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 
 @Controller('products')
-export class ProductsController {}
+export class ProductsController {
+  constructor(private readonly productsService: ProductsService) {}
+
+  @Post()
+  async create(
+    @Body() createProductDto: CreateProductDto,
+    @LoggedInUser() loggedInUser: User,
+  ) {
+    createProductDto.createdBy = loggedInUser.id;
+    return this.productsService.create(createProductDto);
+  }
+
+  @Get()
+  async findAll(@Query() query: PaginationQueryDto) {
+    return this.productsService.findAll(query);
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.productsService.findOne(id);
+  }
+
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+    @LoggedInUser() loggedInUser: User,
+  ) {
+    updateProductDto.updatedBy = loggedInUser.id;
+    return this.productsService.update(id, updateProductDto);
+  }
+}
