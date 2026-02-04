@@ -11,6 +11,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ProductCategory } from '../../products/entities/product-category.entity';
 
 @Entity('categories')
 @Index('uq_categories_slug_active', ['slug'], {
@@ -86,4 +87,10 @@ export class Category {
   resetUpdatedAt() {
     this.updatedAt = null;
   }
+
+  @OneToMany(
+    () => ProductCategory,
+    (productCategory) => productCategory.category,
+  )
+  productCategories: ProductCategory[];
 }

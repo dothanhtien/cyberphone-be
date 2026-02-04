@@ -6,10 +6,12 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Brand } from '../../brands/entities/brand.entity';
+import { ProductCategory } from './product-category.entity';
 
 @Entity('products')
 @Index('uq_products_slug_active', ['slug'], {
@@ -93,4 +95,10 @@ export class Product {
   })
   @Expose()
   updatedBy: string | null;
+
+  @OneToMany(
+    () => ProductCategory,
+    (productCategory) => productCategory.product,
+  )
+  productCategories: ProductCategory[];
 }
