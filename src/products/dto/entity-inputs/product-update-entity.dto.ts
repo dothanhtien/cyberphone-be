@@ -27,5 +27,8 @@ export class ProductUpdateEntityDto {
   brandId?: string;
 
   @Expose()
+  isActive?: boolean;
+
+  @Expose()
   updatedBy: string;
 }

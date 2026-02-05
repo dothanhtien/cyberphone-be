@@ -226,6 +226,10 @@ export class CategoriesService {
     ids: string[],
     entityManager?: EntityManager,
   ): Promise<Pick<Category, 'id'>[]> {
+    if (!ids.length) {
+      return [];
+    }
+
     const repository = entityManager
       ? entityManager.getRepository(Category)
       : this.categoryRepository;

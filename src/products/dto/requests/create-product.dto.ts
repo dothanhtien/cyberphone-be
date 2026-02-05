@@ -67,6 +67,6 @@ export class CreateProductDto {
   @IsArray({ message: 'categoryIds must be an array' })
   categoryIds: string[];
 
-  @IsEmpty({ message: 'updatedBy is not allowed to be set' })
+  @IsEmpty({ message: 'createdBy is not allowed to be set' })
   createdBy: string;
 }
