@@ -5,8 +5,10 @@ import {
   MaxLength,
   IsUUID,
   IsBoolean,
-  IsEmpty,
   IsEnum,
+  ArrayUnique,
+  ArrayNotEmpty,
+  IsArray,
 } from 'class-validator';
 import { ProductStatus } from '@/common/enums';
 
@@ -55,9 +57,12 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'brandId is required' })
   brandId: string;
 
-  @IsEmpty({ message: 'isActive is not allowed to be set manually' })
-  isActive: boolean;
-
-  @IsEmpty({ message: 'createdBy is not allowed to be set manually' })
-  createdBy: string;
+  @ArrayUnique({ message: 'categoryIds must not contain duplicates' })
+  @IsUUID('4', {
+    each: true,
+    message: 'Each categoryId must be a valid UUID',
+  })
+  @ArrayNotEmpty({ message: 'categoryIds must not be empty' })
+  @IsArray({ message: 'categoryIds must be an array' })
+  categoryIds: string[];
 }

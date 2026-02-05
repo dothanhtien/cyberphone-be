@@ -5,15 +5,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Not, Repository } from 'typeorm';
+import { DataSource, EntityManager, In, Not, Repository } from 'typeorm';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import {
   buildPaginationParams,
   extractPaginationParams,
 } from '@/common/utils/paginations.util';
 import { Category } from './entities/category.entity';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CreateCategoryDto } from './dto/requests/create-category.dto';
+import { UpdateCategoryDto } from './dto/requests/update-category.dto';
 import { toEntity } from '@/common/utils/entities';
 import { MediaAssetsService } from '@/media-assets/media-assets.service';
 import {
@@ -219,6 +219,23 @@ export class CategoriesService {
         }
         throw error;
       }
+    });
+  }
+
+  async findActiveByIds(
+    ids: string[],
+    entityManager?: EntityManager,
+  ): Promise<Pick<Category, 'id'>[]> {
+    const repository = entityManager
+      ? entityManager.getRepository(Category)
+      : this.categoryRepository;
+
+    return repository.find({
+      where: {
+        id: In(ids),
+        isActive: true,
+      },
+      select: ['id'],
     });
   }
 

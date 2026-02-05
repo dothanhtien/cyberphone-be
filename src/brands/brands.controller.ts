@@ -15,8 +15,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { NonEmptyBodyPipe } from '@/common/pipes/non-empty-body.pipe';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import { BrandsService } from './brands.service';
-import { CreateBrandDto } from './dto/create-brand.dto';
-import { UpdateBrandDto } from './dto/update-brand.dto';
+import { CreateBrandDto } from './dto/requests/create-brand.dto';
+import { UpdateBrandDto } from './dto/requests/update-brand.dto';
 
 @Controller('brands')
 export class BrandsController {

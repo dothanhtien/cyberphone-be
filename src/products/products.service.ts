@@ -1,22 +1,27 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
-import { CreateProductDto } from './dto/create-product.dto';
-import { toEntity } from '@/common/utils/entities';
-import { normalizeSlug } from '@/common/utils/slugs';
+import { CreateProductDto } from './dto/requests/create-product.dto';
 import { BrandsService } from '@/brands/brands.service';
+import { CategoriesService } from '@/categories/categories.service';
+import { sanitizeEntityInput } from '@/common/utils/entities';
+import { normalizeSlug } from '@/common/utils/slugs';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import { PaginatedEntity } from '@/common/types/paginations.type';
 import {
   buildPaginationParams,
   extractPaginationParams,
 } from '@/common/utils/paginations.util';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { UpdateProductDto } from './dto/requests/update-product.dto';
+import { ProductCategory } from './entities/product-category.entity';
+import { mapToProductResponse } from './mappers/product.mapper';
+import { ProductCreateEntityDto } from './dto/entity-inputs/product-create-entity.dto';
 
 @Injectable()
 export class ProductsService {
@@ -24,9 +29,17 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     private readonly brandsService: BrandsService,
+    private readonly categoriesService: CategoriesService,
+    private readonly dataSource: DataSource,
   ) {}
 
-  async create(createProductDto: CreateProductDto) {
+  async create({
+    createProductDto,
+    loggedInUserId,
+  }: {
+    createProductDto: CreateProductDto;
+    loggedInUserId: string;
+  }) {
     createProductDto.slug = normalizeSlug(createProductDto.slug);
 
     const brandExists = await this.brandsService.exists(
@@ -48,8 +61,59 @@ export class ProductsService {
       throw new ConflictException('Slug already exists');
     }
 
-    const product = toEntity(Product, createProductDto);
-    return this.productRepository.save(product);
+    return this.dataSource.transaction(async (tx) => {
+      const productInput = sanitizeEntityInput(
+        ProductCreateEntityDto,
+        createProductDto,
+      );
+
+      const product = tx.create(Product, {
+        ...productInput,
+        createdBy: loggedInUserId,
+      });
+
+      await tx.save(product);
+
+      if (createProductDto.categoryIds.length) {
+        const categories = await this.categoriesService.findActiveByIds(
+          createProductDto.categoryIds,
+          tx,
+        );
+
+        if (categories.length !== createProductDto.categoryIds.length) {
+          throw new BadRequestException(
+            'One or more categories are invalid or inactive',
+          );
+        }
+
+        const productCategories = createProductDto.categoryIds.map(
+          (categoryId) =>
+            tx.create(ProductCategory, {
+              productId: product.id,
+              categoryId,
+              createdBy: loggedInUserId,
+            }),
+        );
+
+        await tx.save(productCategories);
+      }
+
+      const result = await tx.findOne(Product, {
+        where: { id: product.id },
+        relations: {
+          brand: true,
+          productCategories: {
+            category: true,
+          },
+        },
+      });
+
+      if (!result) {
+        throw new NotFoundException('Product not found');
+      }
+
+      return mapToProductResponse(result);
+    });
   }
 
   async findAll(

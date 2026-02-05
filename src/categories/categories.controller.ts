@@ -15,8 +15,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { NonEmptyBodyPipe } from '@/common/pipes/non-empty-body.pipe';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import { CategoriesService } from './categories.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CreateCategoryDto } from './dto/requests/create-category.dto';
+import { UpdateCategoryDto } from './dto/requests/update-category.dto';
 
 @Controller('categories')
 export class CategoriesController {

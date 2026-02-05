@@ -6,6 +6,9 @@ import {
   IsBoolean,
   IsEnum,
   IsEmpty,
+  ArrayUnique,
+  ArrayNotEmpty,
+  IsArray,
 } from 'class-validator';
 import { ProductStatus } from '@/common/enums';
 
@@ -52,6 +55,16 @@ export class UpdateProductDto {
   @IsUUID('4', { message: 'brandId must be a valid UUID' })
   @IsOptional()
   brandId?: string;
+
+  @ArrayUnique({ message: 'categoryIds must not contain duplicates' })
+  @IsUUID('4', {
+    each: true,
+    message: 'Each categoryId must be a valid UUID',
+  })
+  @ArrayNotEmpty({ message: 'categoryIds must not be empty' })
+  @IsArray({ message: 'categoryIds must be an array' })
+  @IsOptional()
+  categoryIds?: string[];
 
   @IsEmpty({ message: 'isActive is not allowed to be set manually' })
   isActive: boolean;

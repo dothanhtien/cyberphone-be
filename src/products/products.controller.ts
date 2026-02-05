@@ -8,8 +8,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { CreateProductDto } from './dto/requests/create-product.dto';
+import { UpdateProductDto } from './dto/requests/update-product.dto';
 import { LoggedInUser } from '@/auth/decorators/logged-in-user.decorator';
 import { User } from '@/users/entities/user.entity';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
@@ -23,8 +23,10 @@ export class ProductsController {
     @Body() createProductDto: CreateProductDto,
     @LoggedInUser() loggedInUser: User,
   ) {
-    createProductDto.createdBy = loggedInUser.id;
-    return this.productsService.create(createProductDto);
+    return this.productsService.create({
+      createProductDto,
+      loggedInUserId: loggedInUser.id,
+    });
   }
 
   @Get()
