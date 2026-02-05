@@ -66,9 +66,9 @@ export class UpdateProductDto {
   @IsOptional()
   categoryIds?: string[];
 
-  @IsEmpty({ message: 'isActive is not allowed to be set manually' })
+  @IsEmpty({ message: 'isActive is not allowed to be set' })
   isActive: boolean;
 
-  @IsEmpty({ message: 'updatedBy is not allowed to be set manually' })
+  @IsEmpty({ message: 'updatedBy is not allowed to be set' })
   updatedBy: string;
 }

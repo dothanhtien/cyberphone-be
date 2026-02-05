@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Query,
@@ -23,10 +25,8 @@ export class ProductsController {
     @Body() createProductDto: CreateProductDto,
     @LoggedInUser() loggedInUser: User,
   ) {
-    return this.productsService.create({
-      createProductDto,
-      loggedInUserId: loggedInUser.id,
-    });
+    createProductDto.createdBy = loggedInUser.id;
+    return this.productsService.create(createProductDto);
   }
 
   @Get()
@@ -47,5 +47,19 @@ export class ProductsController {
   ) {
     updateProductDto.updatedBy = loggedInUser.id;
     return this.productsService.update(id, updateProductDto);
+  }
+
+  @Delete(':id')
+  async remove(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @LoggedInUser() loggedInUser: User,
+  ) {
+    const updateProductDto = new UpdateProductDto();
+    updateProductDto.isActive = false;
+    updateProductDto.updatedBy = loggedInUser.id;
+
+    await this.productsService.update(id, updateProductDto);
+
+    return true;
   }
 }

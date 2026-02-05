@@ -9,6 +9,7 @@ import {
   ArrayUnique,
   ArrayNotEmpty,
   IsArray,
+  IsEmpty,
 } from 'class-validator';
 import { ProductStatus } from '@/common/enums';
 
@@ -65,4 +66,7 @@ export class CreateProductDto {
   @ArrayNotEmpty({ message: 'categoryIds must not be empty' })
   @IsArray({ message: 'categoryIds must be an array' })
   categoryIds: string[];
+
+  @IsEmpty({ message: 'updatedBy is not allowed to be set' })
+  createdBy: string;
 }

@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, EntityManager, Not, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/requests/create-product.dto';
 import { BrandsService } from '@/brands/brands.service';
@@ -22,6 +22,8 @@ import { UpdateProductDto } from './dto/requests/update-product.dto';
 import { ProductCategory } from './entities/product-category.entity';
 import { mapToProductResponse } from './mappers/product.mapper';
 import { ProductCreateEntityDto } from './dto/entity-inputs/product-create-entity.dto';
+import { ProductResponseDto } from './dto/responses/product-response.dto';
+import { ProductUpdateEntityDto } from './dto/entity-inputs/product-update-entity.dto';
 
 @Injectable()
 export class ProductsService {
@@ -33,33 +35,12 @@ export class ProductsService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async create({
-    createProductDto,
-    loggedInUserId,
-  }: {
-    createProductDto: CreateProductDto;
-    loggedInUserId: string;
-  }) {
+  async create(createProductDto: CreateProductDto) {
     createProductDto.slug = normalizeSlug(createProductDto.slug);
 
-    const brandExists = await this.brandsService.exists(
-      createProductDto.brandId,
-    );
+    await this.assertBrandExists(createProductDto.brandId);
 
-    if (!brandExists) {
-      throw new NotFoundException('Brand not found');
-    }
-
-    const existingProduct = await this.productRepository.findOne({
-      where: {
-        slug: createProductDto.slug,
-        isActive: true,
-      },
-    });
-
-    if (existingProduct) {
-      throw new ConflictException('Slug already exists');
-    }
+    await this.assertSlugAvailable(createProductDto.slug);
 
     return this.dataSource.transaction(async (tx) => {
       const productInput = sanitizeEntityInput(
@@ -69,33 +50,20 @@ export class ProductsService {
 
       const product = tx.create(Product, {
         ...productInput,
-        createdBy: loggedInUserId,
+        createdBy: createProductDto.createdBy,
       });
 
       await tx.save(product);
 
       if (createProductDto.categoryIds.length) {
-        const categories = await this.categoriesService.findActiveByIds(
-          createProductDto.categoryIds,
+        await this.assertCategoriesValid(createProductDto.categoryIds, tx);
+
+        await this.syncProductCategories({
+          productId: product.id,
+          categoryIds: createProductDto.categoryIds,
+          userId: createProductDto.createdBy,
           tx,
-        );
-
-        if (categories.length !== createProductDto.categoryIds.length) {
-          throw new BadRequestException(
-            'One or more categories are invalid or inactive',
-          );
-        }
-
-        const productCategories = createProductDto.categoryIds.map(
-          (categoryId) =>
-            tx.create(ProductCategory, {
-              productId: product.id,
-              categoryId,
-              createdBy: loggedInUserId,
-            }),
-        );
-
-        await tx.save(productCategories);
+        });
       }
 
       const result = await tx.findOne(Product, {
@@ -118,7 +86,7 @@ export class ProductsService {
 
   async findAll(
     getProductsDto: PaginationQueryDto,
-  ): Promise<PaginatedEntity<Product>> {
+  ): Promise<PaginatedEntity<ProductResponseDto>> {
     const { page, limit } = extractPaginationParams(getProductsDto);
 
     const [products, totalCount] = await this.productRepository.findAndCount({
@@ -128,7 +96,7 @@ export class ProductsService {
     });
 
     return {
-      items: products,
+      items: products.map(mapToProductResponse),
       totalCount,
       currentPage: page,
       itemsPerPage: limit,
@@ -138,19 +106,24 @@ export class ProductsService {
   async findOne(id: string) {
     const product = await this.productRepository.findOne({
       where: { id, isActive: true },
+      relations: {
+        brand: true,
+        productCategories: { category: true },
+      },
     });
 
     if (!product) {
       throw new NotFoundException('Product not found');
     }
 
-    return product;
+    return mapToProductResponse(product);
   }
 
-  async update(
-    id: string,
-    updateProductDto: UpdateProductDto,
-  ): Promise<Product> {
+  async update(id: string, updateProductDto: UpdateProductDto) {
+    if (updateProductDto.slug) {
+      updateProductDto.slug = normalizeSlug(updateProductDto.slug);
+    }
+
     const product = await this.productRepository.findOne({
       where: { id, isActive: true },
     });
@@ -159,36 +132,133 @@ export class ProductsService {
       throw new NotFoundException('Product not found');
     }
 
-    if (updateProductDto.slug) {
-      updateProductDto.slug = normalizeSlug(updateProductDto.slug);
+    await this.assertBrandExists(updateProductDto.brandId);
 
-      const existingProduct = await this.productRepository.findOne({
-        where: {
-          slug: updateProductDto.slug,
-          isActive: true,
+    if (updateProductDto.slug && updateProductDto.slug !== product.slug) {
+      await this.assertSlugAvailable(updateProductDto.slug, id);
+    }
+
+    return this.dataSource.transaction(async (tx) => {
+      const productInput = sanitizeEntityInput(
+        ProductUpdateEntityDto,
+        updateProductDto,
+      );
+
+      await tx.update(Product, id, {
+        ...productInput,
+        updatedBy: updateProductDto.updatedBy,
+      });
+
+      if (updateProductDto.categoryIds) {
+        await this.assertCategoriesValid(updateProductDto.categoryIds, tx);
+
+        await this.syncProductCategories({
+          productId: id,
+          categoryIds: updateProductDto.categoryIds,
+          userId: updateProductDto.updatedBy,
+          tx,
+        });
+      }
+
+      const result = await tx.findOne(Product, {
+        where: { id },
+        relations: {
+          brand: true,
+          productCategories: { category: true },
         },
       });
 
-      if (existingProduct && existingProduct.id !== product.id) {
-        throw new ConflictException('Slug already exists');
+      if (!result) {
+        throw new NotFoundException('Product not found');
       }
+
+      return mapToProductResponse(result);
+    });
+  }
+
+  private async assertBrandExists(brandId?: string) {
+    if (!brandId) return;
+
+    const exists = await this.brandsService.exists(brandId);
+    if (!exists) {
+      throw new NotFoundException('Brand not found');
     }
+  }
 
-    if (updateProductDto.brandId) {
-      const brandExists = await this.brandsService.exists(
-        updateProductDto.brandId,
-      );
+  private async assertSlugAvailable(slug: string, productId?: string) {
+    const existing = await this.productRepository.findOne({
+      where: {
+        slug,
+        isActive: true,
+        ...(productId && { id: Not(productId) }),
+      },
+    });
 
-      if (!brandExists) {
-        throw new NotFoundException('Brand not found');
-      }
+    if (existing) {
+      throw new ConflictException('Slug already exists');
     }
+  }
 
-    const updatedProduct = this.productRepository.merge(
-      product,
-      updateProductDto,
+  private async assertCategoriesValid(
+    categoryIds: string[],
+    tx: EntityManager,
+  ) {
+    const categories = await this.categoriesService.findActiveByIds(
+      categoryIds,
+      tx,
     );
 
-    return this.productRepository.save(updatedProduct);
+    if (categories.length !== categoryIds.length) {
+      throw new BadRequestException(
+        'One or more categories are invalid or inactive',
+      );
+    }
+  }
+
+  private async syncProductCategories({
+    productId,
+    categoryIds,
+    userId,
+    tx,
+  }: {
+    productId: string;
+    categoryIds: string[];
+    userId: string;
+    tx: EntityManager;
+  }) {
+    await tx.update(
+      ProductCategory,
+      { productId },
+      {
+        isActive: false,
+        updatedBy: userId,
+      },
+    );
+
+    await tx
+      .createQueryBuilder()
+      .update(ProductCategory)
+      .set({
+        isActive: true,
+        updatedBy: userId,
+      })
+      .where('product_id = :productId', { productId })
+      .andWhere('category_id IN (:...categoryIds)', { categoryIds })
+      .execute();
+
+    await tx
+      .createQueryBuilder()
+      .insert()
+      .into(ProductCategory)
+      .values(
+        categoryIds.map((categoryId) => ({
+          productId,
+          categoryId,
+          isActive: true,
+          createdBy: userId,
+        })),
+      )
+      .orIgnore()
+      .execute();
   }
 }
