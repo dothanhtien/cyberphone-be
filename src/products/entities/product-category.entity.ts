@@ -62,7 +62,7 @@ export class ProductCategory {
   @Expose()
   updatedBy: string | null;
 
-  @ManyToOne(() => Product, (product) => product.productCategories, {
+  @ManyToOne(() => Product, (product) => product.categories, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })

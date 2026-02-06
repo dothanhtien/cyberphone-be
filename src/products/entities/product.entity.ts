@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Brand } from '../../brands/entities/brand.entity';
 import { ProductCategory } from './product-category.entity';
+import { ProductVariant } from '../../product-variants/entities/product-variant.entity';
 
 @Entity('products')
 @Index('uq_products_slug_active', ['slug'], {
@@ -85,5 +86,8 @@ export class Product {
     () => ProductCategory,
     (productCategory) => productCategory.product,
   )
-  productCategories: ProductCategory[];
+  categories: ProductCategory[];
+
+  @OneToMany(() => ProductVariant, (productVariant) => productVariant.product)
+  variants: ProductVariant[];
 }

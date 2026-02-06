@@ -7,7 +7,7 @@ export function mapToProductResponse(product: Product): ProductResponseDto {
     ProductResponseDto,
     {
       ...product,
-      categories: product.productCategories?.map((pc) => pc.category),
+      categories: (product.categories || []).map((pc) => pc.category),
     },
     {
       excludeExtraneousValues: true,

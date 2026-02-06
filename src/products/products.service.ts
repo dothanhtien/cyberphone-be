@@ -70,7 +70,7 @@ export class ProductsService {
         where: { id: product.id },
         relations: {
           brand: true,
-          productCategories: {
+          categories: {
             category: true,
           },
         },
@@ -108,7 +108,7 @@ export class ProductsService {
       where: { id, isActive: true },
       relations: {
         brand: true,
-        productCategories: { category: true },
+        categories: { category: true },
       },
     });
 
@@ -164,7 +164,7 @@ export class ProductsService {
         where: { id },
         relations: {
           brand: true,
-          productCategories: { category: true },
+          categories: { category: true },
         },
       });
 
