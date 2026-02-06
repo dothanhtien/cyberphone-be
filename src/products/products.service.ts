@@ -24,6 +24,8 @@ import { mapToProductResponse } from './mappers/product.mapper';
 import { ProductCreateEntityDto } from './dto/entity-inputs/product-create-entity.dto';
 import { ProductResponseDto } from './dto/responses/product-response.dto';
 import { ProductUpdateEntityDto } from './dto/entity-inputs/product-update-entity.dto';
+import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
+import { ProductVariantsService } from '@/product-variants/product-variants.service';
 
 @Injectable()
 export class ProductsService {
@@ -32,6 +34,7 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
     private readonly brandsService: BrandsService,
     private readonly categoriesService: CategoriesService,
+    private readonly productVariantsService: ProductVariantsService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -174,6 +177,26 @@ export class ProductsService {
 
       return mapToProductResponse(result);
     });
+  }
+
+  async createVariant(createVariantDto: CreateProductVariantDto) {
+    const productExists = await this.productRepository.exists({
+      where: { id: createVariantDto.productId, isActive: true },
+    });
+
+    if (!productExists) {
+      throw new NotFoundException('Product not found');
+    }
+
+    const variantExists = await this.productVariantsService.findOneBySku(
+      createVariantDto.sku,
+    );
+
+    if (variantExists) {
+      throw new ConflictException('Variant already exists');
+    }
+
+    return this.findOne(createVariantDto.productId);
   }
 
   private async assertBrandExists(brandId?: string) {
