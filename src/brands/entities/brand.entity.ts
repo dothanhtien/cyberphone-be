@@ -4,9 +4,11 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Product } from '../../products/entities/product.entity';
 
 @Entity('brands')
 @Index('uq_brands_slug_active', ['slug'], {
@@ -35,6 +37,9 @@ export class Brand {
   @Column({ name: 'website_url', type: 'text', nullable: true })
   @Expose()
   websiteUrl?: string;
+
+  @OneToMany(() => Product, (product) => product.brand)
+  products: Product[];
 
   @Column({ name: 'is_active', type: 'boolean', default: true })
   @Expose()

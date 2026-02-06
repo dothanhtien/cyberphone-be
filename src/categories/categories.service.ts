@@ -5,22 +5,22 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Not, Repository } from 'typeorm';
-import { PaginationQueryDto } from '@/common/dtos/paginations.dto';
+import { DataSource, EntityManager, In, Not, Repository } from 'typeorm';
+import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import {
   buildPaginationParams,
   extractPaginationParams,
 } from '@/common/utils/paginations.util';
 import { Category } from './entities/category.entity';
-import { CreateCategoryDto } from './dtos/create-category.dto';
-import { UpdateCategoryDto } from './dtos/update-category.dto';
+import { CreateCategoryDto } from './dto/requests/create-category.dto';
+import { UpdateCategoryDto } from './dto/requests/update-category.dto';
 import { toEntity } from '@/common/utils/entities';
 import { MediaAssetsService } from '@/media-assets/media-assets.service';
 import {
   MediaAsset,
   MediaType,
 } from '@/media-assets/entities/media-asset.entity';
-import { MediaAssetRefTypeEnum } from '@/common/enums';
+import { MediaAssetRefType } from '@/common/enums';
 import { CATEGORY_FOLDER } from '@/common/constants/paths';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {
@@ -67,7 +67,7 @@ export class CategoriesService {
               publicId: uploadResult.key,
               url: uploadResult.url,
               resourceType: uploadResult.resourceType as MediaType,
-              refType: MediaAssetRefTypeEnum.CATEGORY,
+              refType: MediaAssetRefType.CATEGORY,
               refId: savedCategory.id,
               createdBy: savedCategory.createdBy,
             },
@@ -177,7 +177,7 @@ export class CategoriesService {
       try {
         if (logo) {
           const oldMedia = await this.mediaAssetService.findByRefId(
-            MediaAssetRefTypeEnum.CATEGORY,
+            MediaAssetRefType.CATEGORY,
             id,
             tx,
           );
@@ -191,7 +191,7 @@ export class CategoriesService {
               publicId: uploadResult.key,
               url: uploadResult.url,
               resourceType: uploadResult.resourceType as MediaType,
-              refType: MediaAssetRefTypeEnum.CATEGORY,
+              refType: MediaAssetRefType.CATEGORY,
               refId: id,
               createdBy: updateCategoryDto.updatedBy,
             },
@@ -219,6 +219,27 @@ export class CategoriesService {
         }
         throw error;
       }
+    });
+  }
+
+  async findActiveByIds(
+    ids: string[],
+    entityManager?: EntityManager,
+  ): Promise<Pick<Category, 'id'>[]> {
+    if (!ids.length) {
+      return [];
+    }
+
+    const repository = entityManager
+      ? entityManager.getRepository(Category)
+      : this.categoryRepository;
+
+    return repository.find({
+      where: {
+        id: In(ids),
+        isActive: true,
+      },
+      select: ['id'],
     });
   }
 
@@ -342,7 +363,7 @@ export class CategoriesService {
     const ids = categories.map((c) => c.id);
 
     const medias = await this.mediaAssetService.findByRefIds(
-      MediaAssetRefTypeEnum.CATEGORY,
+      MediaAssetRefType.CATEGORY,
       ids,
     );
 

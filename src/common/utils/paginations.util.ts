@@ -1,4 +1,4 @@
-import { PaginationQueryDto } from '../dtos/paginations.dto';
+import { PaginationQueryDto } from '../dto/paginations.dto';
 
 export const extractPaginationParams = (input: PaginationQueryDto) => {
   const page = input.page || 1;
