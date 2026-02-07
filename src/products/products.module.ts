@@ -6,12 +6,15 @@ import { Product } from './entities/product.entity';
 import { BrandsModule } from '@/brands/brands.module';
 import { ProductCategory } from './entities/product-category.entity';
 import { CategoriesModule } from '@/categories/categories.module';
+import { ProductVariant } from '@/product-variants/entities/product-variant.entity';
+import { ProductVariantsModule } from '@/product-variants/product-variants.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Product, ProductCategory]),
+    TypeOrmModule.forFeature([Product, ProductCategory, ProductVariant]),
     BrandsModule,
     CategoriesModule,
+    ProductVariantsModule,
   ],
   providers: [ProductsService],
   controllers: [ProductsController],

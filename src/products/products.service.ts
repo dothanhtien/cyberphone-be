@@ -24,6 +24,7 @@ import { mapToProductResponse } from './mappers/product.mapper';
 import { ProductCreateEntityDto } from './dto/entity-inputs/product-create-entity.dto';
 import { ProductResponseDto } from './dto/responses/product-response.dto';
 import { ProductUpdateEntityDto } from './dto/entity-inputs/product-update-entity.dto';
+import { ProductVariantsService } from '@/product-variants/product-variants.service';
 
 @Injectable()
 export class ProductsService {
@@ -32,6 +33,7 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
     private readonly brandsService: BrandsService,
     private readonly categoriesService: CategoriesService,
+    private readonly productVariantsService: ProductVariantsService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -70,7 +72,7 @@ export class ProductsService {
         where: { id: product.id },
         relations: {
           brand: true,
-          productCategories: {
+          categories: {
             category: true,
           },
         },
@@ -108,7 +110,7 @@ export class ProductsService {
       where: { id, isActive: true },
       relations: {
         brand: true,
-        productCategories: { category: true },
+        categories: { category: true },
       },
     });
 
@@ -164,7 +166,7 @@ export class ProductsService {
         where: { id },
         relations: {
           brand: true,
-          productCategories: { category: true },
+          categories: { category: true },
         },
       });
 
