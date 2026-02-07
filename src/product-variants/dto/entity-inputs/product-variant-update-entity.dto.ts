@@ -8,13 +8,13 @@ export class ProductVariantUpdateEntityDto {
   name?: string;
 
   @Expose()
-  price?: number;
+  price?: string;
 
   @Expose()
-  salePrice?: number | null;
+  salePrice?: string | null;
 
   @Expose()
-  costPrice?: number | null;
+  costPrice?: string | null;
 
   @Expose()
   stockQuantity?: number;
