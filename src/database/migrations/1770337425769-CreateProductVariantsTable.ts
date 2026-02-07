@@ -6,7 +6,7 @@ export class CreateProductVariantsTable1770337425769 implements MigrationInterfa
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `
-        CREATE TABLE "product-variants" (
+        CREATE TABLE "product_variants" (
           "id" uuid NOT NULL DEFAULT uuid_generate_v4(), 
           "product_id" uuid NOT NULL, 
           "sku" character varying(100) NOT NULL, 
@@ -28,18 +28,18 @@ export class CreateProductVariantsTable1770337425769 implements MigrationInterfa
       `,
     );
     await queryRunner.query(
-      `CREATE INDEX "idx_product_variants_stock_status" ON "product-variants" ("stock_status") `,
+      `CREATE INDEX "idx_product_variants_stock_status" ON "product_variants" ("stock_status") `,
     );
     await queryRunner.query(
-      `CREATE INDEX "idx_product_variants_product_id" ON "product-variants" ("product_id") `,
+      `CREATE INDEX "idx_product_variants_product_id" ON "product_variants" ("product_id") `,
     );
     await queryRunner.query(
-      `CREATE UNIQUE INDEX "uq_product_variants_sku" ON "product-variants" ("sku") `,
+      `CREATE UNIQUE INDEX "uq_product_variants_sku_active" ON "product_variants" ("sku") WHERE "is_active" = true`,
     );
     await queryRunner.query(
       `
         ALTER TABLE 
-          "product-variants" 
+          "product_variants" 
         ADD 
           CONSTRAINT "fk_product_variants_product_id" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE NO ACTION
       `,
@@ -48,15 +48,17 @@ export class CreateProductVariantsTable1770337425769 implements MigrationInterfa
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "product-variants" DROP CONSTRAINT "fk_product_variants_product_id"`,
+      `ALTER TABLE "product_variants" DROP CONSTRAINT "fk_product_variants_product_id"`,
     );
-    await queryRunner.query(`DROP INDEX "public"."uq_product_variants_sku"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."uq_product_variants_sku_active"`,
+    );
     await queryRunner.query(
       `DROP INDEX "public"."idx_product_variants_product_id"`,
     );
     await queryRunner.query(
       `DROP INDEX "public"."idx_product_variants_stock_status"`,
     );
-    await queryRunner.query(`DROP TABLE "product-variants"`);
+    await queryRunner.query(`DROP TABLE "product_variants"`);
   }
 }

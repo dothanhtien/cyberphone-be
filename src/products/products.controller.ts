@@ -54,11 +54,10 @@ export class ProductsController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @LoggedInUser() loggedInUser: User,
   ) {
-    const updateProductDto = new UpdateProductDto();
-    updateProductDto.isActive = false;
-    updateProductDto.updatedBy = loggedInUser.id;
-
-    await this.productsService.update(id, updateProductDto);
+    await this.productsService.update(id, {
+      isActive: false,
+      updatedBy: loggedInUser.id,
+    });
 
     return true;
   }

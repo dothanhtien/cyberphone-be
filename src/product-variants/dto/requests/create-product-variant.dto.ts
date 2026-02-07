@@ -1,23 +1,21 @@
-import { ProductVariantStockStatus } from '@/common/enums';
+import { Type } from 'class-transformer';
 import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  MaxLength,
-  IsUUID,
   IsBoolean,
+  IsEmpty,
   IsEnum,
   IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
   Min,
-  IsEmpty,
-  Matches,
 } from 'class-validator';
+import { ProductVariantStockStatus } from '@/common/enums';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SKU_LENGTH = 100;
-
-// decimal(12,2) — allow "1000", "1000.50"
-const DECIMAL_REGEX = /^\d+(\.\d{1,2})?$/;
 
 export class CreateProductVariantDto {
   @IsUUID('4', { message: 'productId must be a valid UUID' })
@@ -38,26 +36,31 @@ export class CreateProductVariantDto {
   @IsNotEmpty({ message: 'Variant name is required' })
   name: string;
 
-  @Matches(DECIMAL_REGEX, {
-    message: 'Price must be a valid decimal with up to 2 decimal places',
-  })
-  @IsString({ message: 'Price must be a string' })
-  @IsNotEmpty({ message: 'Price is required' })
-  price: string;
+  @IsNumber(
+    { maxDecimalPlaces: 2 },
+    { message: 'Price must be a number with up to 2 decimal places' },
+  )
+  @Min(0, { message: 'Price must be greater than or equal to 0' })
+  @Type(() => Number)
+  price: number;
 
-  @Matches(DECIMAL_REGEX, {
-    message: 'Sale price must be a valid decimal with up to 2 decimal places',
-  })
-  @IsString({ message: 'Sale price must be a string' })
+  @IsNumber(
+    { maxDecimalPlaces: 2 },
+    { message: 'Sale price must be a number with up to 2 decimal places' },
+  )
+  @Min(0, { message: 'Sale price must be greater than or equal to 0' })
+  @Type(() => Number)
   @IsOptional()
-  salePrice?: string;
+  salePrice?: number;
 
-  @Matches(DECIMAL_REGEX, {
-    message: 'Cost price must be a valid decimal with up to 2 decimal places',
-  })
-  @IsString({ message: 'Cost price must be a string' })
+  @IsNumber(
+    { maxDecimalPlaces: 2 },
+    { message: 'Cost price must be a number with up to 2 decimal places' },
+  )
+  @Min(0, { message: 'Cost price must be greater than or equal to 0' })
+  @Type(() => Number)
   @IsOptional()
-  costPrice?: string;
+  costPrice?: number;
 
   @IsInt({ message: 'Stock quantity must be an integer' })
   @Min(0, { message: 'Stock quantity must be greater than or equal to 0' })
@@ -83,6 +86,6 @@ export class CreateProductVariantDto {
   @IsOptional()
   isDefault?: boolean;
 
-  @IsEmpty({ message: 'createdBy is not allowed to be set' })
+  @IsEmpty()
   createdBy: string;
 }

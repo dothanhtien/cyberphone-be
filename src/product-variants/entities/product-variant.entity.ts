@@ -11,8 +11,11 @@ import {
 import { Product } from '../../products/entities/product.entity';
 import { ProductVariantStockStatus } from '../../common/enums';
 
-@Entity('product-variants')
-@Index('uq_product_variants_sku', ['sku'], { unique: true })
+@Entity('product_variants')
+@Index('uq_product_variants_sku_active', ['sku'], {
+  unique: true,
+  where: `"is_active" = true`,
+})
 @Index('idx_product_variants_product_id', ['productId'])
 @Index('idx_product_variants_stock_status', ['stockStatus'])
 export class ProductVariant {
@@ -45,7 +48,7 @@ export class ProductVariant {
     precision: 12,
     scale: 2,
   })
-  price: string;
+  price: number;
 
   @Column({
     name: 'sale_price',
@@ -54,7 +57,7 @@ export class ProductVariant {
     scale: 2,
     nullable: true,
   })
-  salePrice?: string | null;
+  salePrice?: number | null;
 
   @Column({
     name: 'cost_price',
@@ -63,7 +66,7 @@ export class ProductVariant {
     scale: 2,
     nullable: true,
   })
-  costPrice?: string | null;
+  costPrice?: number | null;
 
   @Column({
     name: 'stock_quantity',
