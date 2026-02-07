@@ -117,26 +117,29 @@ export class ProductVariantsService {
       }
     }
 
-    if (updateProductVariantDto.isDefault === true && !variant.isDefault) {
-      await this.productVariantRepository.update(
-        {
-          productId: variant.productId,
-          isDefault: true,
-        },
-        { isDefault: false },
+    await this.productVariantRepository.manager.transaction(async (tx) => {
+      if (updateProductVariantDto.isDefault === true && !variant.isDefault) {
+        await tx.update(
+          ProductVariant,
+          {
+            productId: variant.productId,
+            isDefault: true,
+          },
+          { isDefault: false },
+        );
+      }
+
+      const entityInput = sanitizeEntityInput(
+        ProductVariantUpdateEntityDto,
+        updateProductVariantDto,
       );
-    }
 
-    const entityInput = sanitizeEntityInput(
-      ProductVariantUpdateEntityDto,
-      updateProductVariantDto,
-    );
+      const updatedVariant = this.productVariantRepository.merge(
+        variant,
+        entityInput,
+      );
 
-    const updatedVariant = this.productVariantRepository.merge(
-      variant,
-      entityInput,
-    );
-
-    return this.productVariantRepository.save(updatedVariant);
+      return tx.save(updatedVariant);
+    });
   }
 }

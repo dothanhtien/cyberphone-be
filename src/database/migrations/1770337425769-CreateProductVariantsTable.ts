@@ -34,6 +34,9 @@ export class CreateProductVariantsTable1770337425769 implements MigrationInterfa
       `CREATE INDEX "idx_product_variants_product_id" ON "product_variants" ("product_id") `,
     );
     await queryRunner.query(
+      `CREATE UNIQUE INDEX "uq_product_variants_product_default" ON "product_variants" ("product_id") WHERE "is_default" = true`,
+    );
+    await queryRunner.query(
       `CREATE UNIQUE INDEX "uq_product_variants_sku_active" ON "product_variants" ("sku") WHERE "is_active" = true`,
     );
     await queryRunner.query(
@@ -52,6 +55,9 @@ export class CreateProductVariantsTable1770337425769 implements MigrationInterfa
     );
     await queryRunner.query(
       `DROP INDEX "public"."uq_product_variants_sku_active"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."uq_product_variants_product_default"`,
     );
     await queryRunner.query(
       `DROP INDEX "public"."idx_product_variants_product_id"`,

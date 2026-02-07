@@ -16,6 +16,10 @@ import { ProductVariantStockStatus } from '../../common/enums';
   unique: true,
   where: `"is_active" = true`,
 })
+@Index('uq_product_variants_product_default', ['productId'], {
+  unique: true,
+  where: `"is_default" = true`,
+})
 @Index('idx_product_variants_product_id', ['productId'])
 @Index('idx_product_variants_stock_status', ['stockStatus'])
 export class ProductVariant {
@@ -48,7 +52,7 @@ export class ProductVariant {
     precision: 12,
     scale: 2,
   })
-  price: number;
+  price: string;
 
   @Column({
     name: 'sale_price',
@@ -57,7 +61,7 @@ export class ProductVariant {
     scale: 2,
     nullable: true,
   })
-  salePrice?: number | null;
+  salePrice?: string | null;
 
   @Column({
     name: 'cost_price',
@@ -66,7 +70,7 @@ export class ProductVariant {
     scale: 2,
     nullable: true,
   })
-  costPrice?: number | null;
+  costPrice?: string | null;
 
   @Column({
     name: 'stock_quantity',

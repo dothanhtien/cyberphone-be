@@ -25,9 +25,9 @@ export class ProductVariantsController {
   @Post()
   async create(
     @Body() createProductVariantDto: CreateProductVariantDto,
-    @LoggedInUser() LoggedInUser: User,
+    @LoggedInUser() loggedInUser: User,
   ) {
-    createProductVariantDto.createdBy = LoggedInUser.id;
+    createProductVariantDto.createdBy = loggedInUser.id;
 
     return this.productVariantsService.create(createProductVariantDto);
   }
