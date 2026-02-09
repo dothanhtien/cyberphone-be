@@ -11,13 +11,13 @@ export class ProductVariantCreateEntityDto {
   name: string;
 
   @Expose()
-  price: number;
+  price: string;
 
   @Expose()
-  salePrice?: number;
+  salePrice?: string;
 
   @Expose()
-  costPrice?: number;
+  costPrice?: string;
 
   @Expose()
   stockQuantity?: number;
