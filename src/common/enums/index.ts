@@ -15,3 +15,9 @@ export enum ProductVariantStockStatus {
   OUT_OF_STOCK = 'out_of_stock',
   LOW_STOCK = 'low_stock',
 }
+
+export enum ProductImageType {
+  MAIN = 'main',
+  THUMBNAIL = 'thumbnail',
+  GALLERY = 'gallery',
+}
