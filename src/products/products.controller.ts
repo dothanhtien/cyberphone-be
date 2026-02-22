@@ -8,7 +8,10 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/requests/create-product.dto';
 import { UpdateProductDto } from './dto/requests/update-product.dto';
@@ -21,12 +24,20 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
+  @UseInterceptors(
+    FilesInterceptor('images', 20, {
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+    }),
+  )
   async create(
+    @UploadedFiles() images: Express.Multer.File[],
     @Body() createProductDto: CreateProductDto,
     @LoggedInUser() loggedInUser: User,
   ) {
     createProductDto.createdBy = loggedInUser.id;
-    return this.productsService.create(createProductDto);
+    return this.productsService.create(createProductDto, images);
   }
 
   @Get()

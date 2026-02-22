@@ -10,8 +10,13 @@ import {
   ArrayNotEmpty,
   IsArray,
   IsEmpty,
+  ValidateNested,
 } from 'class-validator';
+import { plainToInstance, Transform } from 'class-transformer';
 import { ProductStatus } from '@/common/enums';
+import { CreateProductImageDto } from './create-product-image.dto';
+import { safeJsonParse } from '@/common/utils/parsers';
+import { normalizeSlug } from '@/common/utils/slugs';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SLUG_LENGTH = 255;
@@ -24,6 +29,7 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'Product name is required' })
   name: string;
 
+  @Transform(({ value }: { value: string }) => normalizeSlug(value))
   @MaxLength(MAX_SLUG_LENGTH, {
     message: `Slug must not exceed ${MAX_SLUG_LENGTH} characters`,
   })
@@ -46,10 +52,12 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'Status is required' })
   status: ProductStatus;
 
+  @Transform(({ value }) => value === 'true')
   @IsBoolean({ message: 'isFeatured must be a boolean' })
   @IsOptional()
   isFeatured?: boolean;
 
+  @Transform(({ value }) => value === 'true')
   @IsBoolean({ message: 'isBestseller must be a boolean' })
   @IsOptional()
   isBestseller?: boolean;
@@ -58,6 +66,17 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'brandId is required' })
   brandId: string;
 
+  @Transform(({ value }) => {
+    let result: unknown;
+
+    if (typeof value === 'string') {
+      result = safeJsonParse<string[]>(value);
+    } else {
+      result = value;
+    }
+
+    return result;
+  })
   @ArrayUnique({ message: 'categoryIds must not contain duplicates' })
   @IsUUID('4', {
     each: true,
@@ -66,6 +85,24 @@ export class CreateProductDto {
   @ArrayNotEmpty({ message: 'categoryIds must not be empty' })
   @IsArray({ message: 'categoryIds must be an array' })
   categoryIds: string[];
+
+  @ValidateNested({ each: true })
+  @IsArray({ message: 'imageMetas must be an array' })
+  @Transform(({ value }) => {
+    let parsed: unknown = value;
+
+    if (typeof value === 'string') {
+      parsed = safeJsonParse<unknown>(value);
+    }
+
+    if (!Array.isArray(parsed)) {
+      return parsed;
+    }
+
+    return parsed.map((item) => plainToInstance(CreateProductImageDto, item));
+  })
+  @IsOptional()
+  imageMetas: CreateProductImageDto[];
 
   @IsEmpty()
   createdBy: string;

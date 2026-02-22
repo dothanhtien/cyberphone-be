@@ -3,18 +3,24 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
 import { Product } from './entities/product.entity';
-import { BrandsModule } from '@/brands/brands.module';
 import { ProductCategory } from './entities/product-category.entity';
-import { CategoriesModule } from '@/categories/categories.module';
+import { ProductImage } from './entities/product-image.entity';
 import { ProductVariant } from '@/product-variants/entities/product-variant.entity';
-import { ProductVariantsModule } from '@/product-variants/product-variants.module';
+import { BrandsModule } from '@/brands/brands.module';
+import { CategoriesModule } from '@/categories/categories.module';
+import { StorageModule } from '@/storage/storage.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Product, ProductCategory, ProductVariant]),
+    TypeOrmModule.forFeature([
+      Product,
+      ProductCategory,
+      ProductVariant,
+      ProductImage,
+    ]),
     BrandsModule,
     CategoriesModule,
-    ProductVariantsModule,
+    StorageModule,
   ],
   providers: [ProductsService],
   controllers: [ProductsController],
