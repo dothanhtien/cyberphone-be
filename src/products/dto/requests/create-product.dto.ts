@@ -12,10 +12,11 @@ import {
   IsEmpty,
   ValidateNested,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { plainToInstance, Transform } from 'class-transformer';
 import { ProductStatus } from '@/common/enums';
 import { CreateProductImageDto } from './create-product-image.dto';
 import { safeJsonParse } from '@/common/utils/parsers';
+import { normalizeSlug } from '@/common/utils/slugs';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SLUG_LENGTH = 255;
@@ -28,6 +29,7 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'Product name is required' })
   name: string;
 
+  @Transform(({ value }: { value: string }) => normalizeSlug(value))
   @MaxLength(MAX_SLUG_LENGTH, {
     message: `Slug must not exceed ${MAX_SLUG_LENGTH} characters`,
   })
@@ -50,10 +52,12 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'Status is required' })
   status: ProductStatus;
 
+  @Transform(({ value }) => value === 'true')
   @IsBoolean({ message: 'isFeatured must be a boolean' })
   @IsOptional()
   isFeatured?: boolean;
 
+  @Transform(({ value }) => value === 'true')
   @IsBoolean({ message: 'isBestseller must be a boolean' })
   @IsOptional()
   isBestseller?: boolean;
@@ -66,7 +70,7 @@ export class CreateProductDto {
     let result: unknown;
 
     if (typeof value === 'string') {
-      result = safeJsonParse<CreateProductImageDto[]>(value);
+      result = safeJsonParse<string[]>(value);
     } else {
       result = value;
     }
@@ -82,22 +86,23 @@ export class CreateProductDto {
   @IsArray({ message: 'categoryIds must be an array' })
   categoryIds: string[];
 
+  @ValidateNested({ each: true })
+  @IsArray({ message: 'images must be an array' })
   @Transform(({ value }) => {
-    let result: unknown;
+    let parsed: unknown = value;
 
     if (typeof value === 'string') {
-      result = safeJsonParse<CreateProductImageDto[]>(value);
-    } else {
-      result = value;
+      parsed = safeJsonParse<unknown>(value);
     }
 
-    return result;
+    if (!Array.isArray(parsed)) {
+      return parsed;
+    }
+
+    return parsed.map((item) => plainToInstance(CreateProductImageDto, item));
   })
-  @ValidateNested({ each: true })
-  @Type(() => CreateProductImageDto)
-  @IsArray({ message: 'images must be an array' })
   @IsOptional()
-  images: CreateProductImageDto[];
+  imageMetas: CreateProductImageDto[];
 
   @IsEmpty()
   createdBy: string;

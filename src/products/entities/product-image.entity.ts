@@ -36,7 +36,7 @@ export class ProductImage {
   product: Product;
 
   @Column({ name: 'variant_id', type: 'uuid', nullable: true })
-  variantId: string;
+  variantId: string | null;
 
   @ManyToOne(() => ProductVariant, {
     nullable: true,

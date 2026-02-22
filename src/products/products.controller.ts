@@ -25,21 +25,19 @@ export class ProductsController {
 
   @Post()
   @UseInterceptors(
-    FilesInterceptor('files', 20, {
+    FilesInterceptor('images', 20, {
       limits: {
         fileSize: 5 * 1024 * 1024,
       },
     }),
   )
   async create(
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles() images: Express.Multer.File[],
     @Body() createProductDto: CreateProductDto,
     @LoggedInUser() loggedInUser: User,
   ) {
-    console.log({ files });
-
     createProductDto.createdBy = loggedInUser.id;
-    return this.productsService.create(createProductDto);
+    return this.productsService.create(createProductDto, images);
   }
 
   @Get()

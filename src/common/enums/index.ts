@@ -1,6 +1,7 @@
 export enum MediaAssetRefType {
   CATEGORY = 'category',
   BRAND = 'brand',
+  PRODUCT_IMAGE = 'product_image',
 }
 
 export enum ProductStatus {

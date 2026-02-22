@@ -2,6 +2,20 @@ import { Expose, Type } from 'class-transformer';
 import { BrandResponseDto } from '@/brands/dto/responses/brand-response.dto';
 import { CategoryResponseDto } from '@/categories/dto/responses/category-response.dto';
 
+class ProductImageResponseDto {
+  @Expose()
+  id: string;
+
+  @Expose()
+  imageType: string;
+
+  @Expose()
+  altText: string | null;
+
+  @Expose()
+  url: string | null;
+}
+
 export class ProductResponseDto {
   @Expose()
   id: string;
@@ -49,4 +63,8 @@ export class ProductResponseDto {
   @Expose()
   @Type(() => CategoryResponseDto)
   categories: CategoryResponseDto[];
+
+  @Expose()
+  @Type(() => ProductImageResponseDto)
+  images: ProductImageResponseDto[];
 }

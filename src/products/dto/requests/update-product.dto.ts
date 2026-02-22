@@ -10,7 +10,9 @@ import {
   ArrayNotEmpty,
   IsArray,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ProductStatus } from '@/common/enums';
+import { normalizeSlug } from '@/common/utils/slugs';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SLUG_LENGTH = 255;
@@ -23,6 +25,7 @@ export class UpdateProductDto {
   @IsOptional()
   name?: string;
 
+  @Transform(({ value }: { value: string }) => normalizeSlug(value))
   @MaxLength(MAX_SLUG_LENGTH, {
     message: `Slug must not exceed ${MAX_SLUG_LENGTH} characters`,
   })
