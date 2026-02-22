@@ -62,10 +62,11 @@ export class ProductsService {
       this.assertCategoriesValid(createProductDto.categoryIds),
     ]);
 
-    const uploadResults = await this.uploadImages(images);
-
+    let uploadResults: StorageUploadResult[] = [];
     let result: Product;
     try {
+      uploadResults = await this.uploadImages(images);
+
       result = await this.dataSource.transaction(async (tx) => {
         const savedProduct = await this.createProductEntity(
           createProductDto,
@@ -117,7 +118,7 @@ export class ProductsService {
         'product.productImages',
         ProductImage,
         'pi',
-        'pi.productId = product.id',
+        'pi.productId = product.id AND pi.is_active = true',
       )
       .leftJoinAndMapOne(
         'pi.media',

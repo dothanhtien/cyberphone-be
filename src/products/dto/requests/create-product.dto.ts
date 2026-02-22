@@ -87,7 +87,7 @@ export class CreateProductDto {
   categoryIds: string[];
 
   @ValidateNested({ each: true })
-  @IsArray({ message: 'images must be an array' })
+  @IsArray({ message: 'imageMetas must be an array' })
   @Transform(({ value }) => {
     let parsed: unknown = value;
 
