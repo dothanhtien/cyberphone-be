@@ -38,8 +38,8 @@ import type {
 import { PRODUCT_FOLDER } from '@/common/constants/paths';
 
 @Injectable()
-export class ProductsService {
-  private readonly logger = new Logger(ProductsService.name);
+export class AdminProductsService {
+  private readonly logger = new Logger(AdminProductsService.name);
 
   constructor(
     private readonly dataSource: DataSource,
