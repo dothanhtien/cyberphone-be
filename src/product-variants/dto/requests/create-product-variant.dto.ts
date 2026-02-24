@@ -2,26 +2,19 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEmpty,
-  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
-  IsUUID,
   MaxLength,
   Min,
 } from 'class-validator';
-import { ProductVariantStockStatus } from '@/common/enums';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SKU_LENGTH = 100;
 
 export class CreateProductVariantDto {
-  @IsUUID('4', { message: 'productId must be a valid UUID' })
-  @IsNotEmpty({ message: 'productId is required' })
-  productId: string;
-
   @MaxLength(MAX_SKU_LENGTH, {
     message: `SKU must not exceed ${MAX_SKU_LENGTH} characters`,
   })
@@ -66,14 +59,6 @@ export class CreateProductVariantDto {
   @Min(0, { message: 'Stock quantity must be greater than or equal to 0' })
   @IsOptional()
   stockQuantity?: number;
-
-  @IsEnum(ProductVariantStockStatus, {
-    message: `Stock status must be one of: ${Object.values(
-      ProductVariantStockStatus,
-    ).join(', ')}`,
-  })
-  @IsOptional()
-  stockStatus?: ProductVariantStockStatus;
 
   @IsInt({ message: 'Low stock threshold must be an integer' })
   @Min(0, {

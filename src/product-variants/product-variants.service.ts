@@ -4,142 +4,200 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { ProductVariant } from './entities/product-variant.entity';
 import { sanitizeEntityInput } from '@/common/utils/entities';
 import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
 import { ProductVariantCreateEntityDto } from './dto/entity-inputs/product-variant-create-entity.dto';
 import { Product } from '@/products/entities/product.entity';
-import { PaginationQueryDto } from '@/common/dto/paginations.dto';
-import { PaginatedEntity } from '@/common/types/paginations.type';
-import {
-  buildPaginationParams,
-  extractPaginationParams,
-} from '@/common/utils/paginations.util';
+import { ProductVariantStockStatus } from '@/common/enums';
+import { isUniqueConstraintError } from '@/common/utils/database-error.util';
 import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
 import { ProductVariantUpdateEntityDto } from './dto/entity-inputs/product-variant-update-entity.dto';
 
 @Injectable()
 export class ProductVariantsService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     @InjectRepository(ProductVariant)
     private readonly productVariantRepository: Repository<ProductVariant>,
   ) {}
 
-  async create(createProductVariantDto: CreateProductVariantDto) {
-    const productExists = await this.productRepository.exists({
-      where: {
-        id: createProductVariantDto.productId,
-        isActive: true,
-      },
-    });
+  async create(
+    productId: string,
+    createProductVariantDto: CreateProductVariantDto,
+  ) {
+    await this.ensureProductExists(productId);
 
-    if (!productExists) {
-      throw new NotFoundException('Product not found');
-    }
+    return this.dataSource.transaction(async (tx) => {
+      const variantRepo = tx.getRepository(ProductVariant);
 
-    const skuExists = await this.productVariantRepository.findOne({
-      where: {
-        sku: createProductVariantDto.sku,
-        isActive: true,
-      },
-    });
-
-    if (skuExists) {
-      throw new ConflictException('Variant already exists');
-    }
-
-    const entityInput = sanitizeEntityInput(
-      ProductVariantCreateEntityDto,
-      createProductVariantDto,
-    );
-
-    const variant = this.productVariantRepository.create(entityInput);
-    return this.productVariantRepository.save(variant);
-  }
-
-  async findAll(
-    paginationQueryDto: PaginationQueryDto,
-  ): Promise<PaginatedEntity<ProductVariant>> {
-    const { page, limit } = extractPaginationParams(paginationQueryDto);
-
-    const [variants, totalCount] =
-      await this.productVariantRepository.findAndCount({
-        where: { isActive: true },
-        ...buildPaginationParams(page, limit),
-        order: { updatedAt: 'DESC' },
-      });
-
-    return {
-      items: variants,
-      totalCount,
-      currentPage: page,
-      itemsPerPage: limit,
-    };
-  }
-
-  async findOne(id: string) {
-    const variant = await this.productVariantRepository.findOne({
-      where: { id, isActive: true },
-    });
-
-    if (!variant) {
-      throw new NotFoundException('Variant not found');
-    }
-
-    return variant;
-  }
-
-  async update(id: string, updateProductVariantDto: UpdateProductVariantDto) {
-    const variant = await this.productVariantRepository.findOne({
-      where: { id, isActive: true },
-    });
-
-    if (!variant) {
-      throw new NotFoundException('Variant not found');
-    }
-
-    if (
-      updateProductVariantDto.sku &&
-      updateProductVariantDto.sku !== variant.sku
-    ) {
-      const skuExists = await this.productVariantRepository.exists({
+      const hasActiveVariants = await variantRepo.exists({
         where: {
-          sku: updateProductVariantDto.sku,
+          productId,
           isActive: true,
         },
       });
 
-      if (skuExists) {
-        throw new ConflictException('SKU already exists');
-      }
-    }
+      const stockStatus = this.calculateStockStatus(
+        createProductVariantDto.stockQuantity,
+        createProductVariantDto.lowStockThreshold,
+      );
 
-    await this.productVariantRepository.manager.transaction(async (tx) => {
-      if (updateProductVariantDto.isDefault === true && !variant.isDefault) {
-        await tx.update(
-          ProductVariant,
-          {
-            productId: variant.productId,
-            isDefault: true,
+      const entityInput = sanitizeEntityInput(ProductVariantCreateEntityDto, {
+        ...createProductVariantDto,
+        productId,
+        stockStatus,
+      });
+
+      let isDefault = createProductVariantDto.isDefault ?? false;
+
+      if (!hasActiveVariants) {
+        isDefault = true;
+      }
+
+      if (isDefault) {
+        await this.unsetDefaultVariant(tx, productId);
+      }
+
+      const variant = variantRepo.create({
+        ...entityInput,
+        isDefault,
+      });
+
+      try {
+        return await variantRepo.save(variant);
+      } catch (error) {
+        if (isUniqueConstraintError(error)) {
+          throw new ConflictException('SKU already exists');
+        }
+        throw error;
+      }
+    });
+  }
+
+  async findAllByProductId(productId: string): Promise<ProductVariant[]> {
+    await this.ensureProductExists(productId);
+
+    return this.productVariantRepository.find({
+      where: {
+        productId,
+        isActive: true,
+      },
+      order: {
+        isDefault: 'DESC',
+        updatedAt: { direction: 'DESC', nulls: 'LAST' },
+        createdAt: 'DESC',
+      },
+    });
+  }
+
+  async update(id: string, updateProductVariantDto: UpdateProductVariantDto) {
+    return this.dataSource.transaction(async (tx) => {
+      const variantRepo = tx.getRepository(ProductVariant);
+
+      const existing = await variantRepo.findOne({
+        where: { id, isActive: true },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!existing) {
+        throw new NotFoundException('Variant not found');
+      }
+
+      let isDefault = existing.isDefault;
+
+      if (updateProductVariantDto.isDefault === true) {
+        await this.unsetDefaultVariant(tx, existing.productId);
+        isDefault = true;
+      }
+
+      if (updateProductVariantDto.isDefault === false && existing.isDefault) {
+        const activeCount = await variantRepo.count({
+          where: {
+            productId: existing.productId,
+            isActive: true,
           },
-          { isDefault: false },
+        });
+
+        if (activeCount >= 1) {
+          throw new ConflictException(
+            'Cannot unset default variant without assigning another one',
+          );
+        }
+      }
+
+      let stockStatus: ProductVariantStockStatus | undefined;
+
+      if (
+        updateProductVariantDto.stockQuantity !== undefined ||
+        updateProductVariantDto.lowStockThreshold !== undefined
+      ) {
+        stockStatus = this.calculateStockStatus(
+          updateProductVariantDto.stockQuantity ?? existing.stockQuantity,
+          updateProductVariantDto.lowStockThreshold ??
+            existing.lowStockThreshold,
         );
       }
 
-      const entityInput = sanitizeEntityInput(
-        ProductVariantUpdateEntityDto,
-        updateProductVariantDto,
-      );
+      const updatePayload = sanitizeEntityInput(ProductVariantUpdateEntityDto, {
+        ...updateProductVariantDto,
+        ...(stockStatus && { stockStatus }),
+        isDefault,
+      });
 
-      const updatedVariant = this.productVariantRepository.merge(
-        variant,
-        entityInput,
-      );
+      try {
+        await variantRepo.update(id, updatePayload);
 
-      return tx.save(updatedVariant);
+        return variantRepo.findOne({ where: { id } });
+      } catch (error) {
+        if (isUniqueConstraintError(error)) {
+          throw new ConflictException('SKU already exists');
+        }
+        throw error;
+      }
     });
+  }
+
+  private async ensureProductExists(productId: string) {
+    const exists = await this.productRepository.exists({
+      where: { id: productId, isActive: true },
+    });
+
+    if (!exists) {
+      throw new NotFoundException('Product not found');
+    }
+  }
+
+  private async unsetDefaultVariant(tx: EntityManager, productId: string) {
+    await tx.update(
+      ProductVariant,
+      {
+        productId,
+        isDefault: true,
+        isActive: true,
+      },
+      { isDefault: false },
+    );
+  }
+
+  private calculateStockStatus(
+    stockQuantity?: number,
+    lowStockThreshold?: number,
+  ) {
+    const quantity = stockQuantity ?? 0;
+    const threshold = lowStockThreshold ?? 5;
+
+    if (quantity <= 0) {
+      return ProductVariantStockStatus.OUT_OF_STOCK;
+    }
+
+    if (quantity <= threshold) {
+      return ProductVariantStockStatus.LOW_STOCK;
+    }
+
+    return ProductVariantStockStatus.IN_STOCK;
   }
 }
