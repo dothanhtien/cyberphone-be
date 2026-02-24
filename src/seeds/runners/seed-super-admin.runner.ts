@@ -39,6 +39,11 @@ export class SeedSuperAdminRunner {
       });
 
       if (existingUser) {
+        if (existingUser.role?.name !== 'SUPER_ADMIN') {
+          throw new Error(
+            `User ${username} exists but is not SUPER_ADMIN. Resolve manually.`,
+          );
+        }
         this.logger.log(`Super admin already exists: ${username}`);
         return;
       }
