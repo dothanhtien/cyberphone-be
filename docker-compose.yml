@@ -1,3 +1,5 @@
+name: cyberphone-be
+
 services:
   api:
     build:
@@ -9,7 +11,7 @@ services:
       - "8080:3000"
     volumes:
       - .:/usr/src/app
-      - /usr/src/app/node_modules
+      - node_modules:/usr/src/app/node_modules
     env_file:
       - .env
     environment:
@@ -29,7 +31,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgresql-data:/var/lib/postgresql/data
+      - postgresql-data:/var/lib/postgresql
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
@@ -57,3 +59,4 @@ services:
 volumes:
   postgresql-data:
   pgadmin-data:
+  node_modules:
