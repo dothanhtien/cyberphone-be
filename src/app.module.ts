@@ -13,6 +13,7 @@ import { PasswordModule } from './password/password.module';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { ProductVariantsModule } from './product-variants/product-variants.module';
+import { SeedsModule } from './seeds/seeds.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ProductVariantsModule } from './product-variants/product-variants.modul
     AuthModule,
     ProductsModule,
     ProductVariantsModule,
+    SeedsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

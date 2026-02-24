@@ -38,6 +38,13 @@ make down
 make clean
 ```
 
+## Seeds
+
+```bash
+# run seeds
+docker exec api npm run seed
+```
+
 ## TypeORM CLI
 
 ```bash
