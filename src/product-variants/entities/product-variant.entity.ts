@@ -18,7 +18,7 @@ import { ProductVariantStockStatus } from '../../common/enums';
 })
 @Index('uq_product_variants_product_default', ['productId'], {
   unique: true,
-  where: `"is_default" = true`,
+  where: `"is_default" = true AND "is_active" = true`,
 })
 @Index('idx_product_variants_product_id', ['productId'])
 @Index('idx_product_variants_stock_status', ['stockStatus'])
