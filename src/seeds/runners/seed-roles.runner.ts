@@ -37,15 +37,29 @@ export class SeedRolesRunner {
       const roleRepo = manager.getRepository(Role);
 
       for (const roleData of rolesToSeed) {
-        const exists = await roleRepo.findOne({
-          where: { name: roleData.name },
+        const activeRole = await roleRepo.findOne({
+          where: { name: roleData.name, isActive: true },
         });
 
-        if (!exists) {
+        if (activeRole) {
+          this.logger.log(`Role already exists: ${roleData.name}`);
+          continue;
+        }
+
+        const inactiveRole = await roleRepo.findOne({
+          where: { name: roleData.name, isActive: false },
+        });
+
+        if (inactiveRole) {
+          await roleRepo.save({
+            ...inactiveRole,
+            isActive: true,
+            updatedBy: 'system',
+          });
+          this.logger.log(`Reactivated role: ${roleData.name}`);
+        } else {
           await roleRepo.save(roleRepo.create(roleData));
           this.logger.log(`Created role: ${roleData.name}`);
-        } else {
-          this.logger.log(`Role already exists: ${roleData.name}`);
         }
       }
     });

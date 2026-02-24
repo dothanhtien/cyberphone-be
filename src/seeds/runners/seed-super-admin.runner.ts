@@ -31,10 +31,10 @@ export class SeedSuperAdminRunner {
       const roleRepo = manager.getRepository(Role);
 
       const existingUser = await userRepo.findOne({
-        where: {
-          username: username,
-          isActive: true,
-        },
+        where: [
+          { username, isActive: true },
+          { phone, isActive: true },
+        ],
         relations: ['role'],
       });
 
@@ -44,7 +44,7 @@ export class SeedSuperAdminRunner {
       }
 
       const superAdminRole = await roleRepo.findOne({
-        where: { name: 'SUPER_ADMIN' },
+        where: { name: 'SUPER_ADMIN', isActive: true },
       });
 
       if (!superAdminRole) {
