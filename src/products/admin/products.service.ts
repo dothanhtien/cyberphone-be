@@ -8,9 +8,9 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Not, Repository } from 'typeorm';
-import { Product } from './entities/product.entity';
-import { ProductCategory } from './entities/product-category.entity';
-import { ProductImage } from './entities/product-image.entity';
+import { Product } from '@/products/entities/product.entity';
+import { ProductCategory } from '@/products/entities/product-category.entity';
+import { ProductImage } from '@/products/entities/product-image.entity';
 import { CreateProductDto } from './dto/requests/create-product.dto';
 import { UpdateProductDto } from './dto/requests/update-product.dto';
 import {
