@@ -95,16 +95,17 @@ export class ProductVariantsService {
   }
 
   async update(id: string, updateProductVariantDto: UpdateProductVariantDto) {
-    const existing = await this.productVariantRepository.findOne({
-      where: { id, isActive: true },
-    });
-
-    if (!existing) {
-      throw new NotFoundException('Variant not found');
-    }
-
     return this.dataSource.transaction(async (tx) => {
       const variantRepo = tx.getRepository(ProductVariant);
+
+      const existing = await variantRepo.findOne({
+        where: { id, isActive: true },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!existing) {
+        throw new NotFoundException('Variant not found');
+      }
 
       let isDefault = existing.isDefault;
 
@@ -121,7 +122,7 @@ export class ProductVariantsService {
           },
         });
 
-        if (activeCount > 1) {
+        if (activeCount >= 1) {
           throw new ConflictException(
             'Cannot unset default variant without assigning another one',
           );
