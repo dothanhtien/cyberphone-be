@@ -12,16 +12,16 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { ProductsService } from './products.service';
+import { AdminProductsService } from './admin-products.service';
 import { CreateProductDto } from './dto/requests/create-product.dto';
 import { UpdateProductDto } from './dto/requests/update-product.dto';
 import { LoggedInUser } from '@/auth/decorators/logged-in-user.decorator';
 import { User } from '@/users/entities/user.entity';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 
-@Controller('products')
-export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+@Controller('admin/products')
+export class AdminProductsController {
+  constructor(private readonly productsService: AdminProductsService) {}
 
   @Post()
   @UseInterceptors(
