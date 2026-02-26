@@ -13,6 +13,7 @@ import { Brand } from '../../brands/entities/brand.entity';
 import { ProductCategory } from './product-category.entity';
 import { ProductVariant } from '../../product-variants/entities/product-variant.entity';
 import { ProductImage } from './product-image.entity';
+import { ProductAttribute } from './product-attribute.entity';
 
 @Entity('products')
 @Index('uq_products_slug_active', ['slug'], {
@@ -94,4 +95,10 @@ export class Product {
 
   @OneToMany(() => ProductImage, (productImage) => productImage.product)
   productImages: ProductImage[];
+
+  @OneToMany(
+    () => ProductAttribute,
+    (productAttribute) => productAttribute.product,
+  )
+  attributes: ProductAttribute[];
 }
