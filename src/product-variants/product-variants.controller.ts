@@ -13,7 +13,7 @@ import { User } from '@/users/entities/user.entity';
 import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
 
-@Controller()
+@Controller('admin')
 export class ProductVariantsController {
   constructor(
     private readonly productVariantsService: ProductVariantsService,

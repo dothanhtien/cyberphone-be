@@ -15,7 +15,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import { NonEmptyBodyPipe } from '@/common/pipes/non-empty-body.pipe';
 
-@Controller('users')
+@Controller('admin/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
