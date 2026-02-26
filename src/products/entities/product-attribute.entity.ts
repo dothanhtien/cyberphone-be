@@ -13,8 +13,16 @@ import { Product } from './product.entity';
 @Entity('product_attributes')
 @Index('idx_product_attributes_product_id', ['productId'])
 @Index(
-  'uq_product_attributes_product_id_attribute_key',
+  'uq_product_attributes_product_id_attribute_key_is_active',
   ['productId', 'attributeKey'],
+  {
+    unique: true,
+    where: `"is_active" = true`,
+  },
+)
+@Index(
+  'uq_product_attributes_product_id_attribute_key_display_order',
+  ['productId', 'attributeKey', 'displayOrder'],
   { unique: true },
 )
 export class ProductAttribute {
@@ -39,8 +47,8 @@ export class ProductAttribute {
   @Column({ name: 'attribute_key', length: 255 })
   attributeKey: string;
 
-  @Column({ name: 'attribute_name', length: 255 })
-  attributeName: string;
+  @Column({ name: 'attribute_key_display', length: 255 })
+  attributeKeyDisplay: string;
 
   @Column({ name: 'display_order', type: 'integer', default: 0 })
   displayOrder: number;

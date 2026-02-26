@@ -72,4 +72,11 @@ export class AdminProductsController {
 
     return true;
   }
+
+  @Get(':id/attributes')
+  async findAttributes(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ) {
+    return this.productsService.findAttributes(id);
+  }
 }

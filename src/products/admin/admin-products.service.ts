@@ -36,6 +36,8 @@ import type {
   StorageUploadResult,
 } from '@/storage/storage.provider';
 import { PRODUCT_FOLDER } from '@/common/constants/paths';
+import { ProductAttribute } from '../entities/product-attribute.entity';
+import { ProductAttributeCreateEntityDto } from './dto/entity-inputs/product-attribute-create-entity.dto';
 
 @Injectable()
 export class AdminProductsService {
@@ -45,6 +47,8 @@ export class AdminProductsService {
     private readonly dataSource: DataSource,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(ProductAttribute)
+    private readonly productAttributeRepository: Repository<ProductAttribute>,
     private readonly brandsService: BrandsService,
     private readonly categoriesService: CategoriesService,
     @Inject(STORAGE_PROVIDER) private readonly storageProvider: StorageProvider,
@@ -79,6 +83,12 @@ export class AdminProductsService {
           userId: createProductDto.createdBy,
           tx,
         });
+
+        await this.insertProductAttributes(
+          savedProduct,
+          createProductDto.attributes,
+          tx,
+        );
 
         if (uploadResults.length) {
           await this.insertProductImagesAndMediaAssets(
@@ -219,6 +229,16 @@ export class AdminProductsService {
     });
 
     return this.findOne(id);
+  }
+
+  async findAttributes(productId: string) {
+    return this.productAttributeRepository.find({
+      where: {
+        productId,
+        isActive: true,
+      },
+      order: { displayOrder: 'ASC' },
+    });
   }
 
   private async assertBrandExists(brandId?: string) {
@@ -409,6 +429,26 @@ export class AdminProductsService {
     });
 
     await tx.save(MediaAsset, mediaAssets);
+  }
+
+  private async insertProductAttributes(
+    product: Product,
+    attributes: CreateProductDto['attributes'],
+    tx: EntityManager,
+  ) {
+    if (!attributes?.length) return;
+
+    const entities = attributes.map((attr) => {
+      const entityInput = sanitizeEntityInput(ProductAttributeCreateEntityDto, {
+        ...attr,
+        productId: product.id,
+        createdBy: product.createdBy,
+      });
+
+      return tx.create(ProductAttribute, entityInput);
+    });
+
+    await tx.save(ProductAttribute, entities);
   }
 
   private async cleanupUploads(uploads: StorageUploadResult[]) {

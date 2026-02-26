@@ -17,6 +17,8 @@ import { ProductStatus } from '@/common/enums';
 import { CreateProductImageDto } from './create-product-image.dto';
 import { safeJsonParse } from '@/common/utils/parsers';
 import { normalizeSlug } from '@/common/utils/slugs';
+import { CreateProductAttributeDto } from './create-product-attribute.dto';
+import { ArrayUniqueBy } from '@/common/validators/array-unique-by.decorator';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SLUG_LENGTH = 255;
@@ -103,6 +105,32 @@ export class CreateProductDto {
   })
   @IsOptional()
   imageMetas: CreateProductImageDto[];
+
+  @ValidateNested({ each: true })
+  @IsArray({ message: 'Attributes must be an array' })
+  @ArrayUniqueBy<CreateProductAttributeDto>('attributeKey', {
+    message: 'Attribute key must not be duplicated',
+  })
+  @ArrayUniqueBy<CreateProductAttributeDto>('displayOrder', {
+    message: 'Display order must not be duplicated',
+  })
+  @Transform(({ value }) => {
+    let parsed: unknown = value;
+
+    if (typeof value === 'string') {
+      parsed = safeJsonParse<unknown>(value);
+    }
+
+    if (!Array.isArray(parsed)) {
+      return parsed;
+    }
+
+    return parsed.map((item) =>
+      plainToInstance(CreateProductAttributeDto, item),
+    );
+  })
+  @IsOptional()
+  attributes: CreateProductAttributeDto[];
 
   @IsEmpty()
   createdBy: string;
