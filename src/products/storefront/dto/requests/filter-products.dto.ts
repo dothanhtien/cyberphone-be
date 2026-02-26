@@ -10,12 +10,6 @@ export class FilterProductsDto extends PaginationQueryDto {
   @IsOptional()
   search?: string;
 
-  @IsOptional()
-  @IsString({
-    message: 'Category ID must be a string',
-  })
-  categoryId?: string;
-
   @IsEnum(ProductSortEnum, {
     message:
       'Sort must be one of the following values: newest, price_asc, price_desc',

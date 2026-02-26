@@ -26,18 +26,6 @@ export class StorefrontProductsService {
       whereClause += ` AND p.name ILIKE $${values.length}`;
     }
 
-    if (params.categoryId) {
-      values.push(params.categoryId);
-      whereClause += `
-        AND EXISTS (
-          SELECT 1
-          FROM product_categories pc
-          WHERE pc.product_id = p.id
-            AND pc.category_id = $${values.length}
-        )
-      `;
-    }
-
     let orderClause = `ORDER BY p.created_at DESC`;
 
     if (params.sort === ProductSortEnum.PRICE_ASC) {
