@@ -23,7 +23,7 @@ export class StorefrontProductResponseDto {
   price: number;
 
   @Expose()
-  salePrice: number;
+  salePrice: number | null;
 
   @Expose()
   inStock: boolean;
