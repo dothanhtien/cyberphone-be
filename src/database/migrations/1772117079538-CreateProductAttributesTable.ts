@@ -25,7 +25,7 @@ export class CreateProductAttributesTable1772117079538 implements MigrationInter
       `CREATE UNIQUE INDEX "uq_product_attributes_product_id_attribute_key_display_order" ON "product_attributes" ("product_id", "attribute_key", "display_order") `,
     );
     await queryRunner.query(
-      `CREATE UNIQUE INDEX "uq_product_attributes_product_id_attribute_key_is_active" ON "product_attributes" ("product_id", "attribute_key") WHERE "is_active" = true`,
+      `CREATE UNIQUE INDEX "uq_product_attributes_product_id_attribute_key_active" ON "product_attributes" ("product_id", "attribute_key") WHERE "is_active" = true`,
     );
     await queryRunner.query(
       `CREATE INDEX "idx_product_attributes_product_id" ON "product_attributes" ("product_id") `,
@@ -43,7 +43,7 @@ export class CreateProductAttributesTable1772117079538 implements MigrationInter
       `DROP INDEX "public"."idx_product_attributes_product_id"`,
     );
     await queryRunner.query(
-      `DROP INDEX "public"."uq_product_attributes_product_id_attribute_key_is_active"`,
+      `DROP INDEX "public"."uq_product_attributes_product_id_attribute_key_active"`,
     );
     await queryRunner.query(
       `DROP INDEX "public"."uq_product_attributes_product_id_attribute_key_display_order"`,

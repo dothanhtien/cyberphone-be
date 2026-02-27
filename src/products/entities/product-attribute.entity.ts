@@ -5,15 +5,17 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Product } from './product.entity';
+import { VariantAttribute } from '../../product-variants/entities/variant-attribute.entity';
 
 @Entity('product_attributes')
 @Index('idx_product_attributes_product_id', ['productId'])
 @Index(
-  'uq_product_attributes_product_id_attribute_key_is_active',
+  'uq_product_attributes_product_id_attribute_key_active',
   ['productId', 'attributeKey'],
   {
     unique: true,
@@ -76,4 +78,7 @@ export class ProductAttribute {
     nullable: true,
   })
   updatedBy?: string | null;
+
+  @OneToMany(() => VariantAttribute, (variant) => variant.productAttribute)
+  attributes: VariantAttribute[];
 }
