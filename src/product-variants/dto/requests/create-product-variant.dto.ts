@@ -12,7 +12,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { CreateProductAttributeDto } from './create-variant-attribute.dto';
+import { CreateVariantAttributeDto } from './create-variant-attribute.dto';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SKU_LENGTH = 100;
@@ -36,7 +36,7 @@ export class CreateProductVariantDto {
     { maxDecimalPlaces: 2 },
     { message: 'Price must be a number with up to 2 decimal places' },
   )
-  @Min(0, { message: 'Price must be greater than or equal to 0' })
+  @Min(1, { message: 'Price must be greater than 0' })
   @Type(() => Number)
   price: number;
 
@@ -44,7 +44,7 @@ export class CreateProductVariantDto {
     { maxDecimalPlaces: 2 },
     { message: 'Sale price must be a number with up to 2 decimal places' },
   )
-  @Min(0, { message: 'Sale price must be greater than or equal to 0' })
+  @Min(1, { message: 'Sale price must be greater than 0' })
   @Type(() => Number)
   @IsOptional()
   salePrice?: number;
@@ -53,7 +53,7 @@ export class CreateProductVariantDto {
     { maxDecimalPlaces: 2 },
     { message: 'Cost price must be a number with up to 2 decimal places' },
   )
-  @Min(0, { message: 'Cost price must be greater than or equal to 0' })
+  @Min(1, { message: 'Cost price must be greater than 0' })
   @Type(() => Number)
   @IsOptional()
   costPrice?: number;
@@ -75,10 +75,10 @@ export class CreateProductVariantDto {
   isDefault?: boolean;
 
   @ValidateNested({ each: true })
-  @Type(() => CreateProductAttributeDto)
+  @Type(() => CreateVariantAttributeDto)
   @IsArray({ message: 'Attributes must be an array' })
   @IsOptional()
-  attributes?: CreateProductAttributeDto[];
+  attributes?: CreateVariantAttributeDto[];
 
   @IsEmpty()
   createdBy: string;

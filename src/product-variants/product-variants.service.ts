@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, In, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { ProductVariant } from './entities/product-variant.entity';
 import { sanitizeEntityInput } from '@/common/utils/entities';
 import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
@@ -15,8 +15,7 @@ import { ProductVariantStockStatus } from '@/common/enums';
 import { isUniqueConstraintError } from '@/common/utils/database-error.util';
 import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
 import { ProductVariantUpdateEntityDto } from './dto/entity-inputs/product-variant-update-entity.dto';
-import { VariantAttribute } from './entities/variant-attribute.entity';
-import { ProductAttribute } from '@/products/entities/product-attribute.entity';
+import { VariantAttributesService } from './variant-attributes.service';
 
 @Injectable()
 export class ProductVariantsService {
@@ -26,28 +25,29 @@ export class ProductVariantsService {
     private readonly productRepository: Repository<Product>,
     @InjectRepository(ProductVariant)
     private readonly productVariantRepository: Repository<ProductVariant>,
+    private readonly variantAttributesService: VariantAttributesService,
   ) {}
 
   async create(
     productId: string,
     createProductVariantDto: CreateProductVariantDto,
   ) {
+    this.validatePrices(
+      createProductVariantDto.price,
+      createProductVariantDto.salePrice,
+    );
+
     await this.ensureProductExists(productId);
 
     return this.dataSource.transaction(async (tx) => {
-      const variantRepo = tx.getRepository(ProductVariant);
+      const variantRepository = tx.getRepository(ProductVariant);
 
-      const hasActiveVariants = await variantRepo.exists({
+      const hasActiveVariants = await variantRepository.exists({
         where: {
           productId,
           isActive: true,
         },
       });
-
-      const stockStatus = this.calculateStockStatus(
-        createProductVariantDto.stockQuantity,
-        createProductVariantDto.lowStockThreshold,
-      );
 
       let isDefault = createProductVariantDto.isDefault ?? false;
 
@@ -59,13 +59,18 @@ export class ProductVariantsService {
         await this.unsetDefaultVariant(tx, productId);
       }
 
+      const stockStatus = this.calculateStockStatus(
+        createProductVariantDto.stockQuantity,
+        createProductVariantDto.lowStockThreshold,
+      );
+
       const entityInput = sanitizeEntityInput(ProductVariantCreateEntityDto, {
         ...createProductVariantDto,
         productId,
         stockStatus,
       });
 
-      const variant = variantRepo.create({
+      const variant = variantRepository.create({
         ...entityInput,
         isDefault,
       });
@@ -73,7 +78,7 @@ export class ProductVariantsService {
       let savedVariant: ProductVariant;
 
       try {
-        savedVariant = await variantRepo.save(variant);
+        savedVariant = await variantRepository.save(variant);
       } catch (error) {
         if (isUniqueConstraintError(error)) {
           throw new ConflictException('SKU already exists');
@@ -81,7 +86,7 @@ export class ProductVariantsService {
         throw error;
       }
 
-      await this.createVariantAttributes(
+      await this.variantAttributesService.createAttributes(
         tx,
         productId,
         savedVariant.id,
@@ -106,42 +111,40 @@ export class ProductVariantsService {
         updatedAt: { direction: 'DESC', nulls: 'LAST' },
         createdAt: 'DESC',
       },
+      relations: {
+        attributes: true,
+      },
     });
   }
 
   async update(id: string, updateProductVariantDto: UpdateProductVariantDto) {
     return this.dataSource.transaction(async (tx) => {
-      const variantRepo = tx.getRepository(ProductVariant);
+      const variantRepository = tx.getRepository(ProductVariant);
 
-      const existing = await variantRepo.findOne({
+      const existing = await variantRepository.findOne({
         where: { id, isActive: true },
-        lock: { mode: 'pessimistic_write' },
       });
 
       if (!existing) {
         throw new NotFoundException('Variant not found');
       }
 
+      this.validatePrices(
+        updateProductVariantDto.price ?? Number(existing.price),
+        updateProductVariantDto.salePrice,
+      );
+
       let isDefault = existing.isDefault;
 
-      if (updateProductVariantDto.isDefault === true) {
+      if (updateProductVariantDto.isDefault === true && !existing.isDefault) {
         await this.unsetDefaultVariant(tx, existing.productId);
         isDefault = true;
       }
 
       if (updateProductVariantDto.isDefault === false && existing.isDefault) {
-        const activeCount = await variantRepo.count({
-          where: {
-            productId: existing.productId,
-            isActive: true,
-          },
-        });
-
-        if (activeCount >= 1) {
-          throw new ConflictException(
-            'Cannot unset default variant without assigning another one',
-          );
-        }
+        throw new ConflictException(
+          'Cannot unset default variant without assigning another one. Please set another variant as default first',
+        );
       }
 
       let stockStatus: ProductVariantStockStatus | undefined;
@@ -163,16 +166,30 @@ export class ProductVariantsService {
         isDefault,
       });
 
-      try {
-        await variantRepo.update(id, updatePayload);
+      const merged = variantRepository.merge(existing, updatePayload);
 
-        return variantRepo.findOne({ where: { id } });
+      let savedVariant: ProductVariant;
+
+      try {
+        savedVariant = await variantRepository.save(merged);
       } catch (error) {
         if (isUniqueConstraintError(error)) {
           throw new ConflictException('SKU already exists');
         }
         throw error;
       }
+
+      if (updateProductVariantDto.attributes?.length) {
+        await this.variantAttributesService.updateAttributes(
+          tx,
+          id,
+          existing.productId,
+          updateProductVariantDto.attributes,
+          updateProductVariantDto.updatedBy,
+        );
+      }
+
+      return savedVariant;
     });
   }
 
@@ -198,6 +215,12 @@ export class ProductVariantsService {
     );
   }
 
+  private validatePrices(price: number, salePrice?: number | null) {
+    if (salePrice && salePrice > price) {
+      throw new BadRequestException('Sale price cannot be greater than price');
+    }
+  }
+
   private calculateStockStatus(
     stockQuantity?: number,
     lowStockThreshold?: number,
@@ -214,53 +237,5 @@ export class ProductVariantsService {
     }
 
     return ProductVariantStockStatus.IN_STOCK;
-  }
-
-  private async createVariantAttributes(
-    tx: EntityManager,
-    productId: string,
-    variantId: string,
-    attributes: CreateProductVariantDto['attributes'],
-    createdBy: string,
-  ): Promise<void> {
-    if (!attributes?.length) return;
-
-    const attributeRepo = tx.getRepository(VariantAttribute);
-    const productAttributeRepo = tx.getRepository(ProductAttribute);
-
-    const uniqueIds = new Set(attributes.map((a) => a.id));
-
-    if (uniqueIds.size !== attributes.length) {
-      throw new BadRequestException(
-        'Duplicate productAttributeId in attributes',
-      );
-    }
-
-    const productAttributes = await productAttributeRepo.find({
-      where: {
-        id: In([...uniqueIds]),
-        productId,
-        isActive: true,
-      },
-      select: ['id'],
-    });
-
-    if (productAttributes.length !== uniqueIds.size) {
-      throw new BadRequestException(
-        'Some attributes do not belong to this product',
-      );
-    }
-
-    const attributeEntities = attributes.map((attr) =>
-      attributeRepo.create({
-        variantId,
-        productAttributeId: attr.id,
-        attributeValue: attr.attributeValue,
-        attributeValueDisplay: attr.attributeValueDisplay ?? null,
-        createdBy,
-      }),
-    );
-
-    await attributeRepo.save(attributeEntities);
   }
 }

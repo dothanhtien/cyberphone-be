@@ -1,23 +1,22 @@
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUUID,
-  MaxLength,
-} from 'class-validator';
+import { Optional } from '@nestjs/common';
+import { IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
 const MAX_LENGTH = 255;
 
-export class CreateVariantAttributeDto {
+export class UpdateVariantAttributeDto {
   @IsUUID('4', { message: 'Id must be a valid UUID (v4)' })
+  id: string;
+
+  @IsUUID('4', { message: 'Id must be a valid UUID (v4)' })
+  @Optional()
   productAttributeId: string;
 
   @MaxLength(MAX_LENGTH, {
     message: `Attribute value must not exceed ${MAX_LENGTH} characters`,
   })
   @IsString({ message: 'Attribute value must be a string' })
-  @IsNotEmpty({ message: 'Attribute value is required' })
-  attributeValue: string;
+  @IsOptional()
+  attributeValue?: string;
 
   @MaxLength(MAX_LENGTH, {
     message: `Attribute value display must not exceed ${MAX_LENGTH} characters`,

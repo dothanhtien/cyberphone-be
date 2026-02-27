@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsBoolean,
   IsEmpty,
   IsEnum,
@@ -9,8 +10,10 @@ import {
   IsString,
   MaxLength,
   Min,
+  ValidateNested,
 } from 'class-validator';
 import { ProductVariantStockStatus } from '@/common/enums';
+import { UpdateVariantAttributeDto } from './update-variant-attribute.dto';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SKU_LENGTH = 100;
@@ -34,7 +37,7 @@ export class UpdateProductVariantDto {
     { maxDecimalPlaces: 2 },
     { message: 'Price must be a number with up to 2 decimal places' },
   )
-  @Min(0, { message: 'Price must be greater than or equal to 0' })
+  @Min(1, { message: 'Price must be greater than 0' })
   @Type(() => Number)
   @IsOptional()
   price?: number;
@@ -43,7 +46,7 @@ export class UpdateProductVariantDto {
     { maxDecimalPlaces: 2 },
     { message: 'Sale price must be a number with up to 2 decimal places' },
   )
-  @Min(0, { message: 'Sale price must be greater than or equal to 0' })
+  @Min(1, { message: 'Sale price must be greater than 0' })
   @Type(() => Number)
   @IsOptional()
   salePrice?: number | null;
@@ -52,7 +55,7 @@ export class UpdateProductVariantDto {
     { maxDecimalPlaces: 2 },
     { message: 'Cost price must be a number with up to 2 decimal places' },
   )
-  @Min(0, { message: 'Cost price must be greater than or equal to 0' })
+  @Min(1, { message: 'Cost price must be greater than 0' })
   @Type(() => Number)
   @IsOptional()
   costPrice?: number | null;
@@ -83,6 +86,12 @@ export class UpdateProductVariantDto {
 
   @IsEmpty()
   isActive: boolean;
+
+  @ValidateNested({ each: true })
+  @Type(() => UpdateVariantAttributeDto)
+  @IsArray({ message: 'Attributes must be an array' })
+  @IsOptional()
+  attributes?: UpdateVariantAttributeDto[];
 
   @IsEmpty()
   updatedBy: string;
