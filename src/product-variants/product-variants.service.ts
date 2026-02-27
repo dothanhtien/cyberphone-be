@@ -1,10 +1,11 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, EntityManager, In, Repository } from 'typeorm';
 import { ProductVariant } from './entities/product-variant.entity';
 import { sanitizeEntityInput } from '@/common/utils/entities';
 import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
@@ -14,6 +15,8 @@ import { ProductVariantStockStatus } from '@/common/enums';
 import { isUniqueConstraintError } from '@/common/utils/database-error.util';
 import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
 import { ProductVariantUpdateEntityDto } from './dto/entity-inputs/product-variant-update-entity.dto';
+import { VariantAttribute } from './entities/variant-attribute.entity';
+import { ProductAttribute } from '@/products/entities/product-attribute.entity';
 
 @Injectable()
 export class ProductVariantsService {
@@ -46,12 +49,6 @@ export class ProductVariantsService {
         createProductVariantDto.lowStockThreshold,
       );
 
-      const entityInput = sanitizeEntityInput(ProductVariantCreateEntityDto, {
-        ...createProductVariantDto,
-        productId,
-        stockStatus,
-      });
-
       let isDefault = createProductVariantDto.isDefault ?? false;
 
       if (!hasActiveVariants) {
@@ -62,19 +59,37 @@ export class ProductVariantsService {
         await this.unsetDefaultVariant(tx, productId);
       }
 
+      const entityInput = sanitizeEntityInput(ProductVariantCreateEntityDto, {
+        ...createProductVariantDto,
+        productId,
+        stockStatus,
+      });
+
       const variant = variantRepo.create({
         ...entityInput,
         isDefault,
       });
 
+      let savedVariant: ProductVariant;
+
       try {
-        return await variantRepo.save(variant);
+        savedVariant = await variantRepo.save(variant);
       } catch (error) {
         if (isUniqueConstraintError(error)) {
           throw new ConflictException('SKU already exists');
         }
         throw error;
       }
+
+      await this.createVariantAttributes(
+        tx,
+        productId,
+        savedVariant.id,
+        createProductVariantDto.attributes,
+        createProductVariantDto.createdBy,
+      );
+
+      return savedVariant;
     });
   }
 
@@ -199,5 +214,53 @@ export class ProductVariantsService {
     }
 
     return ProductVariantStockStatus.IN_STOCK;
+  }
+
+  private async createVariantAttributes(
+    tx: EntityManager,
+    productId: string,
+    variantId: string,
+    attributes: CreateProductVariantDto['attributes'],
+    createdBy: string,
+  ): Promise<void> {
+    if (!attributes?.length) return;
+
+    const attributeRepo = tx.getRepository(VariantAttribute);
+    const productAttributeRepo = tx.getRepository(ProductAttribute);
+
+    const uniqueIds = new Set(attributes.map((a) => a.id));
+
+    if (uniqueIds.size !== attributes.length) {
+      throw new BadRequestException(
+        'Duplicate productAttributeId in attributes',
+      );
+    }
+
+    const productAttributes = await productAttributeRepo.find({
+      where: {
+        id: In([...uniqueIds]),
+        productId,
+        isActive: true,
+      },
+      select: ['id'],
+    });
+
+    if (productAttributes.length !== uniqueIds.size) {
+      throw new BadRequestException(
+        'Some attributes do not belong to this product',
+      );
+    }
+
+    const attributeEntities = attributes.map((attr) =>
+      attributeRepo.create({
+        variantId,
+        productAttributeId: attr.id,
+        attributeValue: attr.attributeValue,
+        attributeValueDisplay: attr.attributeValueDisplay ?? null,
+        createdBy,
+      }),
+    );
+
+    await attributeRepo.save(attributeEntities);
   }
 }
