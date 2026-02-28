@@ -5,11 +5,13 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude, Expose } from 'class-transformer';
 import { Role } from './role.entity';
+import { Cart } from '../../carts/entities/cart.entity';
 
 @Entity('users')
 @Index('uq_users_phone_active', ['phone'], {
@@ -93,4 +95,7 @@ export class User {
   })
   @Expose()
   updatedBy: string | null;
+
+  @OneToOne(() => Cart, (cart) => cart.user)
+  cart: Cart;
 }
