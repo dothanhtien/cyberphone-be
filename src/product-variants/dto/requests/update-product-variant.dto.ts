@@ -37,7 +37,7 @@ export class UpdateProductVariantDto {
     { maxDecimalPlaces: 2 },
     { message: 'Price must be a number with up to 2 decimal places' },
   )
-  @Min(1, { message: 'Price must be greater than 0' })
+  @Min(0, { message: 'Price must be greater than or equal to 0' })
   @Type(() => Number)
   @IsOptional()
   price?: number;
@@ -46,7 +46,7 @@ export class UpdateProductVariantDto {
     { maxDecimalPlaces: 2 },
     { message: 'Sale price must be a number with up to 2 decimal places' },
   )
-  @Min(1, { message: 'Sale price must be greater than 0' })
+  @Min(0, { message: 'Sale price must be greater than or equal to 0' })
   @Type(() => Number)
   @IsOptional()
   salePrice?: number | null;
@@ -55,7 +55,7 @@ export class UpdateProductVariantDto {
     { maxDecimalPlaces: 2 },
     { message: 'Cost price must be a number with up to 2 decimal places' },
   )
-  @Min(1, { message: 'Cost price must be greater than 0' })
+  @Min(0, { message: 'Cost price must be greater than or equal to 0' })
   @Type(() => Number)
   @IsOptional()
   costPrice?: number | null;

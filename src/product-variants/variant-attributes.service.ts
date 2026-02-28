@@ -78,6 +78,12 @@ export class VariantAttributesService {
     const toUpdate = attributes.map((attr) => {
       const existing = existingMap.get(attr.id)!;
 
+      if (existing.productAttributeId !== attr.productAttributeId) {
+        throw new BadRequestException(
+          `Variant attribute ${attr.id} does not match productAttributeId ${attr.productAttributeId}`,
+        );
+      }
+
       existing.attributeValue = attr.attributeValue ?? existing.attributeValue;
       existing.attributeValueDisplay =
         attr.attributeValueDisplay ?? existing.attributeValueDisplay;

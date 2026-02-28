@@ -129,10 +129,21 @@ export class ProductVariantsService {
         throw new NotFoundException('Variant not found');
       }
 
-      this.validatePrices(
-        updateProductVariantDto.price ?? Number(existing.price),
-        updateProductVariantDto.salePrice,
-      );
+      if (
+        updateProductVariantDto.price !== undefined ||
+        updateProductVariantDto.salePrice !== undefined
+      ) {
+        const nextPrice =
+          updateProductVariantDto.price ?? Number(existing.price);
+        const nextSalePrice =
+          updateProductVariantDto.salePrice === undefined
+            ? existing.salePrice === null
+              ? null
+              : Number(existing.salePrice)
+            : updateProductVariantDto.salePrice;
+
+        this.validatePrices(nextPrice, nextSalePrice);
+      }
 
       let isDefault = existing.isDefault;
 
@@ -216,7 +227,7 @@ export class ProductVariantsService {
   }
 
   private validatePrices(price: number, salePrice?: number | null) {
-    if (salePrice && salePrice > price) {
+    if (salePrice && salePrice !== null && salePrice > price) {
       throw new BadRequestException('Sale price cannot be greater than price');
     }
   }

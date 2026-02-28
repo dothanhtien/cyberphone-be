@@ -232,6 +232,14 @@ export class AdminProductsService {
   }
 
   async findAttributes(productId: string) {
+    const exists = await this.productRepository.exists({
+      where: { id: productId, isActive: true },
+    });
+
+    if (!exists) {
+      throw new NotFoundException('Product not found');
+    }
+
     return this.productAttributeRepository.find({
       where: {
         productId,

@@ -1,4 +1,3 @@
-import { Optional } from '@nestjs/common';
 import { IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
 const MAX_LENGTH = 255;
@@ -8,7 +7,7 @@ export class UpdateVariantAttributeDto {
   id: string;
 
   @IsUUID('4', { message: 'Id must be a valid UUID (v4)' })
-  @Optional()
+  @IsOptional()
   productAttributeId: string;
 
   @MaxLength(MAX_LENGTH, {

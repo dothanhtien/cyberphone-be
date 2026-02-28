@@ -23,8 +23,8 @@ import { VariantAttribute } from '../../product-variants/entities/variant-attrib
   },
 )
 @Index(
-  'uq_product_attributes_product_id_attribute_key_display_order',
-  ['productId', 'attributeKey', 'displayOrder'],
+  'uq_product_attributes_product_id_display_order',
+  ['productId', 'displayOrder'],
   { unique: true },
 )
 export class ProductAttribute {
