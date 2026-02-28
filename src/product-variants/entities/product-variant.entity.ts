@@ -5,10 +5,12 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Product } from '../../products/entities/product.entity';
+import { VariantAttribute } from './variant-attribute.entity';
 import { ProductVariantStockStatus } from '../../common/enums';
 
 @Entity('product_variants')
@@ -128,4 +130,10 @@ export class ProductVariant {
     nullable: true,
   })
   updatedBy?: string | null;
+
+  @OneToMany(
+    () => VariantAttribute,
+    (variantAttribute) => variantAttribute.variant,
+  )
+  attributes: VariantAttribute[];
 }

@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { ProductCategory } from './entities/product-category.entity';
 import { ProductImage } from './entities/product-image.entity';
+import { ProductAttribute } from './entities/product-attribute.entity';
 import { ProductVariant } from '@/product-variants/entities/product-variant.entity';
 import { BrandsModule } from '@/brands/brands.module';
 import { CategoriesModule } from '@/categories/categories.module';
@@ -19,6 +20,7 @@ import { StorefrontProductsController } from './storefront/storefront-products.c
       ProductCategory,
       ProductVariant,
       ProductImage,
+      ProductAttribute,
     ]),
     BrandsModule,
     CategoriesModule,

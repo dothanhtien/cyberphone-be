@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsBoolean,
   IsEmpty,
   IsEnum,
@@ -9,8 +10,10 @@ import {
   IsString,
   MaxLength,
   Min,
+  ValidateNested,
 } from 'class-validator';
 import { ProductVariantStockStatus } from '@/common/enums';
+import { UpdateVariantAttributeDto } from './update-variant-attribute.dto';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SKU_LENGTH = 100;
@@ -83,6 +86,12 @@ export class UpdateProductVariantDto {
 
   @IsEmpty()
   isActive: boolean;
+
+  @ValidateNested({ each: true })
+  @Type(() => UpdateVariantAttributeDto)
+  @IsArray({ message: 'Attributes must be an array' })
+  @IsOptional()
+  attributes?: UpdateVariantAttributeDto[];
 
   @IsEmpty()
   updatedBy: string;

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -14,6 +15,7 @@ import { ProductVariantStockStatus } from '@/common/enums';
 import { isUniqueConstraintError } from '@/common/utils/database-error.util';
 import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
 import { ProductVariantUpdateEntityDto } from './dto/entity-inputs/product-variant-update-entity.dto';
+import { VariantAttributesService } from './variant-attributes.service';
 
 @Injectable()
 export class ProductVariantsService {
@@ -23,33 +25,28 @@ export class ProductVariantsService {
     private readonly productRepository: Repository<Product>,
     @InjectRepository(ProductVariant)
     private readonly productVariantRepository: Repository<ProductVariant>,
+    private readonly variantAttributesService: VariantAttributesService,
   ) {}
 
   async create(
     productId: string,
     createProductVariantDto: CreateProductVariantDto,
   ) {
+    this.validatePrices(
+      createProductVariantDto.price,
+      createProductVariantDto.salePrice,
+    );
+
     await this.ensureProductExists(productId);
 
     return this.dataSource.transaction(async (tx) => {
-      const variantRepo = tx.getRepository(ProductVariant);
+      const variantRepository = tx.getRepository(ProductVariant);
 
-      const hasActiveVariants = await variantRepo.exists({
+      const hasActiveVariants = await variantRepository.exists({
         where: {
           productId,
           isActive: true,
         },
-      });
-
-      const stockStatus = this.calculateStockStatus(
-        createProductVariantDto.stockQuantity,
-        createProductVariantDto.lowStockThreshold,
-      );
-
-      const entityInput = sanitizeEntityInput(ProductVariantCreateEntityDto, {
-        ...createProductVariantDto,
-        productId,
-        stockStatus,
       });
 
       let isDefault = createProductVariantDto.isDefault ?? false;
@@ -62,19 +59,42 @@ export class ProductVariantsService {
         await this.unsetDefaultVariant(tx, productId);
       }
 
-      const variant = variantRepo.create({
+      const stockStatus = this.calculateStockStatus(
+        createProductVariantDto.stockQuantity,
+        createProductVariantDto.lowStockThreshold,
+      );
+
+      const entityInput = sanitizeEntityInput(ProductVariantCreateEntityDto, {
+        ...createProductVariantDto,
+        productId,
+        stockStatus,
+      });
+
+      const variant = variantRepository.create({
         ...entityInput,
         isDefault,
       });
 
+      let savedVariant: ProductVariant;
+
       try {
-        return await variantRepo.save(variant);
+        savedVariant = await variantRepository.save(variant);
       } catch (error) {
         if (isUniqueConstraintError(error)) {
           throw new ConflictException('SKU already exists');
         }
         throw error;
       }
+
+      await this.variantAttributesService.createAttributes(
+        tx,
+        productId,
+        savedVariant.id,
+        createProductVariantDto.attributes,
+        createProductVariantDto.createdBy,
+      );
+
+      return savedVariant;
     });
   }
 
@@ -91,42 +111,51 @@ export class ProductVariantsService {
         updatedAt: { direction: 'DESC', nulls: 'LAST' },
         createdAt: 'DESC',
       },
+      relations: {
+        attributes: true,
+      },
     });
   }
 
   async update(id: string, updateProductVariantDto: UpdateProductVariantDto) {
     return this.dataSource.transaction(async (tx) => {
-      const variantRepo = tx.getRepository(ProductVariant);
+      const variantRepository = tx.getRepository(ProductVariant);
 
-      const existing = await variantRepo.findOne({
+      const existing = await variantRepository.findOne({
         where: { id, isActive: true },
-        lock: { mode: 'pessimistic_write' },
       });
 
       if (!existing) {
         throw new NotFoundException('Variant not found');
       }
 
+      if (
+        updateProductVariantDto.price !== undefined ||
+        updateProductVariantDto.salePrice !== undefined
+      ) {
+        const nextPrice =
+          updateProductVariantDto.price ?? Number(existing.price);
+        const nextSalePrice =
+          updateProductVariantDto.salePrice === undefined
+            ? existing.salePrice === null
+              ? null
+              : Number(existing.salePrice)
+            : updateProductVariantDto.salePrice;
+
+        this.validatePrices(nextPrice, nextSalePrice);
+      }
+
       let isDefault = existing.isDefault;
 
-      if (updateProductVariantDto.isDefault === true) {
+      if (updateProductVariantDto.isDefault === true && !existing.isDefault) {
         await this.unsetDefaultVariant(tx, existing.productId);
         isDefault = true;
       }
 
       if (updateProductVariantDto.isDefault === false && existing.isDefault) {
-        const activeCount = await variantRepo.count({
-          where: {
-            productId: existing.productId,
-            isActive: true,
-          },
-        });
-
-        if (activeCount >= 1) {
-          throw new ConflictException(
-            'Cannot unset default variant without assigning another one',
-          );
-        }
+        throw new ConflictException(
+          'Cannot unset default variant without assigning another one. Please set another variant as default first',
+        );
       }
 
       let stockStatus: ProductVariantStockStatus | undefined;
@@ -148,16 +177,30 @@ export class ProductVariantsService {
         isDefault,
       });
 
-      try {
-        await variantRepo.update(id, updatePayload);
+      const merged = variantRepository.merge(existing, updatePayload);
 
-        return variantRepo.findOne({ where: { id } });
+      let savedVariant: ProductVariant;
+
+      try {
+        savedVariant = await variantRepository.save(merged);
       } catch (error) {
         if (isUniqueConstraintError(error)) {
           throw new ConflictException('SKU already exists');
         }
         throw error;
       }
+
+      if (updateProductVariantDto.attributes?.length) {
+        await this.variantAttributesService.updateAttributes(
+          tx,
+          id,
+          existing.productId,
+          updateProductVariantDto.attributes,
+          updateProductVariantDto.updatedBy,
+        );
+      }
+
+      return savedVariant;
     });
   }
 
@@ -181,6 +224,12 @@ export class ProductVariantsService {
       },
       { isDefault: false },
     );
+  }
+
+  private validatePrices(price: number, salePrice?: number | null) {
+    if (salePrice && salePrice !== null && salePrice > price) {
+      throw new BadRequestException('Sale price cannot be greater than price');
+    }
   }
 
   private calculateStockStatus(

@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsBoolean,
   IsEmpty,
   IsInt,
@@ -9,7 +10,9 @@ import {
   IsString,
   MaxLength,
   Min,
+  ValidateNested,
 } from 'class-validator';
+import { CreateVariantAttributeDto } from './create-variant-attribute.dto';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SKU_LENGTH = 100;
@@ -70,6 +73,12 @@ export class CreateProductVariantDto {
   @IsBoolean({ message: 'isDefault must be a boolean' })
   @IsOptional()
   isDefault?: boolean;
+
+  @ValidateNested({ each: true })
+  @Type(() => CreateVariantAttributeDto)
+  @IsArray({ message: 'Attributes must be an array' })
+  @IsOptional()
+  attributes?: CreateVariantAttributeDto[];
 
   @IsEmpty()
   createdBy: string;
