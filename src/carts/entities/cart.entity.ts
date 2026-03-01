@@ -5,11 +5,13 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { CartItem } from './cart-item.entity';
 
 @Entity('carts')
 @Index('uq_carts_user_id_active', ['userId'], {
@@ -65,4 +67,7 @@ export class Cart {
   })
   @JoinColumn({ name: 'user_id', foreignKeyConstraintName: 'fk_carts_user_id' })
   user: User | null;
+
+  @OneToMany(() => CartItem, (item) => item.cart, { cascade: true })
+  items: CartItem[];
 }

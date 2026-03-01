@@ -1,26 +1,21 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Param, Post } from '@nestjs/common';
 import { StorefrontCartsService } from './storefront-carts.service';
 import { Public } from '@/auth/decorators/public.decorator';
-import { CreateCartDto } from './dto/requests/create-cart.dto';
+import { ResolveCartDto } from './dto/requests/resolve-cart.dto';
+import { AddToCartDto } from './dto/requests/add-to-cart.dto';
 
 @Controller('carts')
 @Public()
 export class StorefrontCartsController {
   constructor(private readonly cartsService: StorefrontCartsService) {}
 
-  @Post()
-  create(@Body() createCartDto: CreateCartDto) {
-    return this.cartsService.create(createCartDto);
+  @Post('resolve')
+  resolveCart(@Body() resolveCartDto: ResolveCartDto) {
+    return this.cartsService.resolve(resolveCartDto);
   }
 
-  @Get()
-  getCart(
-    @Query('userId') userId?: string,
-    @Query('sessionId') sessionId?: string,
-  ) {
-    return this.cartsService.getCartByUserOrSession({
-      userId,
-      sessionId,
-    });
+  @Post(':id/items')
+  addToCart(@Param('id') id: string, @Body() addToCartDto: AddToCartDto) {
+    return this.cartsService.addToCart(id, addToCartDto);
   }
 }
