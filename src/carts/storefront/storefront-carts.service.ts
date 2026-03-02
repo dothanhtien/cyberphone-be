@@ -17,7 +17,7 @@ import { AddToCartDto } from './dto/requests/add-to-cart.dto';
 import { ProductVariant } from '@/product-variants/entities/product-variant.entity';
 import { CartItem } from '../entities/cart-item.entity';
 import { CartItemCreateEntityInput } from './dto/entity-inputs/cart-item-create-entity.dto';
-import { ProductVariantStockStatus } from '@/common/enums';
+import { MediaAssetRefType, ProductVariantStockStatus } from '@/common/enums';
 
 dayjs.extend(utc);
 
@@ -29,16 +29,16 @@ export class StorefrontCartsService {
     private readonly dataSource: DataSource,
     @InjectRepository(Cart)
     private readonly cartRepository: Repository<Cart>,
+    @InjectRepository(CartItem)
+    private readonly cartItemRepository: Repository<CartItem>,
   ) {}
 
   async resolve(resolveCartDto: ResolveCartDto) {
     const { userId, sessionId } = resolveCartDto;
 
-    return this.dataSource.transaction(async (tx) => {
-      let cart: Cart;
-
+    const cart = await this.dataSource.transaction(async (tx) => {
       try {
-        cart = await this.getCartByUserOrSession(resolveCartDto);
+        const cart = await this.getCartByUserOrSession(resolveCartDto);
 
         cart.expiresAt = this.getNewExpiryDate();
         cart.updatedBy = userId ?? 'guest';
@@ -47,7 +47,7 @@ export class StorefrontCartsService {
           `Updating existing cart: id=${cart.id}, userId=${userId}, sessionId=${sessionId}`,
         );
 
-        await tx.save(cart);
+        return await tx.save(cart);
       } catch (err) {
         if (!(err instanceof NotFoundException)) throw err;
         this.logger.log(
@@ -62,18 +62,15 @@ export class StorefrontCartsService {
           expiresAt: this.getNewExpiryDate(),
         });
 
-        cart = await tx.save(Cart, entityInput);
+        return await tx.save(Cart, entityInput);
       }
-
-      return tx.getRepository(Cart).findOne({
-        where: { id: cart.id, isActive: true },
-        relations: ['items'],
-      });
     });
+
+    return this.findOne(cart.id);
   }
 
   async addToCart(cartId: string, addToCartDto: AddToCartDto) {
-    return this.dataSource.transaction(async (tx) => {
+    const cartItem = await this.dataSource.transaction(async (tx) => {
       const cartRepository = tx.getRepository(Cart);
       const cartItemRepository = tx.getRepository(CartItem);
       const variantRepository = tx.getRepository(ProductVariant);
@@ -100,17 +97,17 @@ export class StorefrontCartsService {
         : addToCartDto.quantity;
 
       if (
-        variant.stockStatus === ProductVariantStockStatus.OUT_OF_STOCK ||
+        variant.stockStatus === 'out_of_stock' ||
         variant.stockQuantity < newQuantity
       ) {
         throw new BadRequestException('Not enough stock for this product');
       }
 
-      let savedCartItem: CartItem;
+      let cartItem: CartItem;
       if (existingCartItem) {
         existingCartItem.quantity = newQuantity;
         existingCartItem.updatedBy = addToCartDto.userId ?? 'guest';
-        savedCartItem = await cartItemRepository.save(existingCartItem);
+        cartItem = await cartItemRepository.save(existingCartItem);
       } else {
         const inputEntity = sanitizeEntityInput(CartItemCreateEntityInput, {
           cartId,
@@ -118,14 +115,16 @@ export class StorefrontCartsService {
           quantity: newQuantity,
           createdBy: addToCartDto.userId ?? 'guest',
         });
-        savedCartItem = await cartItemRepository.save(inputEntity);
+        cartItem = await cartItemRepository.save(inputEntity);
       }
 
       cart.updatedBy = addToCartDto.userId ?? 'guest';
       await cartRepository.save(cart);
 
-      return savedCartItem;
+      return cartItem;
     });
+
+    return this.findCartItemById(cartItem.id);
   }
 
   async getCartByUserOrSession({
@@ -166,6 +165,171 @@ export class StorefrontCartsService {
     }
 
     throw new NotFoundException('Cart not found');
+  }
+
+  async updateItemQuantity(
+    cartId: string,
+    itemId: string,
+    type: 'increase' | 'decrease',
+  ) {
+    return this.dataSource.transaction(async (tx) => {
+      const cartItemRepository = tx.getRepository(CartItem);
+
+      const item = await cartItemRepository.findOne({
+        where: { id: itemId, cart: { id: cartId }, isActive: true },
+        relations: ['cart'],
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!item) {
+        throw new NotFoundException('Cart item not found');
+      }
+
+      if (dayjs().isAfter(dayjs(item.cart.expiresAt))) {
+        throw new BadRequestException('Cart has expired');
+      }
+
+      if (type === 'increase') {
+        item.quantity += 1;
+      } else {
+        item.quantity = Math.max(item.quantity - 1, 0);
+        if (item.quantity === 0) item.isActive = false;
+      }
+
+      return cartItemRepository.save(item);
+    });
+  }
+  async removeCartItem(id: string) {
+    const cartItem = await this.cartItemRepository.findOne({
+      where: { id, isActive: true },
+    });
+
+    if (!cartItem) {
+      throw new NotFoundException('Cart item not found');
+    }
+
+    cartItem.isActive = false;
+
+    return this.cartItemRepository.save(cartItem);
+  }
+
+  private async findOne(id: string) {
+    const [result] = await this.dataSource.query<
+      {
+        id: string;
+        user_id: string;
+        session_id: string;
+        expires_at: string;
+        items: {
+          id: string;
+          quantity: number;
+          variantId: string;
+          variantName: string;
+          price: number;
+          salePrice: number | null;
+          stockStatus: ProductVariantStockStatus;
+          imageUrl: string | null;
+        }[];
+      }[]
+    >(
+      `
+        SELECT
+          c.id,
+          c.user_id,
+          c.session_id,
+          c.expires_at,
+          COALESCE(
+            JSON_AGG(
+              JSON_BUILD_OBJECT(
+                'id', ci.id,
+                'quantity', ci.quantity,
+                'variantId', ci.variant_id,
+                'variantName', v.name,
+                'price', v.price,
+                'salePrice', v.sale_price,
+                'stockStatus', v.stock_status,
+                'imageUrl', ma.url
+              )
+              ORDER BY COALESCE(ci.updated_at, ci.created_at) DESC
+            ) FILTER (WHERE ci.id IS NOT NULL),
+            '[]'
+          ) AS items
+        FROM carts c
+        LEFT JOIN cart_items ci 
+          ON ci.cart_id = c.id AND ci.is_active = true
+        LEFT JOIN product_variants v 
+          ON v.id = ci.variant_id AND v.is_active = true
+        LEFT JOIN products p 
+          ON p.id = v.product_id AND p.is_active = true
+        LEFT JOIN product_images pi 
+          ON pi.product_id = p.id AND pi.is_active = true
+        LEFT JOIN media_assets ma 
+          ON ma.ref_id::uuid = pi.id AND ma.ref_type = $1 AND ma.deleted_at IS NULL
+        WHERE c.id = $2 AND c.is_active = true
+        GROUP BY c.id
+      `,
+      [MediaAssetRefType.PRODUCT_IMAGE, id],
+    );
+
+    return {
+      id: result.id,
+      userId: result.user_id,
+      sessionId: result.session_id,
+      expiresAt: result.expires_at,
+      items: result.items,
+    };
+  }
+
+  private async findCartItemById(itemId: string) {
+    const [result] = await this.dataSource.query<
+      {
+        id: string;
+        quantity: number;
+        variantId: string;
+        variantName: string;
+        price: number;
+        salePrice: number | null;
+        stockStatus: ProductVariantStockStatus;
+        imageUrl: string | null;
+      }[]
+    >(
+      `
+      SELECT
+        ci.id,
+        ci.quantity,
+        ci.variant_id AS "variantId",
+        v.name AS "variantName",
+        v.price,
+        v.sale_price AS "salePrice",
+        v.stock_status AS "stockStatus",
+        ma.url AS "imageUrl"
+      FROM cart_items ci
+      LEFT JOIN product_variants v 
+        ON v.id = ci.variant_id AND v.is_active = true
+      LEFT JOIN products p
+        ON p.id = v.product_id AND p.is_active = true
+      LEFT JOIN product_images pi
+        ON pi.product_id = p.id AND pi.is_active = true
+      LEFT JOIN media_assets ma
+        ON ma.ref_id::uuid = pi.id AND ma.ref_type = $1 AND ma.deleted_at IS NULL
+      WHERE ci.id = $2 AND ci.is_active = true
+      LIMIT 1
+    `,
+      [MediaAssetRefType.PRODUCT_IMAGE, itemId],
+    );
+
+    if (!result) return null;
+
+    return {
+      id: result.id,
+      quantity: result.quantity,
+      variantId: result.variantId,
+      variantName: result.variantName,
+      price: result.price,
+      salePrice: result.salePrice,
+      stockStatus: result.stockStatus,
+      imageUrl: result.imageUrl,
+    };
   }
 
   private getNewExpiryDate(): Date {

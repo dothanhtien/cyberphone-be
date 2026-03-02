@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateCartItemsTable1772255482143 implements MigrationInterface {
-  name = 'CreateCartItemsTable1772255482143';
+export class CreateCartItemsTable1772387171432 implements MigrationInterface {
+  name = 'CreateCartItemsTable1772387171432';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -16,10 +16,12 @@ export class CreateCartItemsTable1772255482143 implements MigrationInterface {
           "created_by" character varying(100) NOT NULL, 
           "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(), 
           "updated_by" character varying(100), 
-          CONSTRAINT "uq_cart_items_cart_variant" UNIQUE ("cart_id", "variant_id"), 
           CONSTRAINT "pk_cart_items_id" PRIMARY KEY ("id")
         )
       `,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "uq_cart_items_cart_variant_active" ON "cart_items" ("cart_id", "variant_id") WHERE "is_active" = true`,
     );
     await queryRunner.query(
       `ALTER TABLE "cart_items" ADD CONSTRAINT "fk_cart_items_cart_id" FOREIGN KEY ("cart_id") REFERENCES "carts"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
@@ -35,6 +37,9 @@ export class CreateCartItemsTable1772255482143 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE "cart_items" DROP CONSTRAINT "fk_cart_items_cart_id"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."uq_cart_items_cart_variant_active"`,
     );
     await queryRunner.query(`DROP TABLE "cart_items"`);
   }

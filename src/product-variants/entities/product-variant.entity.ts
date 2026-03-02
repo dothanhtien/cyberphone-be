@@ -88,7 +88,7 @@ export class ProductVariant {
     length: 100,
     default: ProductVariantStockStatus.IN_STOCK,
   })
-  stockStatus: ProductVariantStockStatus;
+  stockStatus: string;
 
   @Column({
     name: 'low_stock_threshold',

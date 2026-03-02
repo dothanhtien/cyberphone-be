@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
 import { StorefrontCartsService } from './storefront-carts.service';
 import { Public } from '@/auth/decorators/public.decorator';
 import { ResolveCartDto } from './dto/requests/resolve-cart.dto';
@@ -17,5 +17,20 @@ export class StorefrontCartsController {
   @Post(':id/items')
   addToCart(@Param('id') id: string, @Body() addToCartDto: AddToCartDto) {
     return this.cartsService.addToCart(id, addToCartDto);
+  }
+
+  @Patch(':id/items/:itemId/increase')
+  increaseCartItem(@Param('id') id: string, @Param('itemId') itemId: string) {
+    return this.cartsService.updateItemQuantity(id, itemId, 'increase');
+  }
+
+  @Patch(':id/items/:itemId/decrease')
+  decreaseCartItem(@Param('id') id: string, @Param('itemId') itemId: string) {
+    return this.cartsService.updateItemQuantity(id, itemId, 'decrease');
+  }
+
+  @Delete(':id/items/:itemId')
+  removeCartItem(@Param('itemId') itemId: string) {
+    return this.cartsService.removeCartItem(itemId);
   }
 }

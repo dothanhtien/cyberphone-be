@@ -2,17 +2,20 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { Cart } from './cart.entity';
 import { ProductVariant } from '../../product-variants/entities/product-variant.entity';
 
 @Entity('cart_items')
-@Unique('uq_cart_items_cart_variant', ['cartId', 'variantId'])
+@Index('uq_cart_items_cart_variant_active', ['cartId', 'variantId'], {
+  unique: true,
+  where: `"is_active" = true`,
+})
 export class CartItem {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'pk_cart_items_id',
