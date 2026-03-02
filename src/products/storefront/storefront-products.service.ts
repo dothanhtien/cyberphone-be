@@ -42,6 +42,7 @@ export class StorefrontProductsService {
         p.name,
         p.slug,
         p.short_description,
+        v.id as variant_id,
         v.price,
         v.sale_price,
         CASE WHEN v.stock_quantity > 0 THEN 1 ELSE 0 END AS in_stock,

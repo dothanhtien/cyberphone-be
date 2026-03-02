@@ -18,6 +18,7 @@ export function mapToStorefrontProductResponse(
       salePrice: product.sale_price ? Number(product.sale_price) : null,
       inStock: product.in_stock === 1,
       mainImage: product.main_image,
+      variantId: product.variant_id,
     },
     {
       excludeExtraneousValues: true,

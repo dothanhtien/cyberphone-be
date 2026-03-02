@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Product } from '../../products/entities/product.entity';
 import { VariantAttribute } from './variant-attribute.entity';
+import { CartItem } from '../../carts/entities/cart-item.entity';
 import { ProductVariantStockStatus } from '../../common/enums';
 
 @Entity('product_variants')
@@ -136,4 +137,7 @@ export class ProductVariant {
     (variantAttribute) => variantAttribute.variant,
   )
   attributes: VariantAttribute[];
+
+  @OneToMany(() => CartItem, (item) => item.variant)
+  cartItems: CartItem[];
 }

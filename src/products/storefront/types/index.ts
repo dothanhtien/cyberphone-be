@@ -9,4 +9,5 @@ export interface RawProductRow {
   sale_price: string | null;
   in_stock: number;
   main_image: string | null;
+  variant_id: string;
 }

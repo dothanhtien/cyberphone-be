@@ -30,4 +30,7 @@ export class StorefrontProductResponseDto {
 
   @Expose()
   mainImage: string | null;
+
+  @Expose()
+  variantId: string;
 }
