@@ -54,7 +54,7 @@ export class StorefrontCartsService {
           `No existing cart found, creating new cart for userId=${userId}, sessionId=${sessionId}`,
         );
 
-        resolveCartDto.sessionId = sessionId ?? uuid();
+        resolveCartDto.sessionId = uuid();
 
         const entityInput = sanitizeEntityInput(CartCreateEntityInput, {
           ...resolveCartDto,
@@ -76,7 +76,13 @@ export class StorefrontCartsService {
       const variantRepository = tx.getRepository(ProductVariant);
 
       const [cart, variant, existingCartItem] = await Promise.all([
-        cartRepository.findOne({ where: { id: cartId, isActive: true } }),
+        cartRepository.findOne({
+          where: {
+            id: cartId,
+            isActive: true,
+            expiresAt: MoreThan(new Date()),
+          },
+        }),
         variantRepository.findOne({
           where: { id: addToCartDto.variantId, isActive: true },
         }),
@@ -89,7 +95,7 @@ export class StorefrontCartsService {
         }),
       ]);
 
-      if (!cart) throw new NotFoundException('Cart not found');
+      if (!cart) throw new NotFoundException('Cart not found or expired');
       if (!variant) throw new NotFoundException('Product variant not found');
 
       const newQuantity = existingCartItem
@@ -154,14 +160,18 @@ export class StorefrontCartsService {
 
     if (sessionId) {
       const guestCart = await this.cartRepository.findOne({
-        where: {
-          sessionId,
-          isActive: true,
-          expiresAt: MoreThan(now),
-        },
+        where: { sessionId, isActive: true },
       });
 
-      if (guestCart) return guestCart;
+      if (guestCart) {
+        if (guestCart.expiresAt && guestCart.expiresAt < now) {
+          await this.cartItemRepository.update(guestCart.id, {
+            isActive: false,
+          });
+        } else {
+          return guestCart;
+        }
+      }
     }
 
     throw new NotFoundException('Cart not found');
@@ -176,8 +186,11 @@ export class StorefrontCartsService {
       const cartItemRepository = tx.getRepository(CartItem);
 
       const item = await cartItemRepository.findOne({
-        where: { id: itemId, cart: { id: cartId }, isActive: true },
-        relations: ['cart'],
+        where: {
+          id: itemId,
+          cart: { id: cartId },
+          isActive: true,
+        },
         lock: { mode: 'pessimistic_write' },
       });
 
@@ -185,11 +198,36 @@ export class StorefrontCartsService {
         throw new NotFoundException('Cart item not found');
       }
 
-      if (dayjs().isAfter(dayjs(item.cart.expiresAt))) {
+      const [cart, variant] = await Promise.all([
+        tx.getRepository(Cart).findOneBy({
+          id: cartId,
+          isActive: true,
+        }),
+        tx.getRepository(ProductVariant).findOneBy({
+          id: item.variantId,
+          isActive: true,
+        }),
+      ]);
+
+      if (!cart) {
+        throw new NotFoundException('Cart not found');
+      }
+
+      if (!variant) {
+        throw new NotFoundException('Variant not found');
+      }
+
+      if (dayjs().isAfter(dayjs(cart.expiresAt))) {
         throw new BadRequestException('Cart has expired');
       }
 
       if (type === 'increase') {
+        if (
+          variant.stockStatus === 'out_of_stock' ||
+          item.quantity + 1 > variant.stockQuantity
+        ) {
+          throw new BadRequestException('Not enough stock for this product');
+        }
         item.quantity += 1;
       } else {
         item.quantity = Math.max(item.quantity - 1, 0);
@@ -199,9 +237,10 @@ export class StorefrontCartsService {
       return cartItemRepository.save(item);
     });
   }
-  async removeCartItem(id: string) {
+
+  async removeCartItem(cartId: string, itemId: string) {
     const cartItem = await this.cartItemRepository.findOne({
-      where: { id, isActive: true },
+      where: { id: itemId, cartId, isActive: true },
     });
 
     if (!cartItem) {
@@ -248,7 +287,7 @@ export class StorefrontCartsService {
                 'price', v.price,
                 'salePrice', v.sale_price,
                 'stockStatus', v.stock_status,
-                'imageUrl', ma.url
+                'imageUrl', img.url
               )
               ORDER BY COALESCE(ci.updated_at, ci.created_at) DESC
             ) FILTER (WHERE ci.id IS NOT NULL),
@@ -261,10 +300,18 @@ export class StorefrontCartsService {
           ON v.id = ci.variant_id AND v.is_active = true
         LEFT JOIN products p 
           ON p.id = v.product_id AND p.is_active = true
-        LEFT JOIN product_images pi 
-          ON pi.product_id = p.id AND pi.is_active = true
-        LEFT JOIN media_assets ma 
-          ON ma.ref_id::uuid = pi.id AND ma.ref_type = $1 AND ma.deleted_at IS NULL
+        LEFT JOIN LATERAL (
+          SELECT ma.url
+          FROM product_images pi
+          LEFT JOIN media_assets ma
+            ON ma.ref_id::uuid = pi.id
+           AND ma.ref_type = $1
+           AND ma.deleted_at IS NULL
+          WHERE pi.product_id = p.id
+            AND pi.is_active = true
+          ORDER BY COALESCE(pi.updated_at, pi.created_at) DESC
+          LIMIT 1
+        ) img ON true
         WHERE c.id = $2 AND c.is_active = true
         GROUP BY c.id
       `,
