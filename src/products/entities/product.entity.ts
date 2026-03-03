@@ -14,6 +14,7 @@ import { ProductCategory } from './product-category.entity';
 import { ProductVariant } from '../../product-variants/entities/product-variant.entity';
 import { ProductImage } from './product-image.entity';
 import { ProductAttribute } from './product-attribute.entity';
+import { OrderItem } from '../../orders/entities/order-item.entity';
 
 @Entity('products')
 @Index('uq_products_slug_active', ['slug'], {
@@ -101,4 +102,7 @@ export class Product {
     (productAttribute) => productAttribute.product,
   )
   attributes: ProductAttribute[];
+
+  @OneToMany(() => OrderItem, (item) => item.product)
+  orderItems: OrderItem[];
 }
