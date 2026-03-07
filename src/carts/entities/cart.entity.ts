@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { CartItem } from './cart-item.entity';
+import { Order } from '../../orders/entities/order.entity';
 
 @Entity('carts')
 @Index('uq_carts_user_id_active', ['userId'], {
@@ -70,4 +71,7 @@ export class Cart {
 
   @OneToMany(() => CartItem, (item) => item.cart, { cascade: true })
   items: CartItem[];
+
+  @OneToMany(() => Order, (order) => order.cart)
+  orders: Order[];
 }

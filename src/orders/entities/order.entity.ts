@@ -18,25 +18,28 @@ import {
 } from '../enums';
 import { User } from '../../users/entities/user.entity';
 import { OrderItem } from './order-item.entity';
+import { Cart } from '../../carts/entities/cart.entity';
 
 @Entity('orders')
 @Unique('idx_orders_code', ['code'])
 @Index('idx_orders_customer_id', ['customerId'])
 @Index('idx_orders_order_status', ['orderStatus'])
 @Index('idx_orders_payment_status', ['paymentStatus'])
+@Index('idx_orders_cart_revision', ['cartId', 'revision'])
 export class Order {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'pk_orders_id',
   })
   id: string;
 
-  @Column({
-    name: 'code',
-    type: 'varchar',
-    length: 50,
-    nullable: false,
-  })
+  @Column({ name: 'code', type: 'varchar', length: 50 })
   code: string;
+
+  @Column({ name: 'cart_id', type: 'uuid' })
+  cartId: string;
+
+  @Column({ type: 'int', default: 1 })
+  revision: number;
 
   @Column({
     name: 'customer_id',
@@ -59,11 +62,7 @@ export class Order {
   })
   shippingEmail: string | null;
 
-  @Column({
-    name: 'shipping_address_line1',
-    type: 'varchar',
-    length: 255,
-  })
+  @Column({ name: 'shipping_address_line1', type: 'varchar', length: 255 })
   shippingAddressLine1: string;
 
   @Column({
@@ -110,27 +109,18 @@ export class Order {
   @Column({ name: 'shipping_note', type: 'text', nullable: true })
   shippingNote: string | null;
 
-  @Column({
-    name: 'payment_method',
-    type: 'varchar',
-    length: 50,
-  })
+  @Column({ name: 'payment_method', type: 'varchar', length: 50 })
   paymentMethod: PaymentMethod;
 
   @Column({
     name: 'payment_status',
     type: 'varchar',
     length: 50,
-    enumName: 'payment_status_enum',
     default: PaymentStatus.PENDING,
   })
   paymentStatus: PaymentStatus;
 
-  @Column({
-    name: 'shipping_method',
-    type: 'varchar',
-    length: 100,
-  })
+  @Column({ name: 'shipping_method', type: 'varchar', length: 100 })
   shippingMethod: string;
 
   @Column({
@@ -152,16 +142,12 @@ export class Order {
 
   @Column({
     name: 'estimated_delivery_date',
-    type: 'date',
+    type: 'timestamptz',
     nullable: true,
   })
   estimatedDeliveryDate: Date | null;
 
-  @Column({
-    name: 'actual_delivery_date',
-    type: 'timestamptz',
-    nullable: true,
-  })
+  @Column({ name: 'actual_delivery_date', type: 'timestamptz', nullable: true })
   actualDeliveryDate: Date | null;
 
   @Column({
@@ -215,11 +201,7 @@ export class Order {
   })
   orderStatus: OrderStatus;
 
-  @Column({
-    name: 'cancelled_at',
-    type: 'timestamptz',
-    nullable: true,
-  })
+  @Column({ name: 'cancelled_at', type: 'timestamptz', nullable: true })
   cancelledAt: Date | null;
 
   @Column({ name: 'cancelled_reason', type: 'text', nullable: true })
@@ -270,24 +252,13 @@ export class Order {
   })
   isActive: boolean = true;
 
-  @CreateDateColumn({
-    name: 'created_at',
-    type: 'timestamptz',
-  })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @Column({
-    name: 'created_by',
-    type: 'varchar',
-    length: 100,
-  })
+  @Column({ name: 'created_by', type: 'varchar', length: 100 })
   createdBy: string;
 
-  @UpdateDateColumn({
-    name: 'updated_at',
-    type: 'timestamptz',
-    nullable: true,
-  })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: true })
   updatedAt: Date | null;
 
   @Column({
@@ -297,6 +268,13 @@ export class Order {
     nullable: true,
   })
   updatedBy: string | null;
+
+  @ManyToOne(() => Cart, { nullable: false, onDelete: 'NO ACTION' })
+  @JoinColumn({
+    name: 'cart_id',
+    foreignKeyConstraintName: 'fk_orders_cart_id',
+  })
+  cart: Cart;
 
   @ManyToOne(() => User, (user) => user.orders, {
     nullable: true,

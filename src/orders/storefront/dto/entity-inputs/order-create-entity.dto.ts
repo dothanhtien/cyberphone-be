@@ -11,6 +11,12 @@ export class OrderCreateEntityInput {
   code: string;
 
   @Expose()
+  cartId: string;
+
+  @Expose()
+  revision: number;
+
+  @Expose()
   customerId: string | null;
 
   @Expose()

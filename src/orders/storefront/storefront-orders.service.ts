@@ -8,7 +8,6 @@ import { OrderItem } from '../entities/order-item.entity';
 import { CreateOrderDto } from './dto/requests/create-order.dto';
 import { sanitizeEntityInput } from '@/common/utils/entities';
 import { OrderCreateEntityInput } from './dto/entity-inputs/order-create-entity.dto';
-import { OrderStatus, PaymentStatus } from '../enums';
 
 @Injectable()
 export class StorefrontOrdersService {
@@ -60,8 +59,8 @@ export class StorefrontOrdersService {
         throw new NotFoundException('Cart not found');
       }
 
-      if (!cart || !cart.items.length) {
-        throw new NotFoundException('Cart not found or empty');
+      if (!cart.items.length) {
+        throw new NotFoundException('Cart is empty');
       }
 
       const shippingFee = 0;
@@ -77,31 +76,29 @@ export class StorefrontOrdersService {
 
       const orderCode = await this.generateOrderCode(tx);
 
+      const lastOrder: Pick<Order, 'revision'> | null = await tx
+        .getRepository(Order)
+        .findOne({
+          where: { cartId: cart.id },
+          order: { revision: 'DESC' },
+          select: ['revision'],
+        });
+
+      const nextRevision = (lastOrder?.revision ?? 0) + 1;
+
       const order = sanitizeEntityInput(OrderCreateEntityInput, {
+        ...createOrderDto,
         code: orderCode,
+        cartId: cart.id,
+        revision: nextRevision,
         customerId: cart.userId ?? null,
-        shippingName: createOrderDto.shippingName,
-        shippingPhone: createOrderDto.shippingPhone,
-        shippingEmail: createOrderDto.shippingEmail,
-        shippingAddressLine1: createOrderDto.shippingAddressLine1,
-        shippingAddressLine2: createOrderDto.shippingAddressLine2,
-        shippingCity: createOrderDto.shippingCity,
-        shippingState: createOrderDto.shippingState,
-        shippingDistrict: createOrderDto.shippingDistrict,
-        shippingWard: createOrderDto.shippingWard,
-        shippingPostalCode: createOrderDto.shippingPostalCode,
         shippingCountry: createOrderDto.shippingCountry ?? 'Vietnam',
-        shippingNote: createOrderDto.shippingNote,
-        paymentMethod: createOrderDto.paymentMethod,
-        paymentStatus: createOrderDto.paymentStatus ?? PaymentStatus.PENDING,
-        shippingMethod: createOrderDto.shippingMethod,
         shippingFee: shippingFee.toFixed(2),
         itemsTotal: itemsTotal.toFixed(2),
         discountTotal: discountTotal.toFixed(2),
         taxTotal: taxTotal.toFixed(2),
         shippingTotal: shippingTotal.toFixed(2),
         orderTotal: orderTotal.toFixed(2),
-        orderStatus: OrderStatus.PENDING,
         createdBy: cart.userId ?? cart.sessionId ?? 'guest',
       });
 
@@ -148,7 +145,7 @@ export class StorefrontOrdersService {
     );
 
     const seq = Number(nextval);
-    return `CP-ODR-${dayjs().format('YYYYMMDD')}-${String(seq).padStart(8, '0')}`;
+    return `CP-ODR${dayjs().format('YYYYMMDD')}${seq}`;
   }
 
   private calculateOrder({
@@ -161,7 +158,10 @@ export class StorefrontOrdersService {
 
     for (const item of cart.items) {
       const price = parseFloat(item.variant.price);
-      itemsTotal += price * item.quantity;
+      const salePrice = item.variant.salePrice
+        ? parseFloat(item.variant.salePrice)
+        : null;
+      itemsTotal += (salePrice ?? price) * item.quantity;
     }
 
     const shippingTotal = shippingFee;

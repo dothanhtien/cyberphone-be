@@ -9,6 +9,8 @@ export class CreateOrdersTable1772541379498 implements MigrationInterface {
         CREATE TABLE "orders" (
           "id" uuid NOT NULL DEFAULT uuid_generate_v4(), 
           "code" character varying(50) NOT NULL, 
+          "cart_id" uuid NOT NULL, 
+          "revision" integer NOT NULL DEFAULT '1', 
           "customer_id" uuid, 
           "shipping_name" character varying(255) NOT NULL, 
           "shipping_phone" character varying(30) NOT NULL, 
@@ -27,7 +29,7 @@ export class CreateOrdersTable1772541379498 implements MigrationInterface {
           "shipping_method" character varying(100) NOT NULL, 
           "shipping_fee" numeric(12, 2) NOT NULL DEFAULT '0', 
           "shipping_tracking_code" character varying(100), 
-          "estimated_delivery_date" date, 
+          "estimated_delivery_date" TIMESTAMP WITH TIME ZONE, 
           "actual_delivery_date" TIMESTAMP WITH TIME ZONE, 
           "items_total" numeric(12, 2) NOT NULL, 
           "discount_total" numeric(12, 2) NOT NULL DEFAULT '0', 
@@ -55,6 +57,9 @@ export class CreateOrdersTable1772541379498 implements MigrationInterface {
       `,
     );
     await queryRunner.query(
+      `CREATE INDEX "idx_orders_cart_revision" ON "orders" ("cart_id", "revision") `,
+    );
+    await queryRunner.query(
       `CREATE INDEX "idx_orders_payment_status" ON "orders" ("payment_status") `,
     );
     await queryRunner.query(
@@ -62,6 +67,9 @@ export class CreateOrdersTable1772541379498 implements MigrationInterface {
     );
     await queryRunner.query(
       `CREATE INDEX "idx_orders_customer_id" ON "orders" ("customer_id") `,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "orders" ADD CONSTRAINT "fk_orders_cart_id" FOREIGN KEY ("cart_id") REFERENCES "carts"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "orders" ADD CONSTRAINT "fk_orders_customer_id" FOREIGN KEY ("customer_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
@@ -72,9 +80,13 @@ export class CreateOrdersTable1772541379498 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "orders" DROP CONSTRAINT "fk_orders_customer_id"`,
     );
+    await queryRunner.query(
+      `ALTER TABLE "orders" DROP CONSTRAINT "fk_orders_cart_id"`,
+    );
     await queryRunner.query(`DROP INDEX "public"."idx_orders_customer_id"`);
     await queryRunner.query(`DROP INDEX "public"."idx_orders_order_status"`);
     await queryRunner.query(`DROP INDEX "public"."idx_orders_payment_status"`);
+    await queryRunner.query(`DROP INDEX "public"."idx_orders_cart_revision"`);
     await queryRunner.query(`DROP TABLE "orders"`);
   }
 }
