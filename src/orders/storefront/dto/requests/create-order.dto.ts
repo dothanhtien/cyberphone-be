@@ -6,7 +6,7 @@ import {
   IsUUID,
   IsEnum,
 } from 'class-validator';
-import { PaymentMethod, PaymentStatus } from '@/orders/enums';
+import { PaymentMethod } from '@/orders/enums';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_PHONE_LENGTH = 30;
@@ -108,12 +108,6 @@ export class CreateOrderDto {
   @IsString({ message: 'Payment method must be a string' })
   @IsNotEmpty({ message: 'Payment method is required' })
   paymentMethod: PaymentMethod;
-
-  @IsEnum(PaymentStatus, {
-    message: `Payment status must be one of: ${Object.values(PaymentStatus).join(', ')}`,
-  })
-  @IsOptional()
-  paymentStatus?: PaymentStatus = PaymentStatus.PENDING;
 
   @IsString({ message: 'Shipping method must be a string' })
   @IsNotEmpty({ message: 'Shipping method is required' })
