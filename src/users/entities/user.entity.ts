@@ -5,6 +5,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -12,6 +13,7 @@ import {
 import { Exclude, Expose } from 'class-transformer';
 import { Role } from './role.entity';
 import { Cart } from '../../carts/entities/cart.entity';
+import { Order } from '../../orders/entities/order.entity';
 
 @Entity('users')
 @Index('uq_users_phone_active', ['phone'], {
@@ -98,4 +100,7 @@ export class User {
 
   @OneToOne(() => Cart, (cart) => cart.user)
   cart: Cart;
+
+  @OneToMany(() => Order, (order) => order.customer)
+  orders: Order[];
 }

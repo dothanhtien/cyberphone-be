@@ -12,6 +12,7 @@ import {
 import { Product } from '../../products/entities/product.entity';
 import { VariantAttribute } from './variant-attribute.entity';
 import { CartItem } from '../../carts/entities/cart-item.entity';
+import { OrderItem } from '../../orders/entities/order-item.entity';
 import { ProductVariantStockStatus } from '../../common/enums';
 
 @Entity('product_variants')
@@ -140,4 +141,7 @@ export class ProductVariant {
 
   @OneToMany(() => CartItem, (item) => item.variant)
   cartItems: CartItem[];
+
+  @OneToMany(() => OrderItem, (item) => item.variant)
+  orderItems: OrderItem[];
 }
