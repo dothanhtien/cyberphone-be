@@ -1,8 +1,5 @@
 export enum PaymentProvider {
-  COD = 'cod',
   MOMO = 'momo',
-  VNPAY = 'vnpay',
-  ZALOPAY = 'zalopay',
 }
 
 export enum PaymentStatus {
@@ -13,7 +10,5 @@ export enum PaymentStatus {
 }
 
 export enum PaymentMethod {
-  COD = 'cod',
   MOMO = 'momo',
-  VNPAY = 'vnpay',
 }

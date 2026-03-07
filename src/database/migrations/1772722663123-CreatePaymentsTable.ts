@@ -42,14 +42,20 @@ export class CreatePaymentsTable1772722663123 implements MigrationInterface {
       `CREATE INDEX "idx_payments_provider" ON "payments" ("provider") `,
     );
     await queryRunner.query(
-      `CREATE INDEX "idx_payments_transaction_id" ON "payments" ("transaction_id") `,
+      `CREATE UNIQUE INDEX "idx_payments_transaction_id" ON "payments" ("transaction_id") `,
     );
     await queryRunner.query(
       `CREATE INDEX "idx_payments_order_id" ON "payments" ("order_id") `,
     );
+    await queryRunner.query(
+      `ALTER TABLE "payments" ADD CONSTRAINT "fk_payments_order_id" FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE RESTRICT ON UPDATE NO ACTION`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `ALTER TABLE "payments" DROP CONSTRAINT "fk_payments_order_id"`,
+    );
     await queryRunner.query(`DROP INDEX "public"."idx_payments_order_id"`);
     await queryRunner.query(
       `DROP INDEX "public"."idx_payments_transaction_id"`,

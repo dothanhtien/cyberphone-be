@@ -18,6 +18,8 @@ import { PaymentProvider, PaymentStatus } from './enums';
 import { CreatePaymentDto } from './dto/requests/create-payment.dto';
 import { MomoStrategy } from './strategies/momo.strategy';
 import { OrderStatus } from '@/orders/enums';
+import { Cart } from '@/carts/entities/cart.entity';
+import { CartStatus } from '@/carts/enums';
 
 @Injectable()
 export class PaymentService {
@@ -100,13 +102,30 @@ export class PaymentService {
   private async updatePaymentStatus(data: PaymentResult) {
     return this.dataSource.transaction(async (tx) => {
       const paymentRepository = tx.getRepository(Payment);
+      const orderRepository = tx.getRepository(Order);
+      const cartRepository = tx.getRepository(Cart);
 
       const payment = await paymentRepository.findOne({
-        where: { id: data.paymentId, status: PaymentStatus.PENDING },
+        where: { id: data.paymentId },
+        lock: { mode: 'pessimistic_write' },
       });
 
       if (!payment) {
         throw new NotFoundException('Payment not found or already updated');
+      }
+
+      if (payment.status !== PaymentStatus.PENDING) {
+        this.logger.warn(`Duplicate payment callback: ${payment.id}`);
+
+        const order = await orderRepository.findOne({
+          where: { id: payment.orderId },
+        });
+
+        return {
+          id: payment.id,
+          status: payment.status,
+          orderCode: order?.code,
+        };
       }
 
       payment.status = data.success
@@ -119,21 +138,47 @@ export class PaymentService {
       payment.paidAt = data.success ? new Date() : null;
       payment.paymentMethod = data.orderType ?? null;
 
-      const updatedPayment = await paymentRepository.save(payment);
+      await paymentRepository.save(payment);
 
-      if (data.success) {
-        await tx.getRepository(Order).update(payment.orderId, {
-          // paymentStatus: PaymentStatus.SUCCESS,  // TODO: need to review to remove
-          orderStatus: OrderStatus.COMPLETED,
-          updatedBy: 'system',
-        });
+      const order = await orderRepository.findOne({
+        where: { id: payment.orderId },
+      });
+
+      if (!order) {
+        throw new NotFoundException('Order not found');
+      }
+
+      if (payment.status === PaymentStatus.SUCCESS) {
+        order.paymentStatus = payment.status;
+        order.orderStatus = OrderStatus.COMPLETED;
+        order.updatedBy = 'system';
+
+        await orderRepository.save(order);
+      }
+
+      const cart = await cartRepository.findOne({
+        where: { id: order.cartId },
+      });
+
+      if (!cart) {
+        throw new NotFoundException('Cart not found');
+      }
+
+      if (payment.status === PaymentStatus.SUCCESS) {
+        cart.status = CartStatus.CONVERTED;
+        cart.updatedBy = 'system';
+        await cartRepository.save(cart);
       }
 
       this.logger.log(
         `Payment updated: payment=${payment.id} status=${payment.status}`,
       );
 
-      return updatedPayment;
+      return {
+        id: payment.id,
+        status: payment.status,
+        orderCode: order.code,
+      };
     });
   }
 }

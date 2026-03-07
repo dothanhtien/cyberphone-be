@@ -5,12 +5,15 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Order } from '../../orders/entities/order.entity';
 import { PaymentProvider, PaymentStatus } from '../enums';
 
 @Entity('payments')
 @Index('idx_payments_order_id', ['orderId'])
-@Index('idx_payments_transaction_id', ['transactionId'])
+@Index('idx_payments_transaction_id', ['transactionId'], { unique: true })
 @Index('idx_payments_provider', ['provider'])
 @Index('idx_payments_status', ['status'])
 @Index('idx_payments_paid_at', ['paidAt'])
@@ -98,4 +101,11 @@ export class Payment {
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: true })
   updatedAt: Date | null;
+
+  @ManyToOne(() => Order, (order) => order.payments, { onDelete: 'RESTRICT' })
+  @JoinColumn({
+    name: 'order_id',
+    foreignKeyConstraintName: 'fk_payments_order_id',
+  })
+  order: Order;
 }

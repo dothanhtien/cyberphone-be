@@ -23,7 +23,7 @@ export class MomoStrategy implements PaymentStrategy {
       secretKey: this.configService.getOrThrow<string>('MOMO_SECRET_KEY'),
       apiEndpoint: this.configService.getOrThrow<string>('MOMO_API_ENDPOINT'),
       ipnUrl: this.configService.getOrThrow<string>('MOMO_IPN_URL'),
-      isSandbox: this.configService.get<boolean>('MOMO_SANDBOX', true),
+      isSandbox: this.configService.get('MOMO_SANDBOX', 'true') === 'true',
     };
   }
 
@@ -174,14 +174,7 @@ export class MomoStrategy implements PaymentStrategy {
     if (signature !== expectedSignature) {
       this.logger.warn(`MoMo invalid signature for order: ${orderId}`);
 
-      return {
-        success: false,
-        paymentId: requestId,
-        transactionId: transId,
-        orderType,
-        message: 'Invalid signature',
-        rawData: query,
-      };
+      throw new BadRequestException('Invalid signature');
     }
 
     const success = Number(resultCode) === 0;

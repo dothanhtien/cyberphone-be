@@ -37,7 +37,7 @@ interface Item {
   currency: string;
   quantity: number;
   unit?: string;
-  totolPrice: number;
+  totalPrice: number;
   taxAmount?: number;
 }
 
