@@ -29,7 +29,7 @@ export class CreateOrdersTable1772541379498 implements MigrationInterface {
           "shipping_method" character varying(100) NOT NULL, 
           "shipping_fee" numeric(12, 2) NOT NULL DEFAULT '0', 
           "shipping_tracking_code" character varying(100), 
-          "estimated_delivery_date" date, 
+          "estimated_delivery_date" TIMESTAMP WITH TIME ZONE, 
           "actual_delivery_date" TIMESTAMP WITH TIME ZONE, 
           "items_total" numeric(12, 2) NOT NULL, 
           "discount_total" numeric(12, 2) NOT NULL DEFAULT '0', 

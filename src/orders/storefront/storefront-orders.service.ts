@@ -158,7 +158,10 @@ export class StorefrontOrdersService {
 
     for (const item of cart.items) {
       const price = parseFloat(item.variant.price);
-      itemsTotal += price * item.quantity;
+      const salePrice = item.variant.salePrice
+        ? parseFloat(item.variant.salePrice)
+        : null;
+      itemsTotal += (salePrice ?? price) * item.quantity;
     }
 
     const shippingTotal = shippingFee;

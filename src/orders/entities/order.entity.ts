@@ -140,7 +140,11 @@ export class Order {
   })
   shippingTrackingCode: string | null;
 
-  @Column({ name: 'estimated_delivery_date', type: 'date', nullable: true })
+  @Column({
+    name: 'estimated_delivery_date',
+    type: 'timestamptz',
+    nullable: true,
+  })
   estimatedDeliveryDate: Date | null;
 
   @Column({ name: 'actual_delivery_date', type: 'timestamptz', nullable: true })
