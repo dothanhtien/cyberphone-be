@@ -8,6 +8,7 @@ import { OrderItem } from '../entities/order-item.entity';
 import { CreateOrderDto } from './dto/requests/create-order.dto';
 import { sanitizeEntityInput } from '@/common/utils/entities';
 import { OrderCreateEntityInput } from './dto/entity-inputs/order-create-entity.dto';
+import { CartStatus } from '@/carts/enums';
 
 @Injectable()
 export class StorefrontOrdersService {
@@ -26,7 +27,7 @@ export class StorefrontOrdersService {
         .leftJoinAndSelect('variant.attributes', 'attributes')
         .leftJoinAndSelect('attributes.productAttribute', 'productAttribute')
         .where('cart.id = :cartId', { cartId: createOrderDto.cartId })
-        .andWhere('cart.isActive = :cartActive', { cartActive: true })
+        .andWhere('cart.status = :status', { status: CartStatus.ACTIVE })
         .select([
           'cart.id',
           'cart.userId',

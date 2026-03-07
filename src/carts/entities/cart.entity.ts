@@ -7,19 +7,22 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { CartItem } from './cart-item.entity';
 import { Order } from '../../orders/entities/order.entity';
+import { CartStatus } from '../enums';
 
 @Entity('carts')
+@Index('uq_carts_session_id_active', ['sessionId'], {
+  unique: true,
+  where: `"status" = '${CartStatus.ACTIVE}'`,
+})
 @Index('uq_carts_user_id_active', ['userId'], {
   unique: true,
-  where: `"is_active" = true`,
+  where: `"user_id" IS NOT NULL AND "status" = '${CartStatus.ACTIVE}'`,
 })
-@Unique('uq_carts_session_id', ['sessionId'])
 export class Cart {
   @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'pk_carts_id' })
   id: string;
@@ -34,12 +37,12 @@ export class Cart {
   expiresAt: Date;
 
   @Column({
-    name: 'is_active',
-    type: 'boolean',
-    nullable: false,
-    default: true,
+    name: 'status',
+    type: 'varchar',
+    length: 50,
+    default: CartStatus.ACTIVE,
   })
-  isActive: boolean = true;
+  status: CartStatus;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;

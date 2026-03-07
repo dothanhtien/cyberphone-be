@@ -1,3 +1,4 @@
+import { PaymentMethod } from '@/payment/enums';
 import {
   IsString,
   IsNotEmpty,
@@ -6,7 +7,6 @@ import {
   IsUUID,
   IsEnum,
 } from 'class-validator';
-import { PaymentMethod } from '@/orders/enums';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_PHONE_LENGTH = 30;

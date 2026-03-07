@@ -18,6 +18,7 @@ import { ProductVariant } from '@/product-variants/entities/product-variant.enti
 import { CartItem } from '../entities/cart-item.entity';
 import { CartItemCreateEntityInput } from './dto/entity-inputs/cart-item-create-entity.dto';
 import { MediaAssetRefType, ProductVariantStockStatus } from '@/common/enums';
+import { CartStatus } from '../enums';
 
 dayjs.extend(utc);
 
@@ -79,7 +80,7 @@ export class StorefrontCartsService {
         cartRepository.findOne({
           where: {
             id: cartId,
-            isActive: true,
+            status: CartStatus.ACTIVE,
             expiresAt: MoreThan(new Date()),
           },
         }),
@@ -144,13 +145,13 @@ export class StorefrontCartsService {
 
     if (userId) {
       const userCart = await this.cartRepository.findOne({
-        where: { userId, isActive: true },
+        where: { userId, status: CartStatus.ACTIVE },
       });
 
       if (userCart) {
         if (userCart.expiresAt && userCart.expiresAt < now) {
           await this.cartRepository.update(userCart.id, {
-            isActive: false,
+            status: CartStatus.INACTIVE,
           });
         } else {
           return userCart;
@@ -160,13 +161,13 @@ export class StorefrontCartsService {
 
     if (sessionId) {
       const guestCart = await this.cartRepository.findOne({
-        where: { sessionId, isActive: true },
+        where: { sessionId, status: CartStatus.ACTIVE },
       });
 
       if (guestCart) {
         if (guestCart.expiresAt && guestCart.expiresAt < now) {
-          await this.cartItemRepository.update(guestCart.id, {
-            isActive: false,
+          await this.cartRepository.update(guestCart.id, {
+            status: CartStatus.INACTIVE,
           });
         } else {
           return guestCart;
@@ -201,7 +202,7 @@ export class StorefrontCartsService {
       const [cart, variant] = await Promise.all([
         tx.getRepository(Cart).findOneBy({
           id: cartId,
-          isActive: true,
+          status: CartStatus.ACTIVE,
         }),
         tx.getRepository(ProductVariant).findOneBy({
           id: item.variantId,
@@ -312,11 +313,15 @@ export class StorefrontCartsService {
           ORDER BY COALESCE(pi.updated_at, pi.created_at) DESC
           LIMIT 1
         ) img ON true
-        WHERE c.id = $2 AND c.is_active = true
+        WHERE c.id = $2 AND c.status = $3
         GROUP BY c.id
       `,
-      [MediaAssetRefType.PRODUCT_IMAGE, id],
+      [MediaAssetRefType.PRODUCT_IMAGE, id, CartStatus.ACTIVE],
     );
+
+    if (!result) {
+      throw new NotFoundException('Cart not found');
+    }
 
     return {
       id: result.id,

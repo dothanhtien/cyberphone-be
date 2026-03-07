@@ -1,16 +1,3 @@
-export enum PaymentMethod {
-  COD = 'cod',
-  MOMO = 'momo',
-  VNPAY = 'vnpay',
-}
-
-export enum PaymentStatus {
-  PENDING = 'pending',
-  PAID = 'paid',
-  FAILED = 'failed',
-  REFUNDED = 'refunded',
-}
-
 export enum OrderStatus {
   PENDING = 'pending',
   CONFIRMED = 'confirmed',
