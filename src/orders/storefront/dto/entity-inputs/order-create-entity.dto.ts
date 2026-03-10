@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
-import { DeviceType, OrderStatus, PaymentMethod } from '@/orders/enums';
-import { PaymentStatus } from '@/payment/enums';
+import { DeviceType, OrderStatus } from '@/orders/enums';
+import { PaymentMethod, PaymentStatus } from '@/payment/enums';
 
 export class OrderCreateEntityInput {
   @Expose()
