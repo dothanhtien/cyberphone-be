@@ -1,33 +1,34 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { DateRangeFilterDto, LimitFilterDto } from './dto/requests/filter.dto';
+import { TopProductsFilterDto } from './dto/requests/top-products-filter.dto';
 
 @Controller('dashboard')
 export class DashboardController {
-  constructor(private readonly dashboardSerVice: DashboardService) {}
+  constructor(private readonly dashboardService: DashboardService) {}
 
   @Get('summary')
   getSummary(@Query() filterDto: DateRangeFilterDto) {
-    return this.dashboardSerVice.getSummary(filterDto);
+    return this.dashboardService.getSummary(filterDto);
   }
 
   @Get('revenue')
   getRevenue(@Query() filterDto: DateRangeFilterDto) {
-    return this.dashboardSerVice.getRevenue(filterDto);
+    return this.dashboardService.getRevenue(filterDto);
   }
 
   @Get('top-category-sales')
   getTopCategorySales(@Query() filterDto: DateRangeFilterDto) {
-    return this.dashboardSerVice.getTopCategorySales(filterDto);
+    return this.dashboardService.getTopCategorySales(filterDto);
   }
 
   @Get('top-products')
-  getTopProducts(@Query() filterDto: DateRangeFilterDto & LimitFilterDto) {
-    return this.dashboardSerVice.getTopProducts(filterDto);
+  getTopProducts(@Query() filterDto: TopProductsFilterDto) {
+    return this.dashboardService.getTopProducts(filterDto);
   }
 
   @Get('recent-orders')
   getRecentOrders(@Query() filterDto: LimitFilterDto) {
-    return this.dashboardSerVice.getRecentOrders(filterDto);
+    return this.dashboardService.getRecentOrders(filterDto);
   }
 }

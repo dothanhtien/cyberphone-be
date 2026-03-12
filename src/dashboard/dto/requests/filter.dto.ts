@@ -22,5 +22,5 @@ export class LimitFilterDto {
   @IsInt({ message: 'limit must be an integer number' })
   @Min(1, { message: 'limit must be greater than or equal to 1' })
   @Max(100, { message: 'limit must be less than or equal to 100' })
-  limit: number;
+  limit?: number;
 }

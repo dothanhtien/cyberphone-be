@@ -29,6 +29,10 @@ export function ValidateDateRange(
           const startDate = new Date(start as string);
           const endDate = new Date(end as string);
 
+          if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+            return true;
+          }
+
           return startDate.getTime() <= endDate.getTime();
         },
 
