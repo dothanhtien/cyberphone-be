@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Inject,
   Injectable,
   NotFoundException,
@@ -11,7 +12,7 @@ import { CreateBrandDto } from './dto/requests/create-brand.dto';
 import { UpdateBrandDto } from './dto/requests/update-brand.dto';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import { extractPaginationParams } from '@/common/utils/paginations.util';
-import { toEntity } from '@/common/utils/entities';
+import { sanitizeEntityInput } from '@/common/utils/entities';
 import { normalizeSlug } from '@/common/utils/slugs';
 import { MediaAssetsService } from '@/media-assets/media-assets.service';
 import {
@@ -25,8 +26,13 @@ import type {
   StorageProvider,
   StorageUploadResult,
 } from '@/storage/storage.provider';
-import { BrandWithLogo } from '@/common/types/brands.type';
 import { PaginatedEntity } from '@/common/types/paginations.type';
+import { BrandCreateEntityInput } from './dto/entity-inputs/brand-create-entity-input.dto';
+import { BrandUpdateEntityInput } from './dto/entity-inputs/brand-update-entity-input.dto';
+import { isUniqueConstraintError } from '@/common/utils/database-error.util';
+import { BrandResponseDto } from './dto/responses/brand-response.dto';
+import { mapToBrandResponse } from './mappers/brand.mapper';
+import { BrandQueryRaw, BrandWithExtras } from './types';
 
 @Injectable()
 export class BrandsService {
@@ -41,7 +47,7 @@ export class BrandsService {
   async create(
     createBrandDto: CreateBrandDto,
     logo?: Express.Multer.File,
-  ): Promise<BrandWithLogo> {
+  ): Promise<BrandResponseDto> {
     createBrandDto.slug = normalizeSlug(createBrandDto.slug);
 
     if (await this.doesSlugExist(createBrandDto.slug)) {
@@ -49,8 +55,11 @@ export class BrandsService {
     }
 
     return this.dataSource.transaction(async (tx) => {
-      const brand = toEntity(Brand, createBrandDto);
-      const savedBrand = await tx.save(brand);
+      const brandEntity = sanitizeEntityInput(
+        BrandCreateEntityInput,
+        createBrandDto,
+      );
+      const savedBrand = await tx.save(Brand, brandEntity);
 
       let uploadResult: StorageUploadResult | null = null;
       let media: MediaAsset | null = null;
@@ -74,11 +83,15 @@ export class BrandsService {
           );
         }
 
-        return {
+        return mapToBrandResponse({
           ...savedBrand,
           logo: media?.url ?? null,
-        };
+        });
       } catch (error) {
+        if (isUniqueConstraintError(error)) {
+          throw new ConflictException('Brand with this slug already exists');
+        }
+
         if (uploadResult?.key) {
           await this.storageProvider.delete(uploadResult.key);
         }
@@ -89,80 +102,63 @@ export class BrandsService {
 
   async findAll(
     paginationQueryDto: PaginationQueryDto,
-  ): Promise<PaginatedEntity<BrandWithLogo>> {
+  ): Promise<PaginatedEntity<BrandResponseDto>> {
     const { page, limit } = extractPaginationParams(paginationQueryDto);
 
-    const selectQueryBuilder = this.brandRepository
-      .createQueryBuilder('b')
-      .leftJoin(
-        'media_assets',
-        'm',
-        `
-          m.ref_type = :refType
-          AND m.ref_id::uuid = b.id
-          -- AND m.is_active = true // TODO: consider to add is_active in the media_assets table
-        `,
-        { refType: MediaAssetRefType.BRAND },
-      )
+    const selectQueryBuilder = this.baseBrandQuery()
+      .leftJoin('products', 'p', 'p.brand_id = b.id AND p.is_active = true')
       .select(['b', 'm.url AS logo'])
+      .addSelect('COUNT(p.id)', 'productCount')
       .where('b.is_active = true')
+      .groupBy('b.id, m.url')
       .orderBy('b.updated_at', 'DESC')
       .skip((page - 1) * limit)
       .limit(limit);
 
     const countQueryBuilder = selectQueryBuilder.clone();
 
-    const [{ raw, entities }, totalCount] = await Promise.all([
-      selectQueryBuilder.getRawAndEntities<BrandWithLogo>(),
+    const [{ entities, raw }, totalCount] = await Promise.all([
+      selectQueryBuilder.getRawAndEntities(),
       countQueryBuilder.getCount(),
     ]);
 
-    const items = entities.map((brand, idx) => ({
-      ...brand,
-      logo: raw[idx].logo ?? null,
-    }));
+    const brands = this.mergeBrandExtras(entities, raw as BrandQueryRaw[]);
 
     return {
-      items,
+      items: brands.map(mapToBrandResponse),
       totalCount,
       currentPage: page,
       itemsPerPage: limit,
     };
   }
 
-  async findOne(id: string): Promise<BrandWithLogo> {
-    const result = await this.brandRepository
-      .createQueryBuilder('b')
-      .leftJoin(
-        'media_assets',
-        'm',
-        `
-          m.ref_type = :refType
-          AND m.ref_id::uuid = b.id
-          -- AND m.is_active = true // TODO: consider to add is_active in the media_assets table
-        `,
-        { refType: MediaAssetRefType.BRAND },
-      )
+  async findOne(id: string): Promise<BrandResponseDto> {
+    const { entities, raw } = await this.baseBrandQuery()
       .select(['b', 'm.url AS logo'])
       .where('b.id = :id AND b.is_active = true', { id })
-      .getRawAndEntities<Brand & { logo: string | null }>();
+      .getRawAndEntities();
 
-    if (!result.entities.length) {
+    if (!entities.length) {
       throw new NotFoundException('Brand not found');
     }
 
-    return {
-      ...result.entities[0],
-      logo: result.raw[0].logo,
-    };
+    const brand = this.mergeBrandExtras(entities, raw as BrandQueryRaw[])[0];
+
+    return mapToBrandResponse(brand);
   }
 
   async update(
     id: string,
     updateBrandDto: UpdateBrandDto,
     logo?: Express.Multer.File,
-  ): Promise<BrandWithLogo> {
-    const brand = await this.findOne(id);
+  ): Promise<BrandResponseDto> {
+    const brand = await this.brandRepository.findOne({
+      where: { id, isActive: true },
+    });
+
+    if (!brand) {
+      throw new NotFoundException('Brand not found');
+    }
 
     if (updateBrandDto.slug) {
       updateBrandDto.slug = normalizeSlug(updateBrandDto.slug);
@@ -176,10 +172,15 @@ export class BrandsService {
 
     return this.dataSource.transaction(async (tx) => {
       const updatedBrand = await tx.save(
-        toEntity(Brand, { ...brand, ...updateBrandDto }),
+        Brand,
+        sanitizeEntityInput(BrandUpdateEntityInput, {
+          ...brand,
+          ...updateBrandDto,
+        }),
       );
 
       let uploadResult: StorageUploadResult | null = null;
+      let logoUrl: string | null = null;
 
       try {
         if (logo) {
@@ -200,29 +201,26 @@ export class BrandsService {
               resourceType: uploadResult.resourceType as MediaType,
               refType: MediaAssetRefType.BRAND,
               refId: id,
-              createdBy: updatedBrand.updatedBy!,
+              createdBy: updatedBrand.updatedBy,
             },
             tx,
           );
 
+          logoUrl = newMedia.url;
+
           if (oldMedia) {
             await this.mediaAssetsService.deleteById(oldMedia.id, tx);
-          }
 
-          if (oldMedia?.publicId) {
-            await this.storageProvider.delete(oldMedia.publicId);
+            if (oldMedia.publicId) {
+              await this.storageProvider.delete(oldMedia.publicId);
+            }
           }
-
-          return {
-            ...updatedBrand,
-            logo: newMedia.url,
-          };
         }
 
-        return {
+        return mapToBrandResponse({
           ...updatedBrand,
-          logo: brand?.logo ?? null,
-        };
+          logo: logoUrl,
+        });
       } catch (error) {
         if (uploadResult?.key) {
           await this.storageProvider.delete(uploadResult.key);
@@ -249,5 +247,29 @@ export class BrandsService {
         ...(excludeId && { id: Not(excludeId) }),
       },
     });
+  }
+
+  private baseBrandQuery() {
+    return this.brandRepository.createQueryBuilder('b').leftJoin(
+      'media_assets',
+      'm',
+      `
+        m.ref_type = :refType
+        AND m.ref_id::uuid = b.id
+        AND m.deleted_at IS NULL
+      `,
+      { refType: MediaAssetRefType.BRAND },
+    );
+  }
+
+  private mergeBrandExtras(
+    entities: Brand[],
+    raw: BrandQueryRaw[],
+  ): BrandWithExtras[] {
+    return entities.map((brand, idx) => ({
+      ...brand,
+      logo: raw[idx]?.logo ?? null,
+      productCount: Number(raw[idx]?.productCount ?? 0),
+    }));
   }
 }

@@ -17,6 +17,8 @@ import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import { BrandsService } from './brands.service';
 import { CreateBrandDto } from './dto/requests/create-brand.dto';
 import { UpdateBrandDto } from './dto/requests/update-brand.dto';
+import { LoggedInUser } from '@/auth/decorators/logged-in-user.decorator';
+import { User } from '@/users/entities/user.entity';
 
 @Controller('admin/brands')
 export class BrandsController {
@@ -27,8 +29,9 @@ export class BrandsController {
   async create(
     @UploadedFile() logo: Express.Multer.File,
     @Body() createBrandDto: CreateBrandDto,
+    @LoggedInUser() loggedInUser: User,
   ) {
-    createBrandDto.createdBy = 'admin'; // TODO: replace with actual user
+    createBrandDto.createdBy = loggedInUser.id;
     return this.brandsService.create(createBrandDto, logo);
   }
 

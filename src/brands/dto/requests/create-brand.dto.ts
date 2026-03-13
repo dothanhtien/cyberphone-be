@@ -52,6 +52,6 @@ export class CreateBrandDto {
   })
   websiteUrl?: string;
 
-  @IsEmpty({ message: 'createdBy is not allowed to be set manually' })
+  @IsEmpty()
   createdBy: string;
 }

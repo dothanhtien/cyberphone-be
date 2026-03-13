@@ -17,6 +17,12 @@ export class BrandResponseDto {
   websiteUrl: string | null;
 
   @Expose()
+  logo?: string | null;
+
+  @Expose()
+  productCount?: number;
+
+  @Expose()
   isActive: boolean;
 
   @Expose()

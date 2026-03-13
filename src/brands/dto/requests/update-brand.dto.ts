@@ -51,9 +51,9 @@ export class UpdateBrandDto {
   @IsOptional()
   websiteUrl?: string;
 
-  @IsEmpty({ message: 'isActive is not allowed to be set manually' })
+  @IsEmpty()
   isActive?: boolean;
 
-  @IsEmpty({ message: 'updatedBy is not allowed to be set manually' })
+  @IsEmpty()
   updatedBy: string;
 }
