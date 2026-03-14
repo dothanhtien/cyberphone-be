@@ -2,5 +2,9 @@ export function getErrorStack(error: unknown): string {
   if (error instanceof Error) {
     return error.stack ?? error.message;
   }
-  return JSON.stringify(error);
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
+  }
 }
