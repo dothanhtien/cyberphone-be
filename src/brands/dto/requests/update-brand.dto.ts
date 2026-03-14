@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsString,
   IsOptional,
@@ -5,6 +6,7 @@ import {
   MaxLength,
   Matches,
   IsEmpty,
+  IsBoolean,
 } from 'class-validator';
 
 const MAX_NAME_LENGTH = 255;
@@ -51,9 +53,14 @@ export class UpdateBrandDto {
   @IsOptional()
   websiteUrl?: string;
 
-  @IsEmpty({ message: 'isActive is not allowed to be set manually' })
+  @IsBoolean()
+  @Transform(({ value }) => String(value).toLowerCase() === 'true')
+  @IsOptional()
+  removeLogo?: boolean;
+
+  @IsEmpty()
   isActive?: boolean;
 
-  @IsEmpty({ message: 'updatedBy is not allowed to be set manually' })
+  @IsEmpty()
   updatedBy: string;
 }

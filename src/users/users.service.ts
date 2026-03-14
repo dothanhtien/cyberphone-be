@@ -9,7 +9,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Role } from './entities/role.entity';
 import { PasswordService } from '@/password/password.service';
-import { toEntity } from '@/common/utils/entities';
+import { toEntity } from '@/common/utils/entities.util';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import {
   buildPaginationParams,

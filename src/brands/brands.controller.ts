@@ -12,11 +12,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { NonEmptyBodyPipe } from '@/common/pipes/non-empty-body.pipe';
-import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import { BrandsService } from './brands.service';
-import { CreateBrandDto } from './dto/requests/create-brand.dto';
-import { UpdateBrandDto } from './dto/requests/update-brand.dto';
+import { CreateBrandDto, UpdateBrandDto } from './dto';
+import { PaginationQueryDto } from '@/common/dto';
+import { LoggedInUser } from '@/auth/decorators';
+import { User } from '@/users/entities';
 
 @Controller('admin/brands')
 export class BrandsController {
@@ -27,8 +27,9 @@ export class BrandsController {
   async create(
     @UploadedFile() logo: Express.Multer.File,
     @Body() createBrandDto: CreateBrandDto,
+    @LoggedInUser() loggedInUser: User,
   ) {
-    createBrandDto.createdBy = 'admin'; // TODO: replace with actual user
+    createBrandDto.createdBy = loggedInUser.id;
     return this.brandsService.create(createBrandDto, logo);
   }
 
@@ -47,18 +48,23 @@ export class BrandsController {
   async update(
     @UploadedFile() logo: Express.Multer.File,
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @Body(new NonEmptyBodyPipe()) updateBrandDto: UpdateBrandDto,
+    @Body() updateBrandDto: UpdateBrandDto,
+    @LoggedInUser() loggedInUser: User,
   ) {
-    updateBrandDto.updatedBy = 'admin'; // TODO: replace with actual user
+    updateBrandDto.updatedBy = loggedInUser.id;
     return this.brandsService.update(id, updateBrandDto, logo);
   }
 
   @Delete(':id')
-  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  async remove(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @LoggedInUser() loggedInUser: User,
+  ) {
     await this.brandsService.update(id, {
       isActive: false,
-      updatedBy: 'admin', // TODO: replace with actual user
+      updatedBy: loggedInUser.id,
     });
+
     return true;
   }
 }

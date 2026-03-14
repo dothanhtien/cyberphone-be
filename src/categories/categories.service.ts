@@ -14,7 +14,7 @@ import {
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/requests/create-category.dto';
 import { UpdateCategoryDto } from './dto/requests/update-category.dto';
-import { toEntity } from '@/common/utils/entities';
+import { toEntity } from '@/common/utils/entities.util';
 import { MediaAssetsService } from '@/media-assets/media-assets.service';
 import {
   MediaAsset,
