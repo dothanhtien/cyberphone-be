@@ -23,7 +23,7 @@ import { ProductImageCreateEntityDto } from './dto/entity-inputs/product-image-c
 import { ProductResponseDto } from './dto/responses/product-response.dto';
 import { BrandsService } from '@/brands/brands.service';
 import { CategoriesService } from '@/categories/categories.service';
-import { sanitizeEntityInput } from '@/common/utils/entities';
+import { sanitizeEntityInput } from '@/common/utils/entities.util';
 import { extractPaginationParams } from '@/common/utils/paginations.util';
 import { isUniqueConstraintError } from '@/common/utils/database-error.util';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';

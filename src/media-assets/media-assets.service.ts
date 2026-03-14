@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, Repository } from 'typeorm';
 import { MediaAsset } from './entities/media-asset.entity';
 import { CreateMediaAssetDto } from './dto/create-media-asset.dto';
-import { toEntity } from '@/common/utils/entities';
+import { toEntity } from '@/common/utils';
 
 @Injectable()
 export class MediaAssetsService {

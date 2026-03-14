@@ -6,7 +6,7 @@ import { Cart } from '@/carts/entities/cart.entity';
 import { Order } from '../entities/order.entity';
 import { OrderItem } from '../entities/order-item.entity';
 import { CreateOrderDto } from './dto/requests/create-order.dto';
-import { sanitizeEntityInput } from '@/common/utils/entities';
+import { sanitizeEntityInput } from '@/common/utils';
 import { OrderCreateEntityInput } from './dto/entity-inputs/order-create-entity.dto';
 import { CartStatus } from '@/carts/enums';
 

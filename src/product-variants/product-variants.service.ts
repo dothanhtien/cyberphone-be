@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { ProductVariant } from './entities/product-variant.entity';
-import { sanitizeEntityInput } from '@/common/utils/entities';
+import { sanitizeEntityInput } from '@/common/utils/entities.util';
 import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
 import { ProductVariantCreateEntityDto } from './dto/entity-inputs/product-variant-create-entity.dto';
 import { Product } from '@/products/entities/product.entity';

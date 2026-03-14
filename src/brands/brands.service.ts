@@ -3,39 +3,47 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Not, Repository } from 'typeorm';
-import { Brand } from './entities/brand.entity';
-import { CreateBrandDto } from './dto/requests/create-brand.dto';
-import { UpdateBrandDto } from './dto/requests/update-brand.dto';
-import { PaginationQueryDto } from '@/common/dto/paginations.dto';
-import { extractPaginationParams } from '@/common/utils/paginations.util';
-import { sanitizeEntityInput } from '@/common/utils/entities';
-import { normalizeSlug } from '@/common/utils/slugs';
+import {
+  BrandCreateEntityInput,
+  BrandResponseDto,
+  BrandUpdateEntityInput,
+  CreateBrandDto,
+  UpdateBrandDto,
+} from './dto';
+import { Brand } from './entities';
+import { mapToBrandResponse } from './mappers';
+import { BrandQueryRaw, BrandWithExtras } from './types';
 import { MediaAssetsService } from '@/media-assets/media-assets.service';
 import {
   MediaAsset,
   MediaType,
 } from '@/media-assets/entities/media-asset.entity';
-import { MediaAssetRefType } from '@/common/enums';
-import { BRAND_FOLDER } from '@/common/constants/paths';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {
   StorageProvider,
   StorageUploadResult,
 } from '@/storage/storage.provider';
-import { PaginatedEntity } from '@/common/types/paginations.type';
-import { BrandCreateEntityInput } from './dto/entity-inputs/brand-create-entity-input.dto';
-import { BrandUpdateEntityInput } from './dto/entity-inputs/brand-update-entity-input.dto';
-import { isUniqueConstraintError } from '@/common/utils/database-error.util';
-import { BrandResponseDto } from './dto/responses/brand-response.dto';
-import { mapToBrandResponse } from './mappers/brand.mapper';
-import { BrandQueryRaw, BrandWithExtras } from './types';
+import { BRAND_FOLDER } from '@/common/constants';
+import { PaginationQueryDto } from '@/common/dto';
+import { MediaAssetRefType } from '@/common/enums';
+import { PaginatedEntity } from '@/common/types';
+import {
+  extractPaginationParams,
+  getErrorStack,
+  isUniqueConstraintError,
+  normalizeSlug,
+  sanitizeEntityInput,
+} from '@/common/utils';
 
 @Injectable()
 export class BrandsService {
+  private readonly logger = new Logger(BrandsService.name);
+
   constructor(
     @InjectRepository(Brand)
     private readonly brandRepository: Repository<Brand>,
@@ -48,9 +56,12 @@ export class BrandsService {
     createBrandDto: CreateBrandDto,
     logo?: Express.Multer.File,
   ): Promise<BrandResponseDto> {
+    this.logger.log(`Creating brand: ${createBrandDto.name}`);
+
     createBrandDto.slug = normalizeSlug(createBrandDto.slug);
 
     if (await this.doesSlugExist(createBrandDto.slug)) {
+      this.logger.warn(`Brand slug already exists: ${createBrandDto.slug}`);
       throw new BadRequestException('Brand with this slug already exists');
     }
 
@@ -59,13 +70,18 @@ export class BrandsService {
         BrandCreateEntityInput,
         createBrandDto,
       );
+
       const savedBrand = await tx.save(Brand, brandEntity);
+
+      this.logger.debug(`Brand saved with id=${savedBrand.id}`);
 
       let uploadResult: StorageUploadResult | null = null;
       let media: MediaAsset | null = null;
 
       try {
         if (logo) {
+          this.logger.debug(`Uploading logo for brand ${savedBrand.id}`);
+
           uploadResult = await this.storageProvider.upload(logo, {
             folder: BRAND_FOLDER,
           });
@@ -81,6 +97,10 @@ export class BrandsService {
             },
             tx,
           );
+
+          this.logger.debug(
+            `Logo uploaded for brand ${savedBrand.id} - key=${uploadResult.key}`,
+          );
         }
 
         return mapToBrandResponse({
@@ -88,13 +108,20 @@ export class BrandsService {
           logo: media?.url ?? null,
         });
       } catch (error) {
+        this.logger.error(
+          `Failed to create brand ${createBrandDto.name}`,
+          getErrorStack(error),
+        );
+
         if (isUniqueConstraintError(error)) {
           throw new ConflictException('Brand with this slug already exists');
         }
 
         if (uploadResult?.key) {
           await this.storageProvider.delete(uploadResult.key);
+          this.logger.warn(`Rolled back uploaded file ${uploadResult.key}`);
         }
+
         throw error;
       }
     });
@@ -105,27 +132,39 @@ export class BrandsService {
   ): Promise<PaginatedEntity<BrandResponseDto>> {
     const { page, limit } = extractPaginationParams(paginationQueryDto);
 
+    this.logger.debug(`Fetching brands page=${page} limit=${limit}`);
+
     const selectQueryBuilder = this.baseBrandQuery()
       .leftJoin('products', 'p', 'p.brand_id = b.id AND p.is_active = true')
-      .select(['b', 'm.url AS logo'])
+      .select([
+        'b.id AS id',
+        'b.name AS name',
+        'b.slug AS slug',
+        'b.is_active AS "isActive"',
+        'b.created_at AS "createdAt"',
+        'b.created_by AS "createdBy"',
+        'b.updated_at AS "updatedAt"',
+        'b.updated_by AS "updatedBy"',
+      ])
+      .addSelect('m.url', 'logo')
       .addSelect('COUNT(p.id)', 'productCount')
       .where('b.is_active = true')
       .groupBy('b.id, m.url')
-      .orderBy('b.updated_at', 'DESC')
+      .orderBy('COALESCE(b.updated_at, b.created_at)', 'DESC')
       .skip((page - 1) * limit)
       .limit(limit);
 
     const countQueryBuilder = selectQueryBuilder.clone();
 
-    const [{ entities, raw }, totalCount] = await Promise.all([
-      selectQueryBuilder.getRawAndEntities(),
+    const [rows, totalCount] = await Promise.all([
+      selectQueryBuilder.getRawMany(),
       countQueryBuilder.getCount(),
     ]);
 
-    const brands = this.mergeBrandExtras(entities, raw as BrandQueryRaw[]);
+    this.logger.debug(`Fetched ${rows.length} brands`);
 
     return {
-      items: brands.map(mapToBrandResponse),
+      items: rows.map(mapToBrandResponse),
       totalCount,
       currentPage: page,
       itemsPerPage: limit,
@@ -133,12 +172,15 @@ export class BrandsService {
   }
 
   async findOne(id: string): Promise<BrandResponseDto> {
+    this.logger.debug(`Fetching brand id=${id}`);
+
     const { entities, raw } = await this.baseBrandQuery()
       .select(['b', 'm.url AS logo'])
       .where('b.id = :id AND b.is_active = true', { id })
       .getRawAndEntities();
 
     if (!entities.length) {
+      this.logger.warn(`Brand not found id=${id}`);
       throw new NotFoundException('Brand not found');
     }
 
@@ -152,11 +194,17 @@ export class BrandsService {
     updateBrandDto: UpdateBrandDto,
     logo?: Express.Multer.File,
   ): Promise<BrandResponseDto> {
-    const brand = await this.brandRepository.findOne({
-      where: { id, isActive: true },
-    });
+    this.logger.log(`Updating brand id=${id}`);
+
+    const brand = (await this.brandRepository
+      .createQueryBuilder('brand')
+      .select(['brand'])
+      .where('brand.id = :id AND brand.isActive = true', { id })
+      .loadRelationCountAndMap('brand.productCount', 'brand.products')
+      .getOne()) as Brand & { productCount: number };
 
     if (!brand) {
+      this.logger.warn(`Brand not found id=${id}`);
       throw new NotFoundException('Brand not found');
     }
 
@@ -166,29 +214,54 @@ export class BrandsService {
 
     if (updateBrandDto.slug && updateBrandDto.slug !== brand.slug) {
       if (await this.doesSlugExist(updateBrandDto.slug, id)) {
+        this.logger.warn(`Slug already exists: ${updateBrandDto.slug}`);
         throw new BadRequestException('Slug already exists');
       }
     }
 
     return this.dataSource.transaction(async (tx) => {
-      const updatedBrand = await tx.save(
-        Brand,
-        sanitizeEntityInput(BrandUpdateEntityInput, {
-          ...brand,
-          ...updateBrandDto,
-        }),
+      const entityInput = sanitizeEntityInput(BrandUpdateEntityInput, {
+        ...brand,
+        ...updateBrandDto,
+      });
+
+      if (updateBrandDto.isActive === false) {
+        if (brand.productCount > 0) {
+          this.logger.warn(
+            `Cannot delete brand id=${id} because it has products`,
+          );
+          throw new BadRequestException(
+            'Cannot delete brand with existing products',
+          );
+        }
+
+        entityInput.isActive = false;
+        this.logger.debug(`Setting brand id=${id} as inactive`);
+      }
+
+      this.logger.debug(
+        `Update payload for brand ${id}: ${JSON.stringify(entityInput)}`,
       );
+
+      const updatedBrand = await tx.save(Brand, { id, ...entityInput });
+
+      this.logger.debug(`Brand updated id=${updatedBrand.id}`);
 
       let uploadResult: StorageUploadResult | null = null;
       let logoUrl: string | null = null;
 
       try {
+        // important: Before uploading a logo, we need to retrieve oldMedia to identify differences with newMedia
+        const oldMedia = await this.mediaAssetsService.findByRefId(
+          MediaAssetRefType.BRAND,
+          id,
+          tx,
+        );
+
+        const shouldRemoveOld = updateBrandDto.removeLogo || !!logo;
+
         if (logo) {
-          const oldMedia = await this.mediaAssetsService.findByRefId(
-            MediaAssetRefType.BRAND,
-            id,
-            tx,
-          );
+          this.logger.debug(`Uploading new logo for brand ${id}`);
 
           uploadResult = await this.storageProvider.upload(logo, {
             folder: BRAND_FOLDER,
@@ -207,14 +280,27 @@ export class BrandsService {
           );
 
           logoUrl = newMedia.url;
+        }
 
-          if (oldMedia) {
+        if (shouldRemoveOld && oldMedia) {
+          await tx.save(Brand, { id, ...entityInput });
+          try {
             await this.mediaAssetsService.deleteById(oldMedia.id, tx);
-
             if (oldMedia.publicId) {
               await this.storageProvider.delete(oldMedia.publicId);
+              this.logger.debug(`Deleted old logo ${oldMedia.publicId}`);
             }
+          } catch (err) {
+            this.logger.error(
+              `Failed to delete old logo ${oldMedia.publicId}: ${getErrorStack(err)}`,
+            );
           }
+        }
+
+        if (!logo && updateBrandDto.removeLogo) {
+          logoUrl = null;
+        } else if (!logo && !updateBrandDto.removeLogo) {
+          logoUrl = oldMedia?.url ?? null;
         }
 
         return mapToBrandResponse({
@@ -222,9 +308,13 @@ export class BrandsService {
           logo: logoUrl,
         });
       } catch (error) {
+        this.logger.error(`Failed updating brand ${id}`, getErrorStack(error));
+
         if (uploadResult?.key) {
           await this.storageProvider.delete(uploadResult.key);
+          this.logger.warn(`Rolled back uploaded file ${uploadResult.key}`);
         }
+
         throw error;
       }
     });
@@ -269,7 +359,7 @@ export class BrandsService {
     return entities.map((brand, idx) => ({
       ...brand,
       logo: raw[idx]?.logo ?? null,
-      productCount: Number(raw[idx]?.productCount ?? 0),
+      productCount: Number(raw[idx]?.product_count ?? 0),
     }));
   }
 }

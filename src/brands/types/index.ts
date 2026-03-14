@@ -1,4 +1,4 @@
-import { Brand } from '../entities/brand.entity';
+import { Brand } from '../entities';
 
 export type BrandWithExtras = Brand & {
   logo?: string | null;
@@ -7,5 +7,5 @@ export type BrandWithExtras = Brand & {
 
 export interface BrandQueryRaw {
   logo: string | null;
-  productCount?: string;
+  product_count?: string;
 }

@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { EntityManager, In } from 'typeorm';
-import { sanitizeEntityInput } from '@/common/utils/entities';
+import { sanitizeEntityInput } from '@/common/utils/entities.util';
 import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
 import { VariantAttribute } from './entities/variant-attribute.entity';

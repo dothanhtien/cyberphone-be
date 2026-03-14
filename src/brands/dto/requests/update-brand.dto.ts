@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsString,
   IsOptional,
@@ -5,6 +6,7 @@ import {
   MaxLength,
   Matches,
   IsEmpty,
+  IsBoolean,
 } from 'class-validator';
 
 const MAX_NAME_LENGTH = 255;
@@ -50,6 +52,11 @@ export class UpdateBrandDto {
   @IsString({ message: 'Website URL must be a string' })
   @IsOptional()
   websiteUrl?: string;
+
+  @IsBoolean()
+  @Transform(({ value }) => String(value).toLowerCase() === 'true')
+  @IsOptional()
+  removeLogo?: boolean;
 
   @IsEmpty()
   isActive?: boolean;

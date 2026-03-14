@@ -14,5 +14,8 @@ export class BrandUpdateEntityInput {
   websiteUrl?: string;
 
   @Expose()
+  isActive?: boolean;
+
+  @Expose()
   updatedBy: string;
 }
