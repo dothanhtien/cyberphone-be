@@ -7,14 +7,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
-export enum MediaType {
-  IMAGE = 'image',
-  VIDEO = 'video',
-  DOCUMENT = 'document',
-  AUDIO = 'audio',
-  OTHER = 'other',
-}
+import {
+  MediaAssetRefType,
+  MediaAssetResourceType,
+  MediaAssetUsageType,
+} from '../../common/enums';
 
 @Entity('media_assets')
 @Index('idx_media_assets_ref_type_ref_id', ['refType', 'refId'])
@@ -39,19 +36,23 @@ export class MediaAsset {
   @Column({
     name: 'resource_type',
     type: 'enum',
-    enum: MediaType,
-    default: MediaType.OTHER,
+    enum: MediaAssetResourceType,
+    default: MediaAssetResourceType.OTHER,
   })
   @Expose()
-  resourceType: MediaType;
+  resourceType: MediaAssetResourceType;
 
   @Column({ name: 'ref_type', type: 'varchar', length: 100 })
   @Expose()
-  refType: string;
+  refType: MediaAssetRefType;
 
   @Column({ name: 'ref_id', type: 'varchar', length: 100 })
   @Expose()
   refId: string;
+
+  @Column({ name: 'usage_type', type: 'varchar', length: 100 })
+  @Expose()
+  usageType: MediaAssetUsageType;
 
   @Column({
     name: 'metadata',
@@ -61,6 +62,10 @@ export class MediaAsset {
   })
   @Expose()
   metadata?: Record<string, any>;
+
+  @Column({ name: 'is_active', type: 'boolean', default: true })
+  @Expose()
+  isActive: boolean = true;
 
   @CreateDateColumn({
     name: 'created_at',
@@ -82,19 +87,12 @@ export class MediaAsset {
   @Expose()
   updatedAt?: Date | null;
 
-  @Column({ name: 'updated_by', type: 'varchar', length: 100, nullable: true })
-  @Expose()
-  updatedBy?: string;
-
   @Column({
-    name: 'deleted_at',
-    type: 'timestamp with time zone',
+    name: 'updated_by',
+    type: 'varchar',
+    length: 100,
     nullable: true,
   })
   @Expose()
-  deletedAt?: Date | null;
-
-  @Column({ name: 'deleted_by', type: 'varchar', length: 100, nullable: true })
-  @Expose()
-  deletedBy?: string;
+  updatedBy?: string | null;
 }

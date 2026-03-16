@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, Repository } from 'typeorm';
-import { MediaAsset } from './entities/media-asset.entity';
-import { CreateMediaAssetDto } from './dto/create-media-asset.dto';
+import { MediaAsset } from './entities';
+import { CreateMediaAssetDto } from './dto';
 import { toEntity } from '@/common/utils';
+import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
 
 @Injectable()
 export class MediaAssetsService {
@@ -24,28 +25,40 @@ export class MediaAssetsService {
     return repository.save(mediaAsset);
   }
 
-  async findByRefId(
-    refType: string,
-    refId: string,
-    entityManager?: EntityManager,
-  ) {
-    const repository = entityManager
-      ? entityManager.getRepository(MediaAsset)
+  async findByRefId({
+    refType,
+    refId,
+    usageType,
+    tx,
+  }: {
+    refType: MediaAssetRefType;
+    refId: string;
+    usageType: MediaAssetUsageType;
+    tx?: EntityManager;
+  }) {
+    const repository = tx
+      ? tx.getRepository(MediaAsset)
       : this.mediaAssetRepository;
 
     return repository.findOne({
       where: {
         refType,
         refId,
+        usageType,
       },
     });
   }
 
-  async findByRefIds(refType: string, refIds: string[]) {
+  async findByRefIds(
+    refType: MediaAssetRefType,
+    refIds: string[],
+    usageType: MediaAssetUsageType,
+  ) {
     return this.mediaAssetRepository.find({
       where: {
         refType,
         refId: In(refIds),
+        usageType,
       },
     });
   }

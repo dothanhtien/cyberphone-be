@@ -17,7 +17,11 @@ import { AddToCartDto } from './dto/requests/add-to-cart.dto';
 import { ProductVariant } from '@/product-variants/entities/product-variant.entity';
 import { CartItem } from '../entities/cart-item.entity';
 import { CartItemCreateEntityInput } from './dto/entity-inputs/cart-item-create-entity.dto';
-import { MediaAssetRefType, ProductVariantStockStatus } from '@/common/enums';
+import {
+  MediaAssetRefType,
+  MediaAssetUsageType,
+  ProductVariantStockStatus,
+} from '@/common/enums';
 import { CartStatus } from '../enums';
 
 dayjs.extend(utc);
@@ -295,28 +299,30 @@ export class StorefrontCartsService {
             '[]'
           ) AS items
         FROM carts c
-        LEFT JOIN cart_items ci 
-          ON ci.cart_id = c.id AND ci.is_active = true
-        LEFT JOIN product_variants v 
-          ON v.id = ci.variant_id AND v.is_active = true
-        LEFT JOIN products p 
-          ON p.id = v.product_id AND p.is_active = true
+        LEFT JOIN cart_items ci ON ci.cart_id = c.id AND ci.is_active = true
+        LEFT JOIN product_variants v ON v.id = ci.variant_id AND v.is_active = true
+        LEFT JOIN products p ON p.id = v.product_id AND p.is_active = true
         LEFT JOIN LATERAL (
           SELECT ma.url
           FROM product_images pi
-          LEFT JOIN media_assets ma
-            ON ma.ref_id::uuid = pi.id
-           AND ma.ref_type = $1
-           AND ma.deleted_at IS NULL
-          WHERE pi.product_id = p.id
-            AND pi.is_active = true
+          LEFT JOIN media_assets ma 
+            ON ma.ref_type = $1 
+            AND ma.ref_id::uuid = pi.id 
+            AND ma.is_active = true 
+            AND ma.usage_type = $2
+          WHERE pi.product_id = p.id AND pi.is_active = true
           ORDER BY COALESCE(pi.updated_at, pi.created_at) DESC
           LIMIT 1
         ) img ON true
-        WHERE c.id = $2 AND c.status = $3
+        WHERE c.id = $3 AND c.status = $4
         GROUP BY c.id
       `,
-      [MediaAssetRefType.PRODUCT_IMAGE, id, CartStatus.ACTIVE],
+      [
+        MediaAssetRefType.PRODUCT,
+        MediaAssetUsageType.MAIN,
+        id,
+        CartStatus.ACTIVE,
+      ],
     );
 
     if (!result) {
@@ -356,18 +362,17 @@ export class StorefrontCartsService {
         v.stock_status AS "stockStatus",
         ma.url AS "imageUrl"
       FROM cart_items ci
-      LEFT JOIN product_variants v 
-        ON v.id = ci.variant_id AND v.is_active = true
-      LEFT JOIN products p
-        ON p.id = v.product_id AND p.is_active = true
-      LEFT JOIN product_images pi
-        ON pi.product_id = p.id AND pi.is_active = true
-      LEFT JOIN media_assets ma
-        ON ma.ref_id::uuid = pi.id AND ma.ref_type = $1 AND ma.deleted_at IS NULL
+      LEFT JOIN product_variants v ON v.id = ci.variant_id AND v.is_active = true
+      LEFT JOIN products p ON p.id = v.product_id AND p.is_active = true
+      LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.is_active = true
+      LEFT JOIN media_assets ma 
+        ON ma.ref_type = $1 
+        AND ma.ref_id::uuid = pi.id 
+        AND ma.is_active = true
       WHERE ci.id = $2 AND ci.is_active = true
       LIMIT 1
     `,
-      [MediaAssetRefType.PRODUCT_IMAGE, itemId],
+      [MediaAssetRefType.PRODUCT, itemId],
     );
 
     if (!result) return null;

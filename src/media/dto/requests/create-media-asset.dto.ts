@@ -1,3 +1,4 @@
+import { MediaAssetResourceType } from '@/common/enums';
 import {
   IsEnum,
   IsNotEmpty,
@@ -6,7 +7,6 @@ import {
   IsObject,
   IsEmpty,
 } from 'class-validator';
-import { MediaType } from '../entities/media-asset.entity';
 
 export class CreateMediaAssetDto {
   @IsNotEmpty({ message: 'publicId is required' })
@@ -17,8 +17,10 @@ export class CreateMediaAssetDto {
   @IsString({ message: 'url must be a string' })
   url: string;
 
-  @IsEnum(MediaType, { message: 'resourceType must be a valid MediaType' })
-  resourceType: MediaType;
+  @IsEnum(MediaAssetResourceType, {
+    message: `resourceType must be one of: ${Object.values(MediaAssetResourceType).join(', ')}`,
+  })
+  resourceType: MediaAssetResourceType;
 
   @IsNotEmpty({ message: 'refType is required' })
   @IsString({ message: 'refType must be a string' })
@@ -27,6 +29,10 @@ export class CreateMediaAssetDto {
   @IsNotEmpty({ message: 'refId is required' })
   @IsString({ message: 'refId must be a string' })
   refId: string;
+
+  @IsNotEmpty({ message: 'usageType is required' })
+  @IsString({ message: 'usageType must be a string' })
+  usageType: string;
 
   @IsOptional()
   @IsObject({ message: 'metadata must be an object' })

@@ -18,11 +18,8 @@ import {
 import { Brand } from './entities';
 import { mapToBrandResponse } from './mappers';
 import { BrandQueryRaw, BrandWithExtras } from './types';
-import { MediaAssetsService } from '@/media-assets/media-assets.service';
-import {
-  MediaAsset,
-  MediaType,
-} from '@/media-assets/entities/media-asset.entity';
+import { MediaAssetsService } from '@/media/media-assets.service';
+import { MediaAsset } from '@/media/entities';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {
   StorageProvider,
@@ -30,7 +27,7 @@ import type {
 } from '@/storage/storage.provider';
 import { BRAND_FOLDER } from '@/common/constants';
 import { PaginationQueryDto } from '@/common/dto';
-import { MediaAssetRefType } from '@/common/enums';
+import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
 import { PaginatedEntity } from '@/common/types';
 import {
   extractPaginationParams,
@@ -90,9 +87,10 @@ export class BrandsService {
             {
               publicId: uploadResult.key,
               url: uploadResult.url,
-              resourceType: uploadResult.resourceType as MediaType,
+              resourceType: uploadResult.resourceType,
               refType: MediaAssetRefType.BRAND,
               refId: savedBrand.id,
+              usageType: MediaAssetUsageType.LOGO,
               createdBy: savedBrand.createdBy,
             },
             tx,
@@ -252,11 +250,12 @@ export class BrandsService {
 
       try {
         // important: Before uploading a logo, we need to retrieve oldMedia to identify differences with newMedia
-        const oldMedia = await this.mediaAssetsService.findByRefId(
-          MediaAssetRefType.BRAND,
-          id,
+        const oldLogo = await this.mediaAssetsService.findByRefId({
+          refType: MediaAssetRefType.BRAND,
+          refId: id,
+          usageType: MediaAssetUsageType.LOGO,
           tx,
-        );
+        });
 
         const shouldRemoveOld = updateBrandDto.removeLogo || !!logo;
 
@@ -267,32 +266,33 @@ export class BrandsService {
             folder: BRAND_FOLDER,
           });
 
-          const newMedia = await this.mediaAssetsService.create(
+          const newLogo = await this.mediaAssetsService.create(
             {
               publicId: uploadResult.key,
               url: uploadResult.url,
-              resourceType: uploadResult.resourceType as MediaType,
+              resourceType: uploadResult.resourceType,
               refType: MediaAssetRefType.BRAND,
               refId: id,
+              usageType: MediaAssetUsageType.LOGO,
               createdBy: updatedBrand.updatedBy,
             },
             tx,
           );
 
-          logoUrl = newMedia.url;
+          logoUrl = newLogo.url;
         }
 
-        if (shouldRemoveOld && oldMedia) {
+        if (shouldRemoveOld && oldLogo) {
           await tx.save(Brand, { id, ...entityInput });
           try {
-            await this.mediaAssetsService.deleteById(oldMedia.id, tx);
-            if (oldMedia.publicId) {
-              await this.storageProvider.delete(oldMedia.publicId);
-              this.logger.debug(`Deleted old logo ${oldMedia.publicId}`);
+            await this.mediaAssetsService.deleteById(oldLogo.id, tx);
+            if (oldLogo.publicId) {
+              await this.storageProvider.delete(oldLogo.publicId);
+              this.logger.debug(`Deleted old logo ${oldLogo.publicId}`);
             }
           } catch (err) {
             this.logger.error(
-              `Failed to delete old logo ${oldMedia.publicId}: ${getErrorStack(err)}`,
+              `Failed to delete old logo ${oldLogo.publicId}: ${getErrorStack(err)}`,
             );
           }
         }
@@ -300,7 +300,7 @@ export class BrandsService {
         if (!logo && updateBrandDto.removeLogo) {
           logoUrl = null;
         } else if (!logo && !updateBrandDto.removeLogo) {
-          logoUrl = oldMedia?.url ?? null;
+          logoUrl = oldLogo?.url ?? null;
         }
 
         return mapToBrandResponse({
@@ -344,11 +344,12 @@ export class BrandsService {
       'media_assets',
       'm',
       `
-        m.ref_type = :refType
-        AND m.ref_id::uuid = b.id
-        AND m.deleted_at IS NULL
+        m.ref_type = :refType 
+        AND m.ref_id::uuid = b.id 
+        AND m.is_active = true
+        AND m.usage_type = :usageType
       `,
-      { refType: MediaAssetRefType.BRAND },
+      { refType: MediaAssetRefType.BRAND, usageType: MediaAssetUsageType.LOGO },
     );
   }
 

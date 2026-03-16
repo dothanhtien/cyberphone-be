@@ -13,10 +13,7 @@ import { ProductCategory } from '@/products/entities/product-category.entity';
 import { ProductImage } from '@/products/entities/product-image.entity';
 import { CreateProductDto } from './dto/requests/create-product.dto';
 import { UpdateProductDto } from './dto/requests/update-product.dto';
-import {
-  MediaAsset,
-  MediaType,
-} from '@/media-assets/entities/media-asset.entity';
+import { MediaAsset } from '@/media/entities';
 import { ProductCreateEntityDto } from './dto/entity-inputs/product-create-entity.dto';
 import { ProductUpdateEntityDto } from './dto/entity-inputs/product-update-entity.dto';
 import { ProductImageCreateEntityDto } from './dto/entity-inputs/product-image-create-entity.dto';
@@ -28,7 +25,7 @@ import { extractPaginationParams } from '@/common/utils/paginations.util';
 import { isUniqueConstraintError } from '@/common/utils/database-error.util';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import { PaginatedEntity } from '@/common/types/paginations.type';
-import { MediaAssetRefType } from '@/common/enums';
+import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
 import { mapToProductResponse } from './mappers/product.mapper';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {
@@ -137,9 +134,9 @@ export class AdminProductsService {
         `
           media.ref_id::uuid = pi.id
           AND media.ref_type = :refType
-          AND media.deleted_at IS NULL
+          AND media.is_active = true
         `,
-        { refType: MediaAssetRefType.PRODUCT_IMAGE },
+        { refType: MediaAssetRefType.PRODUCT },
       )
       .where('product.isActive = :isActive', { isActive: true })
       .orderBy('product.updatedAt', 'DESC')
@@ -175,9 +172,9 @@ export class AdminProductsService {
         `
           media.ref_id::uuid = pi.id
           AND media.ref_type = :refType
-          AND media.deleted_at IS NULL
+          AND media.is_active = true
         `,
-        { refType: MediaAssetRefType.PRODUCT_IMAGE },
+        { refType: MediaAssetRefType.PRODUCT },
       )
       .where('product.id = :id', { id })
       .andWhere('product.isActive = true')
@@ -424,14 +421,17 @@ export class AdminProductsService {
     const savedProductImages = await tx.save(ProductImage, productImages);
 
     const mediaAssets = savedProductImages.map((image, index) => {
+      const meta = imageMetas[index];
       const upload = uploadResults[index];
 
       return tx.create(MediaAsset, {
         publicId: upload.key,
         url: upload.url,
-        resourceType: upload.resourceType as MediaType,
-        refType: MediaAssetRefType.PRODUCT_IMAGE,
+        resourceType: upload.resourceType,
+        refType: MediaAssetRefType.PRODUCT,
         refId: image.id,
+        usageType: (meta.imageType ??
+          MediaAssetUsageType.OTHER) as MediaAssetUsageType,
         createdBy: savedProduct.createdBy,
       });
     });
