@@ -6,7 +6,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, LessThan, Repository } from 'typeorm';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { Brand } from '@/brands/entities';
 import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
 import { Category } from '@/categories/entities/category.entity';
@@ -193,6 +194,41 @@ export class MediaService {
 
       throw error;
     }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_2AM)
+  async cleanupInactiveMedia() {
+    this.logger.log('Starting cleanup of inactive media...');
+
+    while (true) {
+      const expiredMedia = await this.mediaAssetRepository.find({
+        where: {
+          isActive: false,
+          updatedAt: LessThan(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)),
+        },
+        take: 100,
+      });
+
+      if (!expiredMedia.length) {
+        this.logger.log('No more expired media to delete.');
+        break;
+      }
+
+      for (const media of expiredMedia) {
+        try {
+          await this.storageProvider.delete(media.publicId);
+          this.logger.log(`Deleted media from storage: ${media.publicId}`);
+
+          await this.mediaAssetRepository.remove(media);
+        } catch (err) {
+          this.logger.error(
+            `Failed to delete media ${media.id} (key=${media.publicId}): ${err}`,
+          );
+        }
+      }
+    }
+
+    this.logger.log('Inactive media cleanup finished.');
   }
 
   private getRepository(
