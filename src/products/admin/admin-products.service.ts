@@ -430,7 +430,7 @@ export class AdminProductsService {
 
     const savedProductImages = await tx.save(ProductImage, productImages);
 
-    const mediaAssets = savedProductImages.map((image, index) => {
+    const mediaAssets = savedProductImages.map((productImage, index) => {
       const meta = imageMetas[index];
       const upload = uploadResults[index];
 
@@ -439,7 +439,7 @@ export class AdminProductsService {
         url: upload.url,
         resourceType: upload.resourceType,
         refType: MediaAssetRefType.PRODUCT,
-        refId: image.id,
+        refId: productImage.id,
         usageType: (meta.imageType ??
           MediaAssetUsageType.OTHER) as MediaAssetUsageType,
         createdBy: savedProduct.createdBy,

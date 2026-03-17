@@ -186,13 +186,13 @@ export class MediaService {
     }
 
     try {
-      this.logger.debug(`Deleting media file from storage: ${media.publicId}`);
-
-      await this.storageProvider.delete(media.publicId);
-
       media.isActive = false;
       media.updatedBy = actor;
       await this.mediaAssetRepository.save(media);
+
+      this.logger.debug(`Deleting media file from storage: ${media.publicId}`);
+
+      await this.storageProvider.delete(media.publicId);
 
       this.logger.log(`Delete media success: id=${id}`);
     } catch (error) {

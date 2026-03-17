@@ -24,18 +24,26 @@ export class CreateMediaAssetDto {
   @IsEnum(MediaAssetResourceType, {
     message: `Resource type must be one of: ${Object.values(MediaAssetResourceType).join(', ')}`,
   })
+  @IsString({ message: 'Resource type must be a string' })
+  @IsNotEmpty({ message: 'Resource type is required' })
   resourceType: MediaAssetResourceType;
 
-  @IsNotEmpty({ message: 'Ref type is required' })
+  @IsEnum(MediaAssetRefType, {
+    message: `Ref type must be one of: ${Object.values(MediaAssetRefType).join(', ')}`,
+  })
   @IsString({ message: 'Ref type must be a string' })
+  @IsNotEmpty({ message: 'Ref type is required' })
   refType: MediaAssetRefType;
 
   @IsNotEmpty({ message: 'Ref Id is required' })
   @IsString({ message: 'Ref Id must be a string' })
   refId: string;
 
-  @IsNotEmpty({ message: 'Usage type is required' })
+  @IsEnum(MediaAssetUsageType, {
+    message: `Usage type must be one of: ${Object.values(MediaAssetUsageType).join(', ')}`,
+  })
   @IsString({ message: 'Usage type must be a string' })
+  @IsNotEmpty({ message: 'Usage type is required' })
   usageType: MediaAssetUsageType;
 
   @IsOptional()
