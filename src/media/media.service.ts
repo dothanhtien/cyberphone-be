@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, LessThan, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Brand } from '@/brands/entities';
 import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
@@ -65,7 +65,7 @@ export class MediaService {
 
   async upload(uploadMediasDto: UploadMediasDto, files: Express.Multer.File[]) {
     this.logger.log(
-      `Upload medias start: refType=${uploadMediasDto.refType}, refId=${uploadMediasDto.refId}, files=${files?.length}`,
+      `Upload medias start: refType=${uploadMediasDto.refType}, refId=${uploadMediasDto.refId}, isTemporary=${uploadMediasDto.isTemporary}, files=${files?.length}`,
     );
 
     if (!files?.length) {
@@ -73,10 +73,12 @@ export class MediaService {
       throw new BadRequestException('Files are required');
     }
 
-    await this.validateEntityByRefId(
-      uploadMediasDto.refType,
-      uploadMediasDto.refId,
-    );
+    if (!uploadMediasDto.isTemporary) {
+      await this.validateEntityByRefId(
+        uploadMediasDto.refType,
+        uploadMediasDto.refId,
+      );
+    }
 
     const uploadedResults: StorageUploadResult[] = [];
     try {
@@ -142,10 +144,15 @@ export class MediaService {
 
   async findAll(getMediasDto: GetMediasDto) {
     this.logger.debug(
-      `Get medias: refType=${getMediasDto.refType}, refId=${getMediasDto.refId}`,
+      `Get medias: refType=${getMediasDto.refType}, refId=${getMediasDto.refId}, isTemporary=${getMediasDto.isTemporary}`,
     );
 
-    await this.validateEntityByRefId(getMediasDto.refType, getMediasDto.refId);
+    if (!getMediasDto.isTemporary) {
+      await this.validateEntityByRefId(
+        getMediasDto.refType,
+        getMediasDto.refId,
+      );
+    }
 
     const result = await this.mediaAssetRepository.find({
       where: {
@@ -178,15 +185,14 @@ export class MediaService {
       throw new NotFoundException('Media not found');
     }
 
-    media.isActive = false;
-    media.updatedBy = actor;
-
     try {
-      await this.mediaAssetRepository.save(media);
-
       this.logger.debug(`Deleting media file from storage: ${media.publicId}`);
 
       await this.storageProvider.delete(media.publicId);
+
+      media.isActive = false;
+      media.updatedBy = actor;
+      await this.mediaAssetRepository.save(media);
 
       this.logger.log(`Delete media success: id=${id}`);
     } catch (error) {
@@ -197,38 +203,59 @@ export class MediaService {
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_2AM)
-  async cleanupInactiveMedia() {
-    this.logger.log('Starting cleanup of inactive media...');
+  async cleanupOrphanTemporaryMedia() {
+    this.logger.log('Starting cleanup of orphan temporary media...');
 
     while (true) {
-      const expiredMedia = await this.mediaAssetRepository.find({
-        where: {
-          isActive: false,
-          updatedAt: LessThan(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)),
-        },
-        take: 100,
-      });
+      const medias = await this.mediaAssetRepository
+        .createQueryBuilder('m')
+        .where('m.is_active = true')
+        .andWhere(
+          `
+            (
+              (m.ref_type = :brandType AND NOT EXISTS (
+                SELECT 1 FROM brands b WHERE b.id = m.ref_id::uuid AND b.is_active = true
+              ))
+              OR
+              (m.ref_type = :categoryType AND NOT EXISTS (
+                SELECT 1 FROM categories c WHERE c.id = m.ref_id::uuid AND c.is_active = true
+              ))
+              OR
+              (m.ref_type = :productType AND NOT EXISTS (
+                SELECT 1 FROM product_images pi WHERE pi.id = m.ref_id::uuid AND pi.is_active = true
+              ))
+            )
+          `,
+          {
+            brandType: MediaAssetRefType.BRAND,
+            categoryType: MediaAssetRefType.CATEGORY,
+            productType: MediaAssetRefType.PRODUCT,
+          },
+        )
+        .take(100)
+        .getMany();
 
-      if (!expiredMedia.length) {
-        this.logger.log('No more expired media to delete.');
+      if (!medias.length) {
+        this.logger.log('No orphan media found.');
         break;
       }
 
-      for (const media of expiredMedia) {
+      for (const media of medias) {
         try {
           await this.storageProvider.delete(media.publicId);
-          this.logger.log(`Deleted media from storage: ${media.publicId}`);
+
+          this.logger.log(`Deleted orphan media file: ${media.publicId}`);
 
           await this.mediaAssetRepository.remove(media);
         } catch (err) {
           this.logger.error(
-            `Failed to delete media ${media.id} (key=${media.publicId}): ${err}`,
+            `Failed to delete orphan media ${media.id}: ${err}`,
           );
         }
       }
     }
 
-    this.logger.log('Inactive media cleanup finished.');
+    this.logger.log('Orphan media cleanup finished.');
   }
 
   private getRepository(

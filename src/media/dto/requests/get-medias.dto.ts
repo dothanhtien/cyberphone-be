@@ -1,4 +1,12 @@
-import { IsEnum, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
+import { Transform } from 'class-transformer';
 import { MediaAssetRefType } from '@/common/enums';
 
 export class GetMediasDto {
@@ -6,9 +14,18 @@ export class GetMediasDto {
   refId: string;
 
   @IsEnum(MediaAssetRefType, {
-    message: `Type must be one of: ${Object.values(MediaAssetRefType).join(', ')}`,
+    message: `Ref type must be one of: ${Object.values(MediaAssetRefType).join(', ')}`,
   })
   @IsString({ message: 'Ref type must be a string' })
   @IsNotEmpty({ message: 'Ref type is required' })
   refType: MediaAssetRefType;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    if (value === true || value === 'true') return true;
+    if (value === false || value === 'false') return false;
+  })
+  @IsBoolean({ message: 'Is temporary must be a boolean' })
+  isTemporary = false;
 }

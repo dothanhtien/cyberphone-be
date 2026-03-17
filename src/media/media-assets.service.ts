@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, Repository } from 'typeorm';
 import { MediaAsset } from './entities';
-import { CreateMediaAssetDto } from './dto';
-import { toEntity } from '@/common/utils';
+import { CreateMediaAssetDto, MediaAssetCreateEntityDto } from './dto';
+import { sanitizeEntityInput } from '@/common/utils';
 import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
 
 @Injectable()
@@ -21,8 +21,11 @@ export class MediaAssetsService {
       ? entityManager.getRepository(MediaAsset)
       : this.mediaAssetRepository;
 
-    const mediaAsset = toEntity(MediaAsset, createMediaAssetDto);
-    return repository.save(mediaAsset);
+    const mediaEntity = sanitizeEntityInput(
+      MediaAssetCreateEntityDto,
+      createMediaAssetDto,
+    );
+    return repository.save(mediaEntity);
   }
 
   async findByRefId({
@@ -45,6 +48,7 @@ export class MediaAssetsService {
         refType,
         refId,
         usageType,
+        isActive: true,
       },
     });
   }
@@ -59,6 +63,7 @@ export class MediaAssetsService {
         refType,
         refId: In(refIds),
         usageType,
+        isActive: true,
       },
     });
   }

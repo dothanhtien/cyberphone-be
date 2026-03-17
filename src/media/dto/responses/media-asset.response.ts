@@ -18,5 +18,5 @@ export class MediaAssetResponse {
   usageType: MediaAssetUsageType;
 
   @Expose()
-  metaData?: string | null;
+  metaData?: Record<string, unknown> | null;
 }

@@ -18,11 +18,22 @@ export class CloudinaryStorageProvider implements StorageProvider {
     return {
       key: result.public_id,
       url: result.secure_url,
-      resourceType: result.resource_type as MediaAssetResourceType,
+      resourceType: this.mapResourceType(result.resource_type),
     };
   }
 
   async delete(key: string) {
     await this.cloudinaryService.deleteFile(key);
+  }
+
+  private mapResourceType(resourceType: string): MediaAssetResourceType {
+    switch (resourceType) {
+      case 'image':
+        return MediaAssetResourceType.IMAGE;
+      case 'video':
+        return MediaAssetResourceType.VIDEO;
+      default:
+        return MediaAssetResourceType.OTHER;
+    }
   }
 }

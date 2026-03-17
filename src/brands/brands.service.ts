@@ -283,7 +283,6 @@ export class BrandsService {
         }
 
         if (shouldRemoveOld && oldLogo) {
-          await tx.save(Brand, { id, ...entityInput });
           try {
             await this.mediaAssetsService.deleteById(oldLogo.id, tx);
             if (oldLogo.publicId) {

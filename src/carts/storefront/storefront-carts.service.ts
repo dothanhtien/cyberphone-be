@@ -369,10 +369,11 @@ export class StorefrontCartsService {
         ON ma.ref_type = $1 
         AND ma.ref_id::uuid = pi.id 
         AND ma.is_active = true
-      WHERE ci.id = $2 AND ci.is_active = true
+        AND ma.usage_type = $2
+      WHERE ci.id = $3 AND ci.is_active = true
       LIMIT 1
     `,
-      [MediaAssetRefType.PRODUCT, itemId],
+      [MediaAssetRefType.PRODUCT, MediaAssetUsageType.MAIN, itemId],
     );
 
     if (!result) return null;
