@@ -25,7 +25,11 @@ import { extractPaginationParams } from '@/common/utils/paginations.util';
 import { isUniqueConstraintError } from '@/common/utils/database-error.util';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import { PaginatedEntity } from '@/common/types/paginations.type';
-import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
+import {
+  MediaAssetRefType,
+  MediaAssetUsageType,
+  ProductImageType,
+} from '@/common/enums';
 import { mapToProductResponse } from './mappers/product.mapper';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {
@@ -125,7 +129,8 @@ export class AdminProductsService {
         'product.productImages',
         ProductImage,
         'pi',
-        'pi.productId = product.id AND pi.is_active = true',
+        'pi.product_id = product.id AND pi.image_type = :imageType AND pi.is_active = true',
+        { imageType: ProductImageType.MAIN },
       )
       .leftJoinAndMapOne(
         'pi.media',
@@ -164,7 +169,12 @@ export class AdminProductsService {
       .leftJoinAndSelect('product.brand', 'brand')
       .leftJoinAndSelect('product.categories', 'productCategory')
       .leftJoinAndSelect('productCategory.category', 'category')
-      .leftJoinAndSelect('product.productImages', 'pi', 'pi.isActive = true')
+      .leftJoinAndSelect(
+        'product.productImages',
+        'pi',
+        'pi.product_id = product.id AND pi.image_type = :imageType AND pi.isActive = true',
+        { imageType: ProductImageType.MAIN },
+      )
       .leftJoinAndMapOne(
         'pi.media',
         MediaAsset,

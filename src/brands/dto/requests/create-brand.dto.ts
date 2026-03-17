@@ -6,12 +6,17 @@ import {
   MaxLength,
   Matches,
   IsEmpty,
+  IsUUID,
 } from 'class-validator';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SLUG_LENGTH = 255;
 
 export class CreateBrandDto {
+  @IsUUID('4', { message: 'Brand Id is invalid' })
+  @IsOptional()
+  id?: string;
+
   @MaxLength(MAX_NAME_LENGTH, {
     message: `Brand name must not exceed ${MAX_NAME_LENGTH} characters`,
   })

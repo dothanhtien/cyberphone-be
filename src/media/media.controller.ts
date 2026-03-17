@@ -36,10 +36,11 @@ export class MediaController {
   }
 
   @Delete(':id')
-  deleteFile(
+  async deleteFile(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @LoggedInUser('id') loggedInUserId: string,
   ) {
-    return this.mediaService.delete(id, loggedInUserId);
+    await this.mediaService.delete(id, loggedInUserId);
+    return true;
   }
 }
