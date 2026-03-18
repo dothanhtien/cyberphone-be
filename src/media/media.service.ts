@@ -240,6 +240,7 @@ export class MediaService {
         break;
       }
 
+      let deletedCount = 0;
       for (const media of medias) {
         try {
           await this.storageProvider.delete(media.publicId);
@@ -247,11 +248,19 @@ export class MediaService {
           this.logger.log(`Deleted orphan media file: ${media.publicId}`);
 
           await this.mediaAssetRepository.remove(media);
+          deletedCount++;
         } catch (err) {
           this.logger.error(
             `Failed to delete orphan media ${media.id}: ${err}`,
           );
         }
+      }
+
+      if (deletedCount === 0) {
+        this.logger.error(
+          'Cleanup aborted: no progress in current batch, potential persistent failures',
+        );
+        break;
       }
     }
 

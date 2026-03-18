@@ -172,7 +172,7 @@ export class AdminProductsService {
       .leftJoinAndSelect(
         'product.productImages',
         'pi',
-        'pi.product_id = product.id AND pi.image_type = :imageType AND pi.isActive = true',
+        'pi.product_id = product.id AND pi.image_type = :imageType AND pi.is_active = true',
         { imageType: ProductImageType.MAIN },
       )
       .leftJoinAndMapOne(
@@ -187,7 +187,7 @@ export class AdminProductsService {
         { refType: MediaAssetRefType.PRODUCT },
       )
       .where('product.id = :id', { id })
-      .andWhere('product.isActive = true')
+      .andWhere('product.is_active = true')
       .getOne();
 
     if (!product) {
