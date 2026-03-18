@@ -3,15 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Brand } from './entities';
 import { BrandsService } from './brands.service';
 import { BrandsController } from './brands.controller';
-import { MediaAssetsModule } from '@/media-assets/media-assets.module';
+import { MediaModule } from '@/media/media.module';
 import { StorageModule } from '@/storage/storage.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Brand]),
-    MediaAssetsModule,
-    StorageModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Brand]), MediaModule, StorageModule],
   providers: [BrandsService],
   controllers: [BrandsController],
   exports: [BrandsService],

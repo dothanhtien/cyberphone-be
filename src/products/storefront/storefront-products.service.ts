@@ -5,6 +5,7 @@ import { extractPaginationParams } from '@/common/utils/paginations.util';
 import { ProductSortEnum } from './enums';
 import { RawProductRow } from './types';
 import { mapToStorefrontProductResponse } from './mappers/product.mapper';
+import { ProductImageType } from '@/common/enums';
 
 @Injectable()
 export class StorefrontProductsService {
@@ -50,19 +51,16 @@ export class StorefrontProductsService {
           SELECT ma.url 
           FROM product_images pi
           JOIN media_assets ma ON pi.id = ma.ref_id::uuid
-          WHERE pi.product_id = p.id
-            AND pi.is_active = true
-          ORDER BY pi.image_type = 'main' DESC, pi.display_order ASC
+          WHERE pi.product_id = p.id AND pi.is_active = true AND ma.is_active = true
+          ORDER BY pi.image_type = '${ProductImageType.MAIN}' DESC, pi.display_order ASC
           LIMIT 1
         ) AS main_image
       FROM products p
       LEFT JOIN LATERAL (
         SELECT pv.*
         FROM product_variants pv
-        WHERE pv.product_id = p.id
-          AND pv.is_active = true
-        ORDER BY 
-          COALESCE(pv.sale_price, pv.price) ASC
+        WHERE pv.product_id = p.id AND pv.is_active = true
+        ORDER BY COALESCE(pv.sale_price, pv.price) ASC
         LIMIT 1
       ) v ON true
 

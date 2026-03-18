@@ -1,7 +1,9 @@
+import { MediaAssetResourceType } from '@/common/enums';
+
 export interface StorageUploadResult {
   key: string;
   url: string;
-  resourceType: string;
+  resourceType: MediaAssetResourceType;
 }
 
 export interface StorageProvider {

@@ -16,13 +16,13 @@ export class CreateMediaAssetsTable1769819737337 implements MigrationInterface {
           "resource_type" "public"."media_assets_resource_type_enum" NOT NULL DEFAULT 'other', 
           "ref_type" character varying(100) NOT NULL, 
           "ref_id" character varying(100) NOT NULL, 
+          "usage_type" character varying(100) NOT NULL, 
           "metadata" jsonb, 
+          "is_active" boolean NOT NULL DEFAULT true, 
           "created_at" TIMESTAMP NOT NULL DEFAULT now(), 
           "created_by" character varying(100) NOT NULL, 
           "updated_at" TIMESTAMP DEFAULT now(), 
           "updated_by" character varying(100), 
-          "deleted_at" TIMESTAMP WITH TIME ZONE, 
-          "deleted_by" character varying(100), 
           CONSTRAINT "pk_media_assets_id" PRIMARY KEY ("id")
         )
       `,

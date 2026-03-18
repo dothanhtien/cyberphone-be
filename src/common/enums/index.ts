@@ -1,7 +1,24 @@
 export enum MediaAssetRefType {
   CATEGORY = 'category',
   BRAND = 'brand',
-  PRODUCT_IMAGE = 'product_image',
+  PRODUCT = 'product',
+}
+
+export enum MediaAssetResourceType {
+  IMAGE = 'image',
+  VIDEO = 'video',
+  DOCUMENT = 'document',
+  AUDIO = 'audio',
+  OTHER = 'other',
+}
+
+export enum MediaAssetUsageType {
+  LOGO = 'logo',
+  MAIN = 'main',
+  THUMBNAIL = 'thumbnail',
+  GALLERY = 'gallery',
+  DESCRIPTION = 'description',
+  OTHER = 'other',
 }
 
 export enum ProductStatus {

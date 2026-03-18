@@ -146,11 +146,8 @@ export class DashboardService {
             v.product_id
           FROM order_items oi
           JOIN orders o ON o.id = oi.order_id
-          JOIN product_variants v 
-            ON v.id = oi.variant_id
-            AND v.is_active = true
-          WHERE o.order_status = $1
-            AND o.created_at BETWEEN $2 AND $3
+          JOIN product_variants v ON v.id = oi.variant_id AND v.is_active = true
+          WHERE o.order_status = $1 AND o.created_at BETWEEN $2 AND $3
           GROUP BY v.id, v.name, v.product_id
           ORDER BY total_sales DESC
           LIMIT $4
@@ -159,26 +156,24 @@ export class DashboardService {
         LEFT JOIN LATERAL (
           SELECT ma.url
           FROM product_images pi
-          JOIN media_assets ma
-            ON ma.ref_id::uuid = pi.id
+          JOIN media_assets ma ON ma.ref_id::uuid = pi.id
           WHERE pi.variant_id = s.id
             AND pi.image_type = $5
             AND pi.is_active = true
             AND ma.ref_type = $6
-            AND ma.deleted_at IS NULL
+            AND ma.is_active = true
           LIMIT 1
         ) vimg ON true
 
         LEFT JOIN LATERAL (
           SELECT ma.url
           FROM product_images pi
-          JOIN media_assets ma
-            ON ma.ref_id::uuid = pi.id
+          JOIN media_assets ma ON ma.ref_id::uuid = pi.id
           WHERE pi.product_id = s.product_id
             AND pi.image_type = $5
             AND pi.is_active = true
             AND ma.ref_type = $6
-            AND ma.deleted_at IS NULL
+            AND ma.is_active = true
           LIMIT 1
         ) pimg ON true
 
@@ -190,7 +185,7 @@ export class DashboardService {
         endDate,
         limit,
         ProductImageType.MAIN,
-        MediaAssetRefType.PRODUCT_IMAGE,
+        MediaAssetRefType.PRODUCT,
       ],
     );
 

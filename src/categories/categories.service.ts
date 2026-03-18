@@ -15,12 +15,9 @@ import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/requests/create-category.dto';
 import { UpdateCategoryDto } from './dto/requests/update-category.dto';
 import { toEntity } from '@/common/utils/entities.util';
-import { MediaAssetsService } from '@/media-assets/media-assets.service';
-import {
-  MediaAsset,
-  MediaType,
-} from '@/media-assets/entities/media-asset.entity';
-import { MediaAssetRefType } from '@/common/enums';
+import { MediaAssetsService } from '@/media/media-assets.service';
+import { MediaAsset } from '@/media/entities';
+import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
 import { CATEGORY_FOLDER } from '@/common/constants/paths';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {
@@ -66,9 +63,10 @@ export class CategoriesService {
             {
               publicId: uploadResult.key,
               url: uploadResult.url,
-              resourceType: uploadResult.resourceType as MediaType,
+              resourceType: uploadResult.resourceType,
               refType: MediaAssetRefType.CATEGORY,
               refId: savedCategory.id,
+              usageType: MediaAssetUsageType.LOGO,
               createdBy: savedCategory.createdBy,
             },
             tx,
@@ -176,11 +174,12 @@ export class CategoriesService {
 
       try {
         if (logo) {
-          const oldMedia = await this.mediaAssetService.findByRefId(
-            MediaAssetRefType.CATEGORY,
-            id,
+          const oldMedia = await this.mediaAssetService.findByRefId({
+            refType: MediaAssetRefType.CATEGORY,
+            refId: id,
+            usageType: MediaAssetUsageType.LOGO,
             tx,
-          );
+          });
 
           uploadResult = await this.storageProvider.upload(logo, {
             folder: CATEGORY_FOLDER,
@@ -190,9 +189,10 @@ export class CategoriesService {
             {
               publicId: uploadResult.key,
               url: uploadResult.url,
-              resourceType: uploadResult.resourceType as MediaType,
+              resourceType: uploadResult.resourceType,
               refType: MediaAssetRefType.CATEGORY,
               refId: id,
+              usageType: MediaAssetUsageType.LOGO,
               createdBy: updateCategoryDto.updatedBy,
             },
             tx,
@@ -365,6 +365,7 @@ export class CategoriesService {
     const medias = await this.mediaAssetService.findByRefIds(
       MediaAssetRefType.CATEGORY,
       ids,
+      MediaAssetUsageType.LOGO,
     );
 
     const mediaMap = new Map(medias.map((m) => [m.refId, m.url]));

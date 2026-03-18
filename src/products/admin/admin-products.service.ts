@@ -13,10 +13,7 @@ import { ProductCategory } from '@/products/entities/product-category.entity';
 import { ProductImage } from '@/products/entities/product-image.entity';
 import { CreateProductDto } from './dto/requests/create-product.dto';
 import { UpdateProductDto } from './dto/requests/update-product.dto';
-import {
-  MediaAsset,
-  MediaType,
-} from '@/media-assets/entities/media-asset.entity';
+import { MediaAsset } from '@/media/entities';
 import { ProductCreateEntityDto } from './dto/entity-inputs/product-create-entity.dto';
 import { ProductUpdateEntityDto } from './dto/entity-inputs/product-update-entity.dto';
 import { ProductImageCreateEntityDto } from './dto/entity-inputs/product-image-create-entity.dto';
@@ -28,7 +25,11 @@ import { extractPaginationParams } from '@/common/utils/paginations.util';
 import { isUniqueConstraintError } from '@/common/utils/database-error.util';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import { PaginatedEntity } from '@/common/types/paginations.type';
-import { MediaAssetRefType } from '@/common/enums';
+import {
+  MediaAssetRefType,
+  MediaAssetUsageType,
+  ProductImageType,
+} from '@/common/enums';
 import { mapToProductResponse } from './mappers/product.mapper';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {
@@ -128,7 +129,8 @@ export class AdminProductsService {
         'product.productImages',
         ProductImage,
         'pi',
-        'pi.productId = product.id AND pi.is_active = true',
+        'pi.product_id = product.id AND pi.image_type = :imageType AND pi.is_active = true',
+        { imageType: ProductImageType.MAIN },
       )
       .leftJoinAndMapOne(
         'pi.media',
@@ -137,9 +139,9 @@ export class AdminProductsService {
         `
           media.ref_id::uuid = pi.id
           AND media.ref_type = :refType
-          AND media.deleted_at IS NULL
+          AND media.is_active = true
         `,
-        { refType: MediaAssetRefType.PRODUCT_IMAGE },
+        { refType: MediaAssetRefType.PRODUCT },
       )
       .where('product.isActive = :isActive', { isActive: true })
       .orderBy('product.updatedAt', 'DESC')
@@ -167,7 +169,12 @@ export class AdminProductsService {
       .leftJoinAndSelect('product.brand', 'brand')
       .leftJoinAndSelect('product.categories', 'productCategory')
       .leftJoinAndSelect('productCategory.category', 'category')
-      .leftJoinAndSelect('product.productImages', 'pi', 'pi.isActive = true')
+      .leftJoinAndSelect(
+        'product.productImages',
+        'pi',
+        'pi.product_id = product.id AND pi.image_type = :imageType AND pi.is_active = true',
+        { imageType: ProductImageType.MAIN },
+      )
       .leftJoinAndMapOne(
         'pi.media',
         MediaAsset,
@@ -175,12 +182,12 @@ export class AdminProductsService {
         `
           media.ref_id::uuid = pi.id
           AND media.ref_type = :refType
-          AND media.deleted_at IS NULL
+          AND media.is_active = true
         `,
-        { refType: MediaAssetRefType.PRODUCT_IMAGE },
+        { refType: MediaAssetRefType.PRODUCT },
       )
       .where('product.id = :id', { id })
-      .andWhere('product.isActive = true')
+      .andWhere('product.is_active = true')
       .getOne();
 
     if (!product) {
@@ -423,15 +430,18 @@ export class AdminProductsService {
 
     const savedProductImages = await tx.save(ProductImage, productImages);
 
-    const mediaAssets = savedProductImages.map((image, index) => {
+    const mediaAssets = savedProductImages.map((productImage, index) => {
+      const meta = imageMetas[index];
       const upload = uploadResults[index];
 
       return tx.create(MediaAsset, {
         publicId: upload.key,
         url: upload.url,
-        resourceType: upload.resourceType as MediaType,
-        refType: MediaAssetRefType.PRODUCT_IMAGE,
-        refId: image.id,
+        resourceType: upload.resourceType,
+        refType: MediaAssetRefType.PRODUCT,
+        refId: productImage.id,
+        usageType: (meta.imageType ??
+          MediaAssetUsageType.OTHER) as MediaAssetUsageType,
         createdBy: savedProduct.createdBy,
       });
     });

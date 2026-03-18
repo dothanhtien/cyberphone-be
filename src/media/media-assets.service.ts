@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, Repository } from 'typeorm';
-import { MediaAsset } from './entities/media-asset.entity';
-import { CreateMediaAssetDto } from './dto/create-media-asset.dto';
-import { toEntity } from '@/common/utils';
+import { MediaAsset } from './entities';
+import { CreateMediaAssetDto, MediaAssetCreateEntityDto } from './dto';
+import { sanitizeEntityInput } from '@/common/utils';
+import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
 
 @Injectable()
 export class MediaAssetsService {
@@ -20,32 +21,49 @@ export class MediaAssetsService {
       ? entityManager.getRepository(MediaAsset)
       : this.mediaAssetRepository;
 
-    const mediaAsset = toEntity(MediaAsset, createMediaAssetDto);
-    return repository.save(mediaAsset);
+    const mediaEntity = sanitizeEntityInput(
+      MediaAssetCreateEntityDto,
+      createMediaAssetDto,
+    );
+    return repository.save(mediaEntity);
   }
 
-  async findByRefId(
-    refType: string,
-    refId: string,
-    entityManager?: EntityManager,
-  ) {
-    const repository = entityManager
-      ? entityManager.getRepository(MediaAsset)
+  async findByRefId({
+    refType,
+    refId,
+    usageType,
+    tx,
+  }: {
+    refType: MediaAssetRefType;
+    refId: string;
+    usageType: MediaAssetUsageType;
+    tx?: EntityManager;
+  }) {
+    const repository = tx
+      ? tx.getRepository(MediaAsset)
       : this.mediaAssetRepository;
 
     return repository.findOne({
       where: {
         refType,
         refId,
+        usageType,
+        isActive: true,
       },
     });
   }
 
-  async findByRefIds(refType: string, refIds: string[]) {
+  async findByRefIds(
+    refType: MediaAssetRefType,
+    refIds: string[],
+    usageType: MediaAssetUsageType,
+  ) {
     return this.mediaAssetRepository.find({
       where: {
         refType,
         refId: In(refIds),
+        usageType,
+        isActive: true,
       },
     });
   }

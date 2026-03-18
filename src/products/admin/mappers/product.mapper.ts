@@ -1,7 +1,7 @@
 import { plainToInstance } from 'class-transformer';
 import { Product } from '@/products/entities/product.entity';
 import { ProductResponseDto } from '../dto/responses/product-response.dto';
-import { MediaAsset } from '@/media-assets/entities/media-asset.entity';
+import { MediaAsset } from '@/media/entities';
 import { ProductImage } from '@/products/entities/product-image.entity';
 
 type ProductImageWithMedia = ProductImage & {
