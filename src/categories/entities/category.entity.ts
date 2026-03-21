@@ -11,7 +11,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ProductCategory } from '../../products/entities/product-category.entity';
+import { ProductCategory } from '../../products/entities';
 
 @Entity('categories')
 @Index('uq_categories_slug_active', ['slug'], {

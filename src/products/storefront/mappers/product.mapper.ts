@@ -1,6 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import { RawProductRow } from '../types';
-import { StorefrontProductResponseDto } from '../dto/responses/product-response.dto';
+import { StorefrontProductResponseDto } from '../dto';
 
 export function mapToStorefrontProductResponse(
   product: RawProductRow,

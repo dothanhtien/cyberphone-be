@@ -10,7 +10,7 @@ import { ProductVariant } from './entities/product-variant.entity';
 import { sanitizeEntityInput } from '@/common/utils/entities.util';
 import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
 import { ProductVariantCreateEntityDto } from './dto/entity-inputs/product-variant-create-entity.dto';
-import { Product } from '@/products/entities/product.entity';
+import { Product } from '@/products/entities';
 import { ProductVariantStockStatus } from '@/common/enums';
 import { isUniqueConstraintError } from '@/common/utils/database-error.util';
 import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';

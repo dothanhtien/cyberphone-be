@@ -8,7 +8,7 @@ import { sanitizeEntityInput } from '@/common/utils/entities.util';
 import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
 import { VariantAttribute } from './entities/variant-attribute.entity';
-import { ProductAttribute } from '@/products/entities/product-attribute.entity';
+import { ProductAttribute } from '@/products/entities';
 import { VariantAttributeCreateEntityDto } from './dto/entity-inputs/variant-attribute-create-entity.dto';
 
 @Injectable()

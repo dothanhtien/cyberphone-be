@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { Public } from '@/auth/decorators/public.decorator';
+import { Public } from '@/auth/decorators';
 import { StorefrontProductsService } from './storefront-products.service';
-import { FilterProductsDto } from './dto/requests/filter-products.dto';
+import { FilterProductsDto } from './dto';
 
 @Public()
 @Controller('/products')

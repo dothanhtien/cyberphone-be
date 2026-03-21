@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { FilterProductsDto } from './dto/requests/filter-products.dto';
-import { extractPaginationParams } from '@/common/utils/paginations.util';
+import { FilterProductsDto } from './dto';
+import { extractPaginationParams } from '@/common/utils';
 import { ProductSortEnum } from './enums';
 import { RawProductRow } from './types';
-import { mapToStorefrontProductResponse } from './mappers/product.mapper';
+import { mapToStorefrontProductResponse } from './mappers';
 import { ProductImageType } from '@/common/enums';
 
 @Injectable()
@@ -56,7 +56,7 @@ export class StorefrontProductsService {
           LIMIT 1
         ) AS main_image
       FROM products p
-      LEFT JOIN LATERAL (
+      JOIN LATERAL (
         SELECT pv.*
         FROM product_variants pv
         WHERE pv.product_id = p.id AND pv.is_active = true

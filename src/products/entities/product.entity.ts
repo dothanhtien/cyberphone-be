@@ -9,11 +9,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Brand } from '../../brands/entities/brand.entity';
-import { ProductCategory } from './product-category.entity';
+import { Brand } from '../../brands/entities';
+import { ProductAttribute, ProductCategory, ProductImage } from '.';
 import { ProductVariant } from '../../product-variants/entities/product-variant.entity';
-import { ProductImage } from './product-image.entity';
-import { ProductAttribute } from './product-attribute.entity';
 import { OrderItem } from '../../orders/entities/order-item.entity';
 
 @Entity('products')

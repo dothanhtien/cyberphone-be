@@ -13,11 +13,10 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { AdminProductsService } from './admin-products.service';
-import { CreateProductDto } from './dto/requests/create-product.dto';
-import { UpdateProductDto } from './dto/requests/update-product.dto';
-import { LoggedInUser } from '@/auth/decorators/logged-in-user.decorator';
-import { User } from '@/users/entities/user.entity';
-import { PaginationQueryDto } from '@/common/dto/paginations.dto';
+import { CreateProductDto, UpdateProductDto } from './dto';
+import { LoggedInUser } from '@/auth/decorators';
+import { User } from '@/users/entities';
+import { PaginationQueryDto } from '@/common/dto';
 
 @Controller('admin/products')
 export class AdminProductsController {
@@ -51,7 +50,15 @@ export class AdminProductsController {
   }
 
   @Patch(':id')
+  @UseInterceptors(
+    FilesInterceptor('images', 20, {
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+    }),
+  )
   async update(
+    @UploadedFiles() images: Express.Multer.File[],
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateProductDto: UpdateProductDto,
     @LoggedInUser() loggedInUser: User,

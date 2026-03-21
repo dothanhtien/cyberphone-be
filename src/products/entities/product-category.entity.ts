@@ -2,14 +2,12 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
   ManyToOne,
   JoinColumn,
   Index,
 } from 'typeorm';
 import { Expose } from 'class-transformer';
-import { Product } from './product.entity';
+import { Product } from '.';
 import { Category } from '../../categories/entities/category.entity';
 
 @Entity('product_categories')
@@ -32,35 +30,6 @@ export class ProductCategory {
   @Column({ name: 'category_id', type: 'uuid' })
   @Expose()
   categoryId: string;
-
-  @Column({ name: 'is_active', type: 'boolean', default: true })
-  @Expose()
-  isActive: boolean;
-
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
-  @Expose()
-  createdAt: Date;
-
-  @Column({
-    name: 'created_by',
-    type: 'varchar',
-    length: 100,
-  })
-  @Expose()
-  createdBy: string;
-
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
-  @Expose()
-  updatedAt: Date;
-
-  @Column({
-    name: 'updated_by',
-    type: 'varchar',
-    length: 100,
-    nullable: true,
-  })
-  @Expose()
-  updatedBy: string | null;
 
   @ManyToOne(() => Product, (product) => product.categories, {
     onDelete: 'CASCADE',

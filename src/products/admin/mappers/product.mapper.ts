@@ -1,50 +1,50 @@
-import { plainToInstance } from 'class-transformer';
-import { Product } from '@/products/entities/product.entity';
-import { ProductResponseDto } from '../dto/responses/product-response.dto';
-import { MediaAsset } from '@/media/entities';
-import { ProductImage } from '@/products/entities/product-image.entity';
+import { ProductResponseDto } from '../dto';
+import { ProductRaw } from '../types';
+import { toDto } from '@/common/utils';
 
-type ProductImageWithMedia = ProductImage & {
-  media?: MediaAsset | null;
-};
+export function mapToProductResponseFromProductRaw(
+  product: ProductRaw,
+): ProductResponseDto {
+  return toDto(ProductResponseDto, {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    status: product.status,
+    shortDescription: product.shortDescription,
+    longDescription: product.longDescription,
+    isFeatured: product.isFeatured,
+    isBestseller: product.isBestseller,
+    brand: product.brand,
+    isActive: product.isActive,
+    createdAt: product.createdAt,
+    createdBy: product.createdBy,
+    updatedAt: product.updatedAt,
+    updatedBy: product.updatedBy ?? null,
 
-export function mapToProductResponse(product: Product): ProductResponseDto {
-  return plainToInstance(
-    ProductResponseDto,
-    {
-      id: product.id,
-      name: product.name,
-      slug: product.slug,
-      shortDescription: product.shortDescription ?? null,
-      longDescription: product.longDescription ?? null,
-      status: product.status,
-      isFeatured: product.isFeatured,
-      isBestseller: product.isBestseller,
-      brand: product.brand,
-      isActive: product.isActive,
-      createdAt: product.createdAt,
-      createdBy: product.createdBy,
-      updatedAt: product.updatedAt,
-      updatedBy: product.updatedBy ?? null,
+    categories: product.categories.map((cat) => ({
+      id: cat.id,
+      name: cat.name,
+    })),
 
-      categories: product.categories?.map((pc) => pc.category) ?? [],
+    images: product.images.map((image) => ({
+      id: image.id,
+      imageType: image.imageType,
+      altText: image.altText,
+      url: image.url ?? null,
+    })),
 
-      images:
-        (product.productImages as ProductImageWithMedia[])?.map((img) => ({
-          id: img.id,
-          imageType: img.imageType,
-          altText: img.altText,
-          url: img.media?.url ?? null,
-        })) ?? [],
-    },
-    {
-      excludeExtraneousValues: true,
-    },
-  );
-}
+    variantCount: product.variantCount
+      ? Number(product.variantCount)
+      : undefined,
 
-export function mapToProductResponseList(
-  products: Product[],
-): ProductResponseDto[] {
-  return products.map(mapToProductResponse);
+    attributes:
+      Array.isArray(product.attributes) && product.attributes.length
+        ? product.attributes.map((attr) => ({
+            id: attr.id,
+            attributeKey: attr.attributeKey,
+            attributeKeyDisplay: attr.attributeKeyDisplay,
+            displayOrder: Number(attr.displayOrder),
+          }))
+        : undefined,
+  });
 }

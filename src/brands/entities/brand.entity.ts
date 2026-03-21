@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from '../../products/entities/product.entity';
+import { Product } from '../../products/entities';
 
 @Entity('brands')
 @Index('uq_brands_slug_active', ['slug'], {

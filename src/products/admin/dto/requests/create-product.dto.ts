@@ -14,16 +14,18 @@ import {
 } from 'class-validator';
 import { plainToInstance, Transform } from 'class-transformer';
 import { ProductStatus } from '@/common/enums';
-import { CreateProductImageDto } from './create-product-image.dto';
-import { safeJsonParse } from '@/common/utils/parsers';
-import { normalizeSlug } from '@/common/utils/slugs';
-import { CreateProductAttributeDto } from './create-product-attribute.dto';
+import { CreateProductImageDto, CreateProductAttributeDto } from '.';
+import { normalizeSlug, safeJsonParse } from '@/common/utils';
 import { ArrayUniqueBy } from '@/common/validators/array-unique-by.decorator';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SLUG_LENGTH = 255;
 
 export class CreateProductDto {
+  @IsUUID('4', { message: 'Product Id must be a valid UUID' })
+  @IsOptional()
+  id?: string;
+
   @MaxLength(MAX_NAME_LENGTH, {
     message: `Product name must not exceed ${MAX_NAME_LENGTH} characters`,
   })

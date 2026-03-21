@@ -7,38 +7,47 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Not, Repository } from 'typeorm';
-import { Product } from '@/products/entities/product.entity';
-import { ProductCategory } from '@/products/entities/product-category.entity';
-import { ProductImage } from '@/products/entities/product-image.entity';
-import { CreateProductDto } from './dto/requests/create-product.dto';
-import { UpdateProductDto } from './dto/requests/update-product.dto';
+import { DataSource, EntityManager, In, Not, Repository } from 'typeorm';
+import {
+  Product,
+  ProductAttribute,
+  ProductCategory,
+  ProductImage,
+} from '@/products/entities';
+import {
+  CreateProductDto,
+  UpdateProductDto,
+  ProductCreateEntityDto,
+  ProductUpdateEntityDto,
+  ProductImageCreateEntityDto,
+  ProductResponseDto,
+  ProductAttributeCreateEntityDto,
+  CreateProductAttributeDto,
+} from './dto';
 import { MediaAsset } from '@/media/entities';
-import { ProductCreateEntityDto } from './dto/entity-inputs/product-create-entity.dto';
-import { ProductUpdateEntityDto } from './dto/entity-inputs/product-update-entity.dto';
-import { ProductImageCreateEntityDto } from './dto/entity-inputs/product-image-create-entity.dto';
-import { ProductResponseDto } from './dto/responses/product-response.dto';
 import { BrandsService } from '@/brands/brands.service';
 import { CategoriesService } from '@/categories/categories.service';
-import { sanitizeEntityInput } from '@/common/utils/entities.util';
-import { extractPaginationParams } from '@/common/utils/paginations.util';
-import { isUniqueConstraintError } from '@/common/utils/database-error.util';
-import { PaginationQueryDto } from '@/common/dto/paginations.dto';
-import { PaginatedEntity } from '@/common/types/paginations.type';
+import {
+  extractPaginationParams,
+  getErrorStack,
+  isUniqueConstraintError,
+  sanitizeEntityInput,
+} from '@/common/utils';
+import { PaginationQueryDto } from '@/common/dto';
+import { PaginatedEntity } from '@/common/types';
 import {
   MediaAssetRefType,
   MediaAssetUsageType,
   ProductImageType,
 } from '@/common/enums';
-import { mapToProductResponse } from './mappers/product.mapper';
+import { mapToProductResponseFromProductRaw } from './mappers';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {
   StorageProvider,
   StorageUploadResult,
 } from '@/storage/storage.provider';
-import { PRODUCT_FOLDER } from '@/common/constants/paths';
-import { ProductAttribute } from '../entities/product-attribute.entity';
-import { ProductAttributeCreateEntityDto } from './dto/entity-inputs/product-attribute-create-entity.dto';
+import { PRODUCT_FOLDER } from '@/common/constants';
+import { ProductRaw } from './types';
 
 @Injectable()
 export class AdminProductsService {
@@ -59,6 +68,9 @@ export class AdminProductsService {
     createProductDto: CreateProductDto,
     images: Express.Multer.File[] = [],
   ) {
+    this.logger.log(`Creating product slug=${createProductDto.slug}`);
+    this.logger.debug(`Payload: ${JSON.stringify(createProductDto)}`);
+
     this.validateImagesInput(createProductDto, images);
 
     await Promise.all([
@@ -72,47 +84,52 @@ export class AdminProductsService {
     try {
       uploadResults = await this.uploadImages(images);
 
+      this.logger.debug(`Uploaded ${uploadResults.length} images`);
+
       result = await this.dataSource.transaction(async (tx) => {
+        this.logger.debug(`Transaction started for product create`);
+
         const savedProduct = await this.createProductEntity(
           createProductDto,
           tx,
         );
 
-        await this.syncProductCategories({
-          productId: savedProduct.id,
-          categoryIds: createProductDto.categoryIds,
-          userId: createProductDto.createdBy,
-          tx,
-        });
+        this.logger.debug(`Product created id=${savedProduct.id}`);
 
-        await this.insertProductAttributes(
-          savedProduct,
-          createProductDto.attributes,
-          tx,
-        );
-
-        if (uploadResults.length) {
-          await this.insertProductImagesAndMediaAssets(
+        await Promise.all([
+          this.insertProductCategories({
+            productId: savedProduct.id,
+            categoryIds: createProductDto.categoryIds,
+            tx,
+          }),
+          this.insertProductAttributes(
+            savedProduct,
+            createProductDto.attributes,
+            tx,
+          ),
+          this.insertProductImagesAndMediaAssets(
             createProductDto,
             uploadResults,
             savedProduct,
             tx,
-          );
-        }
+          ),
+        ]);
 
         return savedProduct;
       });
+
+      this.logger.log(`Product created successfully id=${result.id}`);
     } catch (error) {
       this.logger.error(
         `Failed to create product slug=${createProductDto.slug}`,
-        error,
+        getErrorStack(error),
       );
 
       await this.cleanupUploads(uploadResults);
       throw error;
     }
 
-    return this.findOne(result.id);
+    return { id: result.id };
   }
 
   async findAll(
@@ -120,43 +137,64 @@ export class AdminProductsService {
   ): Promise<PaginatedEntity<ProductResponseDto>> {
     const { page, limit } = extractPaginationParams(getProductsDto);
 
-    const query = this.productRepository
-      .createQueryBuilder('product')
-      .leftJoinAndSelect('product.brand', 'brand')
-      .leftJoinAndSelect('product.categories', 'productCategory')
-      .leftJoinAndSelect('productCategory.category', 'category')
-      .leftJoinAndMapMany(
-        'product.productImages',
-        ProductImage,
-        'pi',
-        'pi.product_id = product.id AND pi.image_type = :imageType AND pi.is_active = true',
-        { imageType: ProductImageType.MAIN },
-      )
-      .leftJoinAndMapOne(
-        'pi.media',
-        MediaAsset,
-        'media',
-        `
-          media.ref_id::uuid = pi.id
-          AND media.ref_type = :refType
-          AND media.is_active = true
-        `,
-        { refType: MediaAssetRefType.PRODUCT },
-      )
-      .where('product.isActive = :isActive', { isActive: true })
-      .orderBy('product.updatedAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit);
+    const query = this.productRepository.query<ProductRaw[]>(
+      `
+        SELECT 
+          p.id,
+          p.name,
+          p.slug,
+          p.status,
+          p.is_featured AS "isFeatured",
+          p.is_bestseller AS "isBestseller",
+          p.is_active AS "isActive",
+          p.created_at AS "createdAt",
+          p.created_by AS "createdBy",
+          p.updated_at AS "updatedAt",
+          p.updated_by AS "updatedBy",
+          json_build_object('id', b.id, 'name', b.name) AS brand,
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object('id', c.id, 'name', c.name)
+            ) FILTER (WHERE c.id IS NOT NULL), '[]'
+          ) AS categories,
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(
+                'id', pi.id, 
+                'imageType', pi.image_type, 
+                'altText', pi.alt_text, 
+                'url', m.url
+              )
+            ) FILTER (WHERE pi.id IS NOT NULL), '[]'
+          ) AS images,
+          COUNT(DISTINCT pv.id) AS "variantCount"
+        FROM products p
+        LEFT JOIN brands b ON b.id = p.brand_id AND b.is_active = true
+        LEFT JOIN product_categories pc ON pc.product_id = p.id
+        LEFT JOIN categories c ON c.id = pc.category_id AND c.is_active = true
+        LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.image_type = $1 AND pi.is_active = true
+        LEFT JOIN media_assets m ON m.ref_type = $2 AND m.ref_id::uuid = pi.id AND m.is_active = true
+        LEFT JOIN product_variants pv ON pv.product_id = p.id AND pv.is_active = true
+        WHERE p.is_active = true
+        GROUP BY p.id, b.id
+        ORDER BY COALESCE(p.updated_at, p.created_at) DESC
+        LIMIT $3 OFFSET $4
+      `,
+      [
+        ProductImageType.MAIN,
+        MediaAssetRefType.PRODUCT,
+        limit,
+        (page - 1) * limit,
+      ],
+    );
 
     const [products, totalCount] = await Promise.all([
-      query.getMany(),
-      this.productRepository.count({
-        where: { isActive: true },
-      }),
+      query,
+      this.productRepository.count({ where: { isActive: true } }),
     ]);
 
     return {
-      items: products.map(mapToProductResponse),
+      items: products.map(mapToProductResponseFromProductRaw),
       totalCount,
       currentPage: page,
       itemsPerPage: limit,
@@ -164,78 +202,131 @@ export class AdminProductsService {
   }
 
   async findOne(id: string) {
-    const product = await this.productRepository
-      .createQueryBuilder('product')
-      .leftJoinAndSelect('product.brand', 'brand')
-      .leftJoinAndSelect('product.categories', 'productCategory')
-      .leftJoinAndSelect('productCategory.category', 'category')
-      .leftJoinAndSelect(
-        'product.productImages',
-        'pi',
-        'pi.product_id = product.id AND pi.image_type = :imageType AND pi.is_active = true',
-        { imageType: ProductImageType.MAIN },
-      )
-      .leftJoinAndMapOne(
-        'pi.media',
-        MediaAsset,
-        'media',
-        `
-          media.ref_id::uuid = pi.id
-          AND media.ref_type = :refType
-          AND media.is_active = true
-        `,
-        { refType: MediaAssetRefType.PRODUCT },
-      )
-      .where('product.id = :id', { id })
-      .andWhere('product.is_active = true')
-      .getOne();
+    this.logger.debug(`Fetching product id=${id}`);
+
+    const products = await this.productRepository.query<ProductRaw[]>(
+      `
+        SELECT 
+          p.id,
+          p.name,
+          p.slug,
+          p.status,
+          p.short_description AS "shortDescription",
+          p.long_description AS "longDescription",
+          p.is_featured AS "isFeatured",
+          p.is_bestseller AS "isBestseller",
+          p.is_active AS "isActive",
+          p.created_at AS "createdAt",
+          p.created_by AS "createdBy",
+          p.updated_at AS "updatedAt",
+          p.updated_by AS "updatedBy",
+          json_build_object('id', b.id, 'name', b.name) AS brand,
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object('id', c.id, 'name', c.name)
+            ) FILTER (WHERE c.id IS NOT NULL), '[]'
+          ) AS categories,
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(
+                'id', pi.id, 
+                'imageType', pi.image_type, 
+                'altText', pi.alt_text, 
+                'url', m.url
+              )
+            ) FILTER (WHERE pi.id IS NOT NULL), '[]'
+          ) AS images,
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(
+                'id', pa.id,
+                'attributeKey', pa.attribute_key,
+                'attributeKeyDisplay', pa.attribute_key_display,
+                'displayOrder', pa.display_order
+              )
+            ) FILTER (WHERE pa.id IS NOT NULL), '[]'
+          ) AS attributes
+        FROM products p
+        LEFT JOIN brands b ON b.id = p.brand_id AND b.is_active = true
+        LEFT JOIN product_categories pc ON pc.product_id = p.id
+        LEFT JOIN categories c ON c.id = pc.category_id AND c.is_active = true
+        LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.image_type = $1 AND pi.is_active = true
+        LEFT JOIN media_assets m ON m.ref_type = $2 AND m.ref_id::uuid = pi.id AND m.is_active = true
+        LEFT JOIN product_attributes pa ON pa.product_id = p.id AND pa.is_active = true
+        WHERE p.id = $3 AND p.is_active = true
+        GROUP BY p.id, b.id
+      `,
+      [ProductImageType.MAIN, MediaAssetRefType.PRODUCT, id],
+    );
+
+    const product = products[0];
 
     if (!product) {
+      this.logger.warn(`Product not found id=${id}`);
       throw new NotFoundException('Product not found');
     }
 
-    return mapToProductResponse(product);
+    return mapToProductResponseFromProductRaw(product);
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
+    this.logger.log(`Updating product id=${id}`);
+    this.logger.debug(`Payload: ${JSON.stringify(updateProductDto)}`);
+
     const product = await this.productRepository.findOne({
       where: { id, isActive: true },
     });
 
     if (!product) {
+      this.logger.warn(`Product not found id=${id}`);
       throw new NotFoundException('Product not found');
     }
 
-    await this.assertBrandExists(updateProductDto.brandId);
+    if (updateProductDto.brandId) {
+      await this.assertBrandExists(updateProductDto.brandId);
+    }
 
     if (updateProductDto.slug && updateProductDto.slug !== product.slug) {
       await this.assertSlugAvailable(updateProductDto.slug, id);
     }
 
     await this.dataSource.transaction(async (tx) => {
+      this.logger.debug(`Transaction started for update id=${id}`);
+
       const productInput = sanitizeEntityInput(
         ProductUpdateEntityDto,
         updateProductDto,
       );
 
-      await tx.update(Product, id, {
-        ...productInput,
-        updatedBy: updateProductDto.updatedBy,
-      });
+      await tx.update(Product, id, productInput);
 
-      if (updateProductDto.categoryIds) {
+      if (Array.isArray(updateProductDto.categoryIds)) {
         await this.assertCategoriesValid(updateProductDto.categoryIds, tx);
 
         await this.syncProductCategories({
-          productId: id,
+          productId: product.id,
           categoryIds: updateProductDto.categoryIds,
-          userId: updateProductDto.updatedBy,
+          tx,
+        });
+      }
+
+      if (Array.isArray(updateProductDto.attributes)) {
+        this.logger.debug(
+          `Syncing attributes count=${updateProductDto.attributes.length}`,
+        );
+
+        await this.syncProductAttributes({
+          productId: product.id,
+          attributes: updateProductDto.attributes,
+          actor: updateProductDto.updatedBy,
           tx,
         });
       }
     });
 
-    return this.findOne(id);
+    this.logger.log(`Product updated successfully id=${id}`);
+
+    return true;
   }
 
   async findAttributes(productId: string) {
@@ -256,9 +347,7 @@ export class AdminProductsService {
     });
   }
 
-  private async assertBrandExists(brandId?: string) {
-    if (!brandId) return;
-
+  private async assertBrandExists(brandId: string) {
     const exists = await this.brandsService.exists(brandId);
 
     if (!exists) {
@@ -296,51 +385,162 @@ export class AdminProductsService {
     }
   }
 
-  private async syncProductCategories({
+  private async insertProductCategories({
     productId,
     categoryIds,
-    userId,
     tx,
   }: {
     productId: string;
     categoryIds: string[];
-    userId: string;
     tx: EntityManager;
   }) {
-    await tx.update(
+    if (!categoryIds.length) return;
+
+    const uniqueCategoryIds = [...new Set(categoryIds)];
+
+    await tx.insert(
       ProductCategory,
-      { productId },
-      {
-        isActive: false,
-        updatedBy: userId,
-      },
+      uniqueCategoryIds.map((categoryId) => ({
+        productId,
+        categoryId,
+      })),
     );
+  }
 
-    await tx
-      .createQueryBuilder()
-      .update(ProductCategory)
-      .set({
-        isActive: true,
-        updatedBy: userId,
-      })
-      .where('product_id = :productId', { productId })
-      .andWhere('category_id IN (:...categoryIds)', { categoryIds })
-      .execute();
+  private async syncProductCategories({
+    productId,
+    categoryIds,
+    tx,
+  }: {
+    productId: string;
+    categoryIds: string[];
+    tx: EntityManager;
+  }) {
+    const existing = await tx.find(ProductCategory, {
+      where: { productId },
+      select: ['categoryId'],
+    });
 
-    await tx
-      .createQueryBuilder()
-      .insert()
-      .into(ProductCategory)
-      .values(
-        categoryIds.map((categoryId) => ({
+    const currentIds = new Set(existing.map((e) => e.categoryId));
+    const incomingIds = new Set(categoryIds);
+
+    const isSame =
+      currentIds.size === incomingIds.size &&
+      [...currentIds].every((id) => incomingIds.has(id));
+
+    if (isSame) return;
+
+    const toDelete = [...currentIds].filter((id) => !incomingIds.has(id));
+    const toInsert = [...incomingIds].filter((id) => !currentIds.has(id));
+
+    if (toDelete.length) {
+      await tx.delete(ProductCategory, {
+        productId,
+        categoryId: In(toDelete),
+      });
+    }
+
+    if (toInsert.length) {
+      await tx.insert(
+        ProductCategory,
+        toInsert.map((categoryId) => ({
           productId,
           categoryId,
-          isActive: true,
-          createdBy: userId,
         })),
-      )
-      .orIgnore()
-      .execute();
+      );
+    }
+  }
+
+  private async syncProductAttributes({
+    productId,
+    attributes,
+    actor,
+    tx,
+  }: {
+    productId: string;
+    attributes: CreateProductAttributeDto[];
+    actor: string;
+    tx: EntityManager;
+  }) {
+    this.logger.debug(
+      `Sync attributes for product=${productId}, incoming=${attributes.length}`,
+    );
+
+    const existing = await tx.find(ProductAttribute, {
+      where: { productId },
+    });
+
+    const existingMap = new Map(existing.map((e) => [e.id, e]));
+    const incomingIds = new Set(
+      attributes.filter((a) => a.id).map((a) => a.id!),
+    );
+
+    const toRemove = existing.filter((e) => !incomingIds.has(e.id));
+
+    if (toRemove.length) {
+      this.logger.debug(`Removing attributes count=${toRemove.length}`);
+
+      const ids = toRemove.map((i) => i.id);
+
+      const usedAttributes = await tx
+        .createQueryBuilder()
+        .select('va.productAttributeId', 'id')
+        .from('variant_attributes', 'va')
+        .where('va.productAttributeId IN (:...ids)', { ids })
+        .groupBy('va.productAttributeId')
+        .getRawMany<{ id: string }>();
+
+      const usedSet = new Set(usedAttributes.map((u) => u.id));
+
+      const toSoftDelete = ids.filter((id) => usedSet.has(id));
+      const toHardDelete = ids.filter((id) => !usedSet.has(id));
+
+      if (toSoftDelete.length) {
+        this.logger.debug(
+          `Soft deleting attributes count=${toSoftDelete.length}`,
+        );
+
+        await tx.update(
+          ProductAttribute,
+          { id: In(toSoftDelete) },
+          {
+            isActive: false,
+            updatedBy: actor,
+          },
+        );
+      }
+
+      if (toHardDelete.length) {
+        this.logger.debug(
+          `Hard deleting attributes count=${toHardDelete.length}`,
+        );
+
+        await tx.delete(ProductAttribute, {
+          id: In(toHardDelete),
+        });
+      }
+    }
+
+    for (const attr of attributes) {
+      if (attr.id && existingMap.has(attr.id)) {
+        await tx.update(ProductAttribute, attr.id, {
+          attributeKey: attr.attributeKey,
+          attributeKeyDisplay: attr.attributeKeyDisplay,
+          displayOrder: attr.displayOrder,
+          updatedBy: actor,
+          isActive: true,
+        });
+      } else {
+        await tx.insert(ProductAttribute, {
+          productId,
+          attributeKey: attr.attributeKey,
+          attributeKeyDisplay: attr.attributeKeyDisplay,
+          displayOrder: attr.displayOrder,
+          createdBy: actor,
+          isActive: true,
+        });
+      }
+    }
   }
 
   private validateImagesInput(
@@ -364,6 +564,8 @@ export class AdminProductsService {
 
   private async uploadImages(images?: Express.Multer.File[]) {
     if (!images?.length) return [];
+
+    this.logger.debug(`Uploading ${images.length} images`);
 
     try {
       return await Promise.all(
@@ -406,6 +608,8 @@ export class AdminProductsService {
     savedProduct: Product,
     tx: EntityManager,
   ) {
+    if (!uploadResults.length) return;
+
     const imageMetas = createProductDto.imageMetas;
 
     const productImages = uploadResults.map((_, index) => {
@@ -472,6 +676,8 @@ export class AdminProductsService {
   private async cleanupUploads(uploads: StorageUploadResult[]) {
     if (!uploads.length) return;
 
+    this.logger.warn(`Cleaning up ${uploads.length} uploaded files`);
+
     await Promise.all(
       uploads.map(async (file) => {
         try {
@@ -479,7 +685,7 @@ export class AdminProductsService {
         } catch (error) {
           this.logger.error(
             `Failed to cleanup uploaded file: ${file.key}`,
-            error,
+            getErrorStack(error),
           );
         }
       }),

@@ -11,7 +11,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { Brand } from '@/brands/entities';
 import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
 import { Category } from '@/categories/entities/category.entity';
-import { Product } from '@/products/entities/product.entity';
+import { Product } from '@/products/entities';
 import { GetMediasDto, UploadMediasDto } from './dto';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {

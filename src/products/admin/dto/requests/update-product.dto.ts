@@ -9,10 +9,13 @@ import {
   ArrayUnique,
   ArrayNotEmpty,
   IsArray,
+  ValidateNested,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { plainToInstance, Transform } from 'class-transformer';
 import { ProductStatus } from '@/common/enums';
-import { normalizeSlug } from '@/common/utils/slugs';
+import { normalizeSlug, safeJsonParse } from '@/common/utils';
+import { ArrayUniqueBy } from '@/common/validators/array-unique-by.decorator';
+import { CreateProductAttributeDto } from '.';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SLUG_LENGTH = 255;
@@ -48,10 +51,12 @@ export class UpdateProductDto {
   status?: ProductStatus;
 
   @IsBoolean({ message: 'isFeatured must be a boolean' })
+  @Transform(({ value }) => value === 'true')
   @IsOptional()
   isFeatured?: boolean;
 
   @IsBoolean({ message: 'isBestseller must be a boolean' })
+  @Transform(({ value }) => value === 'true')
   @IsOptional()
   isBestseller?: boolean;
 
@@ -66,8 +71,45 @@ export class UpdateProductDto {
   })
   @ArrayNotEmpty({ message: 'categoryIds must not be empty' })
   @IsArray({ message: 'categoryIds must be an array' })
+  @Transform(({ value }) => {
+    let result: unknown;
+
+    if (typeof value === 'string') {
+      result = safeJsonParse<string[]>(value);
+    } else {
+      result = value;
+    }
+
+    return result;
+  })
   @IsOptional()
   categoryIds?: string[];
+
+  @ValidateNested({ each: true })
+  @IsArray({ message: 'Attributes must be an array' })
+  @ArrayUniqueBy<CreateProductAttributeDto>('attributeKey', {
+    message: 'Attribute key must not be duplicated',
+  })
+  @ArrayUniqueBy<CreateProductAttributeDto>('displayOrder', {
+    message: 'Display order must not be duplicated',
+  })
+  @Transform(({ value }) => {
+    let parsed: unknown = value;
+
+    if (typeof value === 'string') {
+      parsed = safeJsonParse<unknown>(value);
+    }
+
+    if (!Array.isArray(parsed)) {
+      return parsed;
+    }
+
+    return parsed.map((item) =>
+      plainToInstance(CreateProductAttributeDto, item),
+    );
+  })
+  @IsOptional()
+  attributes?: CreateProductAttributeDto[];
 
   @IsEmpty()
   isActive: boolean;
