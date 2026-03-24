@@ -37,14 +37,13 @@ export function mapToProductResponseFromProductRaw(
       ? Number(product.variantCount)
       : undefined,
 
-    attributes:
-      Array.isArray(product.attributes) && product.attributes.length
-        ? product.attributes.map((attr) => ({
-            id: attr.id,
-            attributeKey: attr.attributeKey,
-            attributeKeyDisplay: attr.attributeKeyDisplay,
-            displayOrder: Number(attr.displayOrder),
-          }))
-        : undefined,
+    attributes: Array.isArray(product.attributes)
+      ? product.attributes.map((attr) => ({
+          id: attr.id,
+          attributeKey: attr.attributeKey,
+          attributeKeyDisplay: attr.attributeKeyDisplay,
+          displayOrder: Number(attr.displayOrder),
+        }))
+      : undefined,
   });
 }

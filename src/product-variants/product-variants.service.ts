@@ -191,7 +191,7 @@ export class ProductVariantsService {
       }
 
       if (updateProductVariantDto.attributes?.length) {
-        await this.variantAttributesService.updateAttributes(
+        await this.variantAttributesService.syncAttributes(
           tx,
           id,
           existing.productId,

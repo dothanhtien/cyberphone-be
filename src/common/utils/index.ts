@@ -5,3 +5,4 @@ export * from './mapper.util';
 export * from './paginations.util';
 export * from './parsers';
 export * from './slugs';
+export * from './files';

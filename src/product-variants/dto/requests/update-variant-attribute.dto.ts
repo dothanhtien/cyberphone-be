@@ -4,7 +4,8 @@ const MAX_LENGTH = 255;
 
 export class UpdateVariantAttributeDto {
   @IsUUID('4', { message: 'Id must be a valid UUID (v4)' })
-  id: string;
+  @IsOptional()
+  id?: string;
 
   @IsUUID('4', { message: 'Id must be a valid UUID (v4)' })
   @IsOptional()

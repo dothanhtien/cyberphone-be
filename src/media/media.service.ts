@@ -99,21 +99,17 @@ export class MediaService {
       const result = await this.dataSource.transaction(async (tx) => {
         this.logger.debug('Creating media records in DB');
 
-        return Promise.all(
-          uploads.map((upload) =>
-            this.mediaAssetsService.create(
-              {
-                publicId: upload.key,
-                url: upload.url,
-                resourceType: upload.resourceType,
-                refType: uploadMediasDto.refType,
-                refId: uploadMediasDto.refId,
-                usageType: uploadMediasDto.usageType,
-                createdBy: uploadMediasDto.createdBy,
-              },
-              tx,
-            ),
-          ),
+        return await this.mediaAssetsService.create(
+          uploads.map((upload) => ({
+            publicId: upload.key,
+            url: upload.url,
+            resourceType: upload.resourceType,
+            refType: uploadMediasDto.refType,
+            refId: uploadMediasDto.refId,
+            usageType: uploadMediasDto.usageType,
+            createdBy: uploadMediasDto.createdBy,
+          })),
+          tx,
         );
       });
 

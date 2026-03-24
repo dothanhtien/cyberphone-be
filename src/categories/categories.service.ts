@@ -59,16 +59,18 @@ export class CategoriesService {
             folder: CATEGORY_FOLDER,
           });
 
-          media = await this.mediaAssetService.create(
-            {
-              publicId: uploadResult.key,
-              url: uploadResult.url,
-              resourceType: uploadResult.resourceType,
-              refType: MediaAssetRefType.CATEGORY,
-              refId: savedCategory.id,
-              usageType: MediaAssetUsageType.LOGO,
-              createdBy: savedCategory.createdBy,
-            },
+          [media] = await this.mediaAssetService.create(
+            [
+              {
+                publicId: uploadResult.key,
+                url: uploadResult.url,
+                resourceType: uploadResult.resourceType,
+                refType: MediaAssetRefType.CATEGORY,
+                refId: savedCategory.id,
+                usageType: MediaAssetUsageType.LOGO,
+                createdBy: savedCategory.createdBy,
+              },
+            ],
             tx,
           );
         }
@@ -185,16 +187,18 @@ export class CategoriesService {
             folder: CATEGORY_FOLDER,
           });
 
-          const newMedia = await this.mediaAssetService.create(
-            {
-              publicId: uploadResult.key,
-              url: uploadResult.url,
-              resourceType: uploadResult.resourceType,
-              refType: MediaAssetRefType.CATEGORY,
-              refId: id,
-              usageType: MediaAssetUsageType.LOGO,
-              createdBy: updateCategoryDto.updatedBy,
-            },
+          const [newMedia] = await this.mediaAssetService.create(
+            [
+              {
+                publicId: uploadResult.key,
+                url: uploadResult.url,
+                resourceType: uploadResult.resourceType,
+                refType: MediaAssetRefType.CATEGORY,
+                refId: id,
+                usageType: MediaAssetUsageType.LOGO,
+                createdBy: updateCategoryDto.updatedBy,
+              },
+            ],
             tx,
           );
 

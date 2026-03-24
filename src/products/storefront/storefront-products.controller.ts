@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { Public } from '@/auth/decorators';
 import { StorefrontProductsService } from './storefront-products.service';
 import { FilterProductsDto } from './dto';
@@ -11,5 +11,10 @@ export class StorefrontProductsController {
   @Get()
   findAll(@Query() filterProductsDto: FilterProductsDto) {
     return this.productsService.findAll(filterProductsDto);
+  }
+
+  @Get(':slug')
+  findOne(@Param('slug') slug: string) {
+    return this.productsService.findOne(slug);
   }
 }

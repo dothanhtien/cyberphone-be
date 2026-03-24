@@ -15,8 +15,8 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { AdminProductsService } from './admin-products.service';
 import { CreateProductDto, UpdateProductDto } from './dto';
 import { LoggedInUser } from '@/auth/decorators';
-import { User } from '@/users/entities';
 import { PaginationQueryDto } from '@/common/dto';
+import { User } from '@/users/entities';
 
 @Controller('admin/products')
 export class AdminProductsController {
@@ -64,7 +64,7 @@ export class AdminProductsController {
     @LoggedInUser() loggedInUser: User,
   ) {
     updateProductDto.updatedBy = loggedInUser.id;
-    return this.productsService.update(id, updateProductDto);
+    return this.productsService.update(id, updateProductDto, images);
   }
 
   @Delete(':id')
@@ -78,12 +78,5 @@ export class AdminProductsController {
     });
 
     return true;
-  }
-
-  @Get(':id/attributes')
-  async findAttributes(
-    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ) {
-    return this.productsService.findAttributes(id);
   }
 }

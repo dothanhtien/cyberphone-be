@@ -15,7 +15,7 @@ import { plainToInstance, Transform } from 'class-transformer';
 import { ProductStatus } from '@/common/enums';
 import { normalizeSlug, safeJsonParse } from '@/common/utils';
 import { ArrayUniqueBy } from '@/common/validators/array-unique-by.decorator';
-import { CreateProductAttributeDto } from '.';
+import { CreateProductAttributeDto, CreateProductImageDto } from '.';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SLUG_LENGTH = 255;
@@ -110,6 +110,24 @@ export class UpdateProductDto {
   })
   @IsOptional()
   attributes?: CreateProductAttributeDto[];
+
+  @ValidateNested({ each: true })
+  @IsArray({ message: 'imageMetas must be an array' })
+  @Transform(({ value }) => {
+    let parsed: unknown = value;
+
+    if (typeof value === 'string') {
+      parsed = safeJsonParse<unknown>(value);
+    }
+
+    if (!Array.isArray(parsed)) {
+      return parsed;
+    }
+
+    return parsed.map((item) => plainToInstance(CreateProductImageDto, item));
+  })
+  @IsOptional()
+  imageMetas?: CreateProductImageDto[];
 
   @IsEmpty()
   isActive: boolean;

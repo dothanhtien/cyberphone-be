@@ -1,9 +1,10 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { EntityManager, In } from 'typeorm';
+import { EntityManager, In, InsertResult, UpdateResult } from 'typeorm';
 import { sanitizeEntityInput } from '@/common/utils/entities.util';
 import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
@@ -13,6 +14,8 @@ import { VariantAttributeCreateEntityDto } from './dto/entity-inputs/variant-att
 
 @Injectable()
 export class VariantAttributesService {
+  private logger = new Logger(VariantAttributesService.name);
+
   constructor() {}
 
   async createAttributes(
@@ -75,24 +78,79 @@ export class VariantAttributesService {
 
     const existingMap = new Map(existingAttrs.map((a) => [a.id, a]));
 
-    const toUpdate = attributes.map((attr) => {
-      const existing = existingMap.get(attr.id)!;
+    const toUpdate = attributes
+      .map((attr) => {
+        if (!attr.id) return;
 
-      if (existing.productAttributeId !== attr.productAttributeId) {
-        throw new BadRequestException(
-          `Variant attribute ${attr.id} does not match productAttributeId ${attr.productAttributeId}`,
-        );
-      }
+        const existing = existingMap.get(attr.id)!;
 
-      existing.attributeValue = attr.attributeValue ?? existing.attributeValue;
-      existing.attributeValueDisplay =
-        attr.attributeValueDisplay ?? existing.attributeValueDisplay;
-      existing.updatedBy = updatedBy;
+        if (existing.productAttributeId !== attr.productAttributeId) {
+          throw new BadRequestException(
+            `Variant attribute ${attr.id} does not match productAttributeId ${attr.productAttributeId}`,
+          );
+        }
 
-      return existing;
-    });
+        existing.attributeValue =
+          attr.attributeValue ?? existing.attributeValue;
+        existing.attributeValueDisplay =
+          attr.attributeValueDisplay ?? existing.attributeValueDisplay;
+        existing.updatedBy = updatedBy;
+
+        return existing;
+      })
+      .filter((x) => x) as VariantAttribute[];
 
     await variantAttributeRepository.save(toUpdate);
+  }
+
+  async syncAttributes(
+    tx: EntityManager,
+    variantId: string,
+    productId: string,
+    attributes: UpdateProductVariantDto['attributes'],
+    actor: string,
+  ) {
+    if (!attributes?.length) return;
+
+    this.logger.debug(
+      `Sync attributes for variant=${variantId}, incoming=${attributes.length}`,
+    );
+
+    const productAttributeIds = attributes.map((a) => a.productAttributeId);
+
+    await this.validateProductAttributes(tx, productId, productAttributeIds);
+
+    const existing = await tx.find(VariantAttribute, {
+      where: { variantId, isActive: true },
+    });
+
+    const existingMap = new Map(existing.map((e) => [e.id, e]));
+
+    const upsertQueries: Promise<InsertResult | UpdateResult>[] = [];
+
+    for (const attr of attributes) {
+      if (attr.id && existingMap.has(attr.id)) {
+        upsertQueries.push(
+          tx.update(VariantAttribute, attr.id, {
+            attributeValue: attr.attributeValue,
+            attributeValueDisplay: attr.attributeValueDisplay,
+            updatedBy: actor,
+          }),
+        );
+      } else {
+        upsertQueries.push(
+          tx.insert(VariantAttribute, {
+            variantId: variantId,
+            productAttributeId: attr.productAttributeId,
+            attributeValue: attr.attributeValue,
+            attributeValueDisplay: attr.attributeValueDisplay,
+            createdBy: actor,
+          }),
+        );
+      }
+    }
+
+    await Promise.all(upsertQueries);
   }
 
   private async validateProductAttributes(

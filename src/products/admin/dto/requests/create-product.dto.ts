@@ -106,7 +106,7 @@ export class CreateProductDto {
     return parsed.map((item) => plainToInstance(CreateProductImageDto, item));
   })
   @IsOptional()
-  imageMetas: CreateProductImageDto[];
+  imageMetas?: CreateProductImageDto[];
 
   @ValidateNested({ each: true })
   @IsArray({ message: 'Attributes must be an array' })
@@ -132,7 +132,7 @@ export class CreateProductDto {
     );
   })
   @IsOptional()
-  attributes: CreateProductAttributeDto[];
+  attributes?: CreateProductAttributeDto[];
 
   @IsEmpty()
   createdBy: string;

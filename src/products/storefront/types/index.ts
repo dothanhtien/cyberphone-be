@@ -11,3 +11,7 @@ export interface RawProductRow {
   main_image: string | null;
   variant_id: string;
 }
+
+export interface ProductDetailsRaw {
+  id: string;
+}

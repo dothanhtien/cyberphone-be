@@ -1,18 +1,18 @@
 import { Expose } from 'class-transformer';
 import { ProductImageType } from '@/common/enums';
 
-export class ProductImageCreateEntityDto {
+export class ProductImageUpdateEntityDto {
   @Expose()
   id?: string;
 
   @Expose()
-  productId: string;
+  productId?: string;
 
   @Expose()
   variantId?: string | null;
 
   @Expose()
-  imageType: ProductImageType;
+  imageType?: ProductImageType;
 
   @Expose()
   altText?: string | null;
@@ -21,8 +21,11 @@ export class ProductImageCreateEntityDto {
   title?: string | null;
 
   @Expose()
-  displayOrder: number;
+  displayOrder?: number;
 
   @Expose()
-  createdBy: string;
+  isActive?: boolean;
+
+  @Expose()
+  updatedBy?: string;
 }
