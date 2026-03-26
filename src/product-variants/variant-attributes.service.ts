@@ -1,16 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { EntityManager, In, InsertResult, UpdateResult } from 'typeorm';
-import { sanitizeEntityInput } from '@/common/utils/entities.util';
-import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
-import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
+import { SyncVariantAttributeDto } from './dto/requests/sync-variant-attribute.dto';
 import { VariantAttribute } from './entities/variant-attribute.entity';
 import { ProductAttribute } from '@/products/entities';
-import { VariantAttributeCreateEntityDto } from './dto/entity-inputs/variant-attribute-create-entity.dto';
 
 @Injectable()
 export class VariantAttributesService {
@@ -18,98 +10,19 @@ export class VariantAttributesService {
 
   constructor() {}
 
-  async createAttributes(
-    tx: EntityManager,
-    productId: string,
-    variantId: string,
-    attributes: CreateProductVariantDto['attributes'],
-    createdBy: string,
-  ): Promise<void> {
-    if (!attributes?.length) return;
-
-    await this.validateProductAttributes(
-      tx,
-      productId,
-      attributes.map((a) => a.productAttributeId),
-    );
-
-    const attributeEntities = attributes.map((attr) =>
-      sanitizeEntityInput(VariantAttributeCreateEntityDto, {
-        variantId,
-        productAttributeId: attr.productAttributeId,
-        attributeValue: attr.attributeValue,
-        attributeValueDisplay: attr.attributeValueDisplay ?? null,
-        createdBy,
-      }),
-    );
-
-    await tx.getRepository(VariantAttribute).save(attributeEntities);
-  }
-
-  async updateAttributes(
-    tx: EntityManager,
-    variantId: string,
-    productId: string,
-    attributes: UpdateProductVariantDto['attributes'],
-    updatedBy: string,
-  ) {
-    if (!attributes?.length) return;
-
-    const productAttributeIds = attributes.map((a) => a.productAttributeId);
-
-    await this.validateProductAttributes(tx, productId, productAttributeIds);
-
-    const ids = attributes.map((a) => a.id);
-
-    const variantAttributeRepository = tx.getRepository(VariantAttribute);
-
-    const existingAttrs = await variantAttributeRepository.find({
-      where: {
-        id: In(ids),
-        productAttributeId: In(productAttributeIds),
-        variantId,
-        isActive: true,
-      },
-    });
-
-    if (existingAttrs.length !== ids.length) {
-      throw new NotFoundException('Some variant attributes were not found');
-    }
-
-    const existingMap = new Map(existingAttrs.map((a) => [a.id, a]));
-
-    const toUpdate = attributes
-      .map((attr) => {
-        if (!attr.id) return;
-
-        const existing = existingMap.get(attr.id)!;
-
-        if (existing.productAttributeId !== attr.productAttributeId) {
-          throw new BadRequestException(
-            `Variant attribute ${attr.id} does not match productAttributeId ${attr.productAttributeId}`,
-          );
-        }
-
-        existing.attributeValue =
-          attr.attributeValue ?? existing.attributeValue;
-        existing.attributeValueDisplay =
-          attr.attributeValueDisplay ?? existing.attributeValueDisplay;
-        existing.updatedBy = updatedBy;
-
-        return existing;
-      })
-      .filter((x) => x) as VariantAttribute[];
-
-    await variantAttributeRepository.save(toUpdate);
-  }
-
-  async syncAttributes(
-    tx: EntityManager,
-    variantId: string,
-    productId: string,
-    attributes: UpdateProductVariantDto['attributes'],
-    actor: string,
-  ) {
+  async sync({
+    productId,
+    variantId,
+    attributes = [],
+    actor,
+    tx,
+  }: {
+    productId: string;
+    variantId: string;
+    attributes?: SyncVariantAttributeDto[];
+    actor: string;
+    tx: EntityManager;
+  }) {
     if (!attributes?.length) return;
 
     this.logger.debug(
@@ -118,7 +31,7 @@ export class VariantAttributesService {
 
     const productAttributeIds = attributes.map((a) => a.productAttributeId);
 
-    await this.validateProductAttributes(tx, productId, productAttributeIds);
+    await this.validate(tx, productId, productAttributeIds);
 
     const existing = await tx.find(VariantAttribute, {
       where: { variantId, isActive: true },
@@ -153,7 +66,7 @@ export class VariantAttributesService {
     await Promise.all(upsertQueries);
   }
 
-  private async validateProductAttributes(
+  private async validate(
     tx: EntityManager,
     productId: string,
     productAttributeIds: string[],

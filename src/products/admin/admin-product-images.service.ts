@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, Logger } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import {
   CreateProductImageDto,
@@ -38,13 +38,13 @@ export class AdminProductImagesService {
   }) {
     if (!imageMetas.length) {
       this.logger.warn(
-        `[create] No imageMetas provided for product=${productId}`,
+        `[create] No imageMetas provided productId=${productId}`,
       );
       return [];
     }
 
     this.logger.log(
-      `[create] Creating ${imageMetas.length} product image(s) for product=${productId}`,
+      `[create] Creating ${imageMetas.length} product image(s) productId=${productId}`,
     );
 
     const entities = imageMetas.map((meta) =>
@@ -58,7 +58,7 @@ export class AdminProductImagesService {
     const result = await this.productImageRepository.create(tx, entities);
 
     this.logger.log(
-      `[create] Successfully created ${result.length} image(s) for product=${productId}`,
+      `[create] Successfully created ${result.length} image(s) productId=${productId}`,
     );
 
     return result;
@@ -76,21 +76,19 @@ export class AdminProductImagesService {
     tx: EntityManager;
   }): Promise<ProductImage[]> {
     if (!imageMetas.length) {
-      this.logger.warn(
-        `[sync] No metaData provided for productId=${productId}`,
-      );
+      this.logger.warn(`[sync] No metaData provided productId=${productId}`);
       return [];
     }
 
     this.logger.log(
-      `[sync] Syncing ${imageMetas.length} image(s) for productId=${productId}`,
+      `[sync] Syncing ${imageMetas.length} image(s) productId=${productId}`,
     );
 
     const existing =
       await this.productImageRepository.findActiveByProductId(productId);
 
     this.logger.log(
-      `[sync] Found ${existing.length} existing image(s) for productId=${productId}`,
+      `[sync] Found ${existing.length} existing image(s) productId=${productId}`,
     );
 
     const { toInsert, toUpdate, toDelete } = this.diff({
@@ -101,7 +99,7 @@ export class AdminProductImagesService {
     });
 
     this.logger.log(
-      `[sync] Diff result for productId=${productId}: insert=${toInsert.length}, update=${toUpdate.length}, delete=${toDelete.length}`,
+      `[sync] Diff result productId=${productId}, insert=${toInsert.length}, update=${toUpdate.length}, delete=${toDelete.length}`,
     );
 
     const [inserted] = await Promise.all([
@@ -111,7 +109,7 @@ export class AdminProductImagesService {
     ]);
 
     this.logger.log(
-      `[sync] Successfully synced images for productId=${productId}: inserted=${inserted.length}`,
+      `[sync] Successfully synced images productId=${productId}, inserted=${inserted.length}`,
     );
 
     return inserted;
@@ -172,6 +170,10 @@ export class AdminProductImagesService {
       }
     }
 
+    this.logger.debug(
+      `[diff] Computed diff productId=${productId}, toInsert=${toInsert.length}, toUpdate=${toUpdate.length}, toDelete=${toDelete.length}`,
+    );
+
     return { toInsert, toUpdate, toDelete };
   }
 
@@ -185,14 +187,15 @@ export class AdminProductImagesService {
     uploadResults: StorageUploadResult[];
   }): MediaAssetCreateEntityDto[] {
     if (productImages.length !== uploadResults.length) {
-      throw new Error(
-        `Image count mismatch: productImages=${productImages.length}, uploadResults=${uploadResults.length}`,
-      );
+      const msg = `Image count mismatch productImages=${productImages.length}, uploadResults=${uploadResults.length}`;
+      this.logger.error(`[buildMediaAssets] ${msg}`);
+
+      throw new ConflictException(msg);
     }
 
     const metaMap = new Map(imageMetas.map((m) => [m.id, m]));
 
-    return productImages.flatMap((pi) => {
+    const assets = productImages.flatMap((pi) => {
       const meta = metaMap.get(pi.id);
       if (!meta) return [];
 
@@ -211,5 +214,9 @@ export class AdminProductImagesService {
         },
       ];
     });
+
+    this.logger.log(`[buildMediaAssets] Built ${assets.length} media asset(s)`);
+
+    return assets;
   }
 }

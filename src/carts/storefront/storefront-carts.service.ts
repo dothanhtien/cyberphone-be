@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cart } from '../entities/cart.entity';
-import { sanitizeEntityInput } from '@/common/utils/entities.util';
+import { sanitizeEntityInput } from '@/common/utils';
 import { CartCreateEntityInput } from './dto/entity-inputs/cart-create-entity.dto';
 import { ResolveCartDto } from './dto/requests/resolve-cart.dto';
 import { AddToCartDto } from './dto/requests/add-to-cart.dto';

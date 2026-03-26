@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  ArrayUnique,
   IsArray,
   IsBoolean,
   IsEmpty,
@@ -12,7 +13,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { CreateVariantAttributeDto } from './create-variant-attribute.dto';
+import { SyncVariantAttributeDto } from './sync-variant-attribute.dto';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SKU_LENGTH = 100;
@@ -75,10 +76,13 @@ export class CreateProductVariantDto {
   isDefault?: boolean;
 
   @ValidateNested({ each: true })
-  @Type(() => CreateVariantAttributeDto)
+  @ArrayUnique((o: SyncVariantAttributeDto) => o.productAttributeId, {
+    message: 'productAttributeId must be unique',
+  })
+  @Type(() => SyncVariantAttributeDto)
   @IsArray({ message: 'Attributes must be an array' })
   @IsOptional()
-  attributes?: CreateVariantAttributeDto[];
+  attributes?: SyncVariantAttributeDto[];
 
   @IsEmpty()
   createdBy: string;

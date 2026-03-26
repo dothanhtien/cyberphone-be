@@ -7,12 +7,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { ProductVariant } from './entities/product-variant.entity';
-import { sanitizeEntityInput } from '@/common/utils/entities.util';
 import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
 import { ProductVariantCreateEntityDto } from './dto/entity-inputs/product-variant-create-entity.dto';
 import { Product } from '@/products/entities';
 import { ProductVariantStockStatus } from '@/common/enums';
-import { isUniqueConstraintError } from '@/common/utils/database-error.util';
+import { isUniqueConstraintError, sanitizeEntityInput } from '@/common/utils';
 import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
 import { ProductVariantUpdateEntityDto } from './dto/entity-inputs/product-variant-update-entity.dto';
 import { VariantAttributesService } from './variant-attributes.service';
@@ -86,13 +85,13 @@ export class ProductVariantsService {
         throw error;
       }
 
-      await this.variantAttributesService.createAttributes(
-        tx,
+      await this.variantAttributesService.sync({
         productId,
-        savedVariant.id,
-        createProductVariantDto.attributes,
-        createProductVariantDto.createdBy,
-      );
+        variantId: savedVariant.id,
+        attributes: createProductVariantDto.attributes,
+        actor: createProductVariantDto.createdBy,
+        tx,
+      });
 
       return savedVariant;
     });
@@ -190,15 +189,13 @@ export class ProductVariantsService {
         throw error;
       }
 
-      if (updateProductVariantDto.attributes?.length) {
-        await this.variantAttributesService.syncAttributes(
-          tx,
-          id,
-          existing.productId,
-          updateProductVariantDto.attributes,
-          updateProductVariantDto.updatedBy,
-        );
-      }
+      await this.variantAttributesService.sync({
+        productId: existing.productId,
+        variantId: id,
+        attributes: updateProductVariantDto.attributes,
+        actor: updateProductVariantDto.updatedBy,
+        tx,
+      });
 
       return savedVariant;
     });

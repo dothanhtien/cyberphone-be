@@ -95,10 +95,22 @@ export class AdminProductValidatorsService {
       );
     }
 
-    const metaIds = new Set(imageMetas.map((m) => m.id));
+    const imageIds = images.map((file) => getFilename(file.originalname));
+    if (new Set(imageIds).size !== imageIds.length) {
+      throw new BadRequestException(
+        'Uploaded image filenames must be unique after removing the extension',
+      );
+    }
+
+    const metaIds = imageMetas.map((m) => m.id);
+    if (new Set(metaIds).size !== metaIds.length) {
+      throw new BadRequestException('imageMetas ids must be unique');
+    }
+
+    const metaIdSet = new Set(metaIds);
 
     const missingMeta = images.find(
-      (file) => !metaIds.has(getFilename(file.originalname)),
+      (file) => !metaIdSet.has(getFilename(file.originalname)),
     );
 
     if (missingMeta) {
@@ -118,11 +130,15 @@ export class AdminProductValidatorsService {
     images: Express.Multer.File[],
   ): Promise<void> {
     this.logger.debug(
-      `[validateUpdateConstraints] Start — productId=${product.id}`,
+      `[validateUpdateConstraints] Validating update constrants productId=${product.id}`,
     );
 
     if (updateProductDto.brandId) {
       await this.ensureBrandExists(updateProductDto.brandId);
+    }
+
+    if (updateProductDto.categoryIds?.length) {
+      await this.ensureCategoriesExistAndActive(updateProductDto.categoryIds);
     }
 
     if (updateProductDto.slug && updateProductDto.slug !== product.slug) {

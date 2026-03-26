@@ -10,11 +10,11 @@ import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import {
   buildPaginationParams,
   extractPaginationParams,
-} from '@/common/utils/paginations.util';
+  toEntity,
+} from '@/common/utils';
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/requests/create-category.dto';
 import { UpdateCategoryDto } from './dto/requests/update-category.dto';
-import { toEntity } from '@/common/utils/entities.util';
 import { MediaAssetsService } from '@/media/media-assets.service';
 import { MediaAsset } from '@/media/entities';
 import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';

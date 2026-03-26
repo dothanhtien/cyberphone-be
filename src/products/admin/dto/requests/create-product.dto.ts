@@ -56,13 +56,23 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'Status is required' })
   status: ProductStatus;
 
-  @Transform(({ value }) => value === 'true')
   @IsBoolean({ message: 'isFeatured must be a boolean' })
+  @Transform(({ value }: { value: unknown }) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    if (value === true || value === 'true') return true;
+    if (value === false || value === 'false') return false;
+    return value;
+  })
   @IsOptional()
   isFeatured?: boolean;
 
   @Transform(({ value }) => value === 'true')
-  @IsBoolean({ message: 'isBestseller must be a boolean' })
+  @Transform(({ value }: { value: unknown }) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    if (value === true || value === 'true') return true;
+    if (value === false || value === 'false') return false;
+    return value;
+  })
   @IsOptional()
   isBestseller?: boolean;
 

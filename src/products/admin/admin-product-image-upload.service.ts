@@ -17,7 +17,10 @@ export class AdminProductImageUploadService {
   ) {}
 
   async upload(images: Express.Multer.File[]): Promise<StorageUploadResult[]> {
-    if (!images.length) return [];
+    if (!images.length) {
+      this.logger.warn(`[upload] No images provided`);
+      return [];
+    }
 
     this.logger.log(`[upload] Uploading ${images.length} image(s)`);
 
@@ -48,7 +51,7 @@ export class AdminProductImageUploadService {
 
       await this.cleanup(succeeded).catch((cleanupErr) => {
         this.logger.error(
-          `[upload] Cleanup failed after partial upload`,
+          `[upload] Failed cleanup after partial upload`,
           getErrorStack(cleanupErr),
         );
       });
@@ -66,24 +69,51 @@ export class AdminProductImageUploadService {
   async cleanup(uploads: StorageUploadResult[]): Promise<void> {
     if (!uploads.length) return;
 
-    this.logger.warn(`Cleaning up ${uploads.length} uploaded files`);
+    this.logger.warn(
+      `[cleanup] Cleaning up ${uploads.length} uploaded file(s)`,
+    );
 
     await Promise.all(
       uploads.map(async (upload) => {
         try {
           await this.storageProvider.delete(upload.key);
+
+          this.logger.debug(
+            `[cleanup] Deleted uploaded file key=${upload.key}`,
+          );
         } catch (error) {
           this.logger.error(
-            `Failed to cleanup uploaded file: ${upload.key}`,
+            `[cleanup] Failed to delete uploaded file key=${upload.key}`,
             getErrorStack(error),
           );
         }
       }),
     );
+
+    this.logger.log(
+      `[cleanup] Cleanup completed for ${uploads.length} file(s)`,
+    );
   }
 
   async delete(keys: string[]): Promise<void> {
     if (!keys.length) return;
-    await Promise.all(keys.map((k) => this.storageProvider.delete(k)));
+
+    this.logger.log(`[delete] Deleting ${keys.length} file(s)`);
+
+    await Promise.all(
+      keys.map(async (key) => {
+        try {
+          await this.storageProvider.delete(key);
+          this.logger.debug(`[delete] Deleted file key=${key}`);
+        } catch (error) {
+          this.logger.error(
+            `[delete] Failed to delete file key=${key}`,
+            getErrorStack(error),
+          );
+        }
+      }),
+    );
+
+    this.logger.log(`[delete] Delete completed for ${keys.length} file(s)`);
   }
 }

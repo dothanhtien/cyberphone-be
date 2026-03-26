@@ -17,7 +17,7 @@ export class AdminProductCategoriesService {
   }) {
     if (!categoryIds.length) {
       this.logger.debug(
-        `[create] No categories to insert, skip — productId=${productId}`,
+        `[create] No categories to insert productId=${productId}`,
       );
       return;
     }
@@ -25,15 +25,24 @@ export class AdminProductCategoriesService {
     const uniqueCategoryIds = [...new Set(categoryIds)];
 
     this.logger.debug(
-      `[create] Inserting ${uniqueCategoryIds.length} categories — productId=${productId}`,
+      `[create] Inserting ${uniqueCategoryIds.length} categories productId=${productId}`,
     );
 
-    await tx.insert(
-      ProductCategory,
-      uniqueCategoryIds.map((categoryId) => ({ productId, categoryId })),
-    );
-
-    this.logger.debug(`[create] Done — productId=${productId}`);
+    try {
+      await tx.insert(
+        ProductCategory,
+        uniqueCategoryIds.map((categoryId) => ({ productId, categoryId })),
+      );
+      this.logger.log(
+        `[create] Categories inserted successfully count=${uniqueCategoryIds.length}, productId=${productId}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `[create] Failed to insert categories productId=${productId}`,
+        error,
+      );
+      throw error;
+    }
   }
 
   async sync({
@@ -46,9 +55,7 @@ export class AdminProductCategoriesService {
     tx: EntityManager;
   }) {
     if (!categoryIds.length) {
-      this.logger.debug(
-        `[sync] Empty categoryIds, skip — productId=${productId}`,
-      );
+      this.logger.debug(`[sync] No categories provided productId=${productId}`);
       return;
     }
 
@@ -64,29 +71,45 @@ export class AdminProductCategoriesService {
     const toInsert = [...incomingIds].filter((id) => !currentIds.has(id));
 
     if (!toDelete.length && !toInsert.length) {
-      this.logger.debug(`[sync] No changes detected — productId=${productId}`);
+      this.logger.debug(`[sync] No changes productId=${productId}`);
       return;
     }
 
     this.logger.debug(
-      `[sync] Applying diff — productId=${productId}, insert=${toInsert.length}, delete=${toDelete.length}`,
+      `[sync] Applying diff productId=${productId}, insert=${toInsert.length}, delete=${toDelete.length}`,
     );
 
-    if (toDelete.length) {
-      await tx.delete(ProductCategory, { productId, categoryId: In(toDelete) });
-      this.logger.debug(
-        `[sync] Deleted ${toDelete.length} categories — productId=${productId}`,
-      );
-    }
+    try {
+      if (toDelete.length) {
+        await tx.delete(ProductCategory, {
+          productId,
+          categoryId: In(toDelete),
+        });
 
-    if (toInsert.length) {
-      await tx.insert(
-        ProductCategory,
-        toInsert.map((categoryId) => ({ productId, categoryId })),
+        this.logger.log(
+          `[sync] Categories deleted count=${toDelete.length}, productId=${productId}`,
+        );
+      }
+
+      if (toInsert.length) {
+        await tx.insert(
+          ProductCategory,
+          toInsert.map((categoryId) => ({ productId, categoryId })),
+        );
+
+        this.logger.log(
+          `[sync] Categories inserted count=${toInsert.length}, productId=${productId}`,
+        );
+      }
+
+      this.logger.log(`[sync] Category sync completed productId=${productId}`);
+    } catch (error) {
+      this.logger.error(
+        `[sync] Failed to sync categories productId=${productId}`,
+        error,
       );
-      this.logger.debug(
-        `[sync] Inserted ${toInsert.length} categories — productId=${productId}`,
-      );
+
+      throw error;
     }
   }
 }

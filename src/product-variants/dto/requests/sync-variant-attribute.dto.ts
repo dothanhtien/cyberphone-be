@@ -8,7 +8,11 @@ import {
 
 const MAX_LENGTH = 255;
 
-export class CreateVariantAttributeDto {
+export class SyncVariantAttributeDto {
+  @IsUUID('4', { message: 'Id must be a valid UUID (v4)' })
+  @IsOptional()
+  id?: string;
+
   @IsUUID('4', { message: 'Id must be a valid UUID (v4)' })
   productAttributeId: string;
 

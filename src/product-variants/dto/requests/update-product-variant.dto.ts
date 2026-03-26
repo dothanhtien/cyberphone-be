@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  ArrayUnique,
   IsArray,
   IsBoolean,
   IsEmpty,
@@ -13,7 +14,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ProductVariantStockStatus } from '@/common/enums';
-import { UpdateVariantAttributeDto } from './update-variant-attribute.dto';
+import { SyncVariantAttributeDto } from './sync-variant-attribute.dto';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SKU_LENGTH = 100;
@@ -88,10 +89,13 @@ export class UpdateProductVariantDto {
   isActive: boolean;
 
   @ValidateNested({ each: true })
-  @Type(() => UpdateVariantAttributeDto)
+  @ArrayUnique((o: SyncVariantAttributeDto) => o.productAttributeId, {
+    message: 'productAttributeId must be unique',
+  })
+  @Type(() => SyncVariantAttributeDto)
   @IsArray({ message: 'Attributes must be an array' })
   @IsOptional()
-  attributes?: UpdateVariantAttributeDto[];
+  attributes?: SyncVariantAttributeDto[];
 
   @IsEmpty()
   updatedBy: string;

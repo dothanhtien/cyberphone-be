@@ -35,13 +35,3 @@ export interface ProductRaw {
 
   variantCount?: string;
 }
-
-export interface ImageSyncMeta {
-  id: string;
-  imageType: ProductImageType;
-  altText?: string | null;
-  title?: string | null;
-  displayOrder?: number;
-  isDeleted?: boolean;
-  createdBy: string;
-}

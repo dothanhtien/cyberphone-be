@@ -1,25 +1,14 @@
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Not, Repository } from 'typeorm';
-import {
-  CreateProductDto,
-  ProductCreateEntityDto,
-  ProductUpdateEntityDto,
-} from '../dto';
+import { ProductCreateEntityDto, ProductUpdateEntityDto } from '../dto';
 import { ProductRaw } from '../types';
 import { MediaAssetRefType, ProductImageType } from '@/common/enums';
-import {
-  getErrorStack,
-  isUniqueConstraintError,
-  sanitizeEntityInput,
-} from '@/common/utils';
+import { getErrorStack, isUniqueConstraintError } from '@/common/utils';
 import { Product } from '@/products/entities';
 
 export interface IProductRepository {
-  create(
-    createProductDto: CreateProductDto,
-    tx: EntityManager,
-  ): Promise<Product>;
+  create(data: ProductCreateEntityDto, tx: EntityManager): Promise<Product>;
   findActiveById(id: string): Promise<Product | null>;
   existsActiveById(id: string): Promise<boolean>;
   existsActiveBySlugExcludingId(
@@ -31,7 +20,7 @@ export interface IProductRepository {
   findOneRaw(id: string): Promise<ProductRaw | null>;
   update(
     id: string,
-    dto: ProductUpdateEntityDto,
+    data: ProductUpdateEntityDto,
     tx: EntityManager,
   ): Promise<void>;
 }
@@ -48,16 +37,11 @@ export class ProductRepository implements IProductRepository {
   ) {}
 
   async create(
-    createProductDto: CreateProductDto,
+    data: ProductCreateEntityDto,
     tx: EntityManager,
   ): Promise<Product> {
     try {
-      const entity = sanitizeEntityInput(
-        ProductCreateEntityDto,
-        createProductDto,
-      );
-
-      const product = await tx.save(Product, entity);
+      const product = await tx.save(Product, data);
 
       this.logger.debug(`Product created id=${product.id}`);
 
@@ -195,9 +179,9 @@ export class ProductRepository implements IProductRepository {
 
   async update(
     id: string,
-    dto: ProductUpdateEntityDto,
+    data: ProductUpdateEntityDto,
     tx: EntityManager,
   ): Promise<void> {
-    await tx.update(Product, id, dto);
+    await tx.update(Product, id, data);
   }
 }
