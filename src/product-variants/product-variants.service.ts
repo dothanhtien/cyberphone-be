@@ -86,13 +86,13 @@ export class ProductVariantsService {
         throw error;
       }
 
-      await this.variantAttributesService.createAttributes(
-        tx,
+      await this.variantAttributesService.sync({
         productId,
-        savedVariant.id,
-        createProductVariantDto.attributes,
-        createProductVariantDto.createdBy,
-      );
+        variantId: savedVariant.id,
+        attributes: createProductVariantDto.attributes ?? [],
+        actor: createProductVariantDto.createdBy,
+        tx,
+      });
 
       return savedVariant;
     });
@@ -191,13 +191,13 @@ export class ProductVariantsService {
       }
 
       if (updateProductVariantDto.attributes?.length) {
-        await this.variantAttributesService.syncAttributes(
+        await this.variantAttributesService.sync({
+          productId: existing.productId,
+          variantId: id,
+          attributes: updateProductVariantDto.attributes,
+          actor: updateProductVariantDto.updatedBy,
           tx,
-          id,
-          existing.productId,
-          updateProductVariantDto.attributes,
-          updateProductVariantDto.updatedBy,
-        );
+        });
       }
 
       return savedVariant;

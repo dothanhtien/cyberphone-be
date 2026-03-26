@@ -2,7 +2,7 @@ import { IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
 const MAX_LENGTH = 255;
 
-export class UpdateVariantAttributeDto {
+export class SyncVariantAttributeDto {
   @IsUUID('4', { message: 'Id must be a valid UUID (v4)' })
   @IsOptional()
   id?: string;

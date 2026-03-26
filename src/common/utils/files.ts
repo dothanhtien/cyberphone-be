@@ -1,2 +1,7 @@
 export const getFilename = (originalname: string): string =>
-  originalname.substring(0, originalname.lastIndexOf('.'));
+  (() => {
+    const lastDotIndex = originalname.lastIndexOf('.');
+    return lastDotIndex > 0
+      ? originalname.substring(0, lastDotIndex)
+      : originalname;
+  })();

@@ -149,9 +149,9 @@ export class StorefrontProductsService {
             ) FILTER (WHERE ma.id IS NOT NULL), '[]'
           ) AS images
         FROM products p
-        LEFT JOIN product_variants pv ON p.id = pv.product_id
+        LEFT JOIN product_variants pv ON p.id = pv.product_id AND pv.is_active = true
         LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_active = true
-        LEFT JOIN media_assets ma ON ma.ref_type = $1 AND ma.ref_id = pi.id::text
+        LEFT JOIN media_assets ma ON ma.ref_type = $1 AND ma.ref_id = pi.id::text AND ma.is_active = true
         LEFT JOIN product_attributes pa ON p.id = pa.product_id AND pa.is_active = true
         WHERE 
           p.slug = $2

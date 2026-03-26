@@ -8,7 +8,7 @@ export class ProductAttributeResponseDto {
   attributeKey: string;
 
   @Expose()
-  attributeKeyDisplay?: string;
+  attributeKeyDisplay: string;
 
   @Expose()
   displayOrder: number;

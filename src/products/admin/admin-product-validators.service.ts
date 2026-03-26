@@ -125,6 +125,10 @@ export class AdminProductValidatorsService {
       await this.ensureBrandExists(updateProductDto.brandId);
     }
 
+    if (updateProductDto.categoryIds?.length) {
+      await this.ensureCategoriesExistAndActive(updateProductDto.categoryIds);
+    }
+
     if (updateProductDto.slug && updateProductDto.slug !== product.slug) {
       await this.ensureSlugNotTaken(updateProductDto.slug, product.id);
     }

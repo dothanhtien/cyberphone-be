@@ -28,6 +28,7 @@ import {
 import { AdminProductValidatorsService } from './admin/admin-product-validators.service';
 import { AdminProductImageUploadService } from './admin/admin-product-image-upload.service';
 import { MediaModule } from '@/media/media.module';
+import { AdminProductAttributesController } from './admin/admin-product-attributes.controller';
 
 @Module({
   imports: [
@@ -64,6 +65,10 @@ import { MediaModule } from '@/media/media.module';
       useClass: ProductImageRepository,
     },
   ],
-  controllers: [AdminProductsController, StorefrontProductsController],
+  controllers: [
+    AdminProductsController,
+    AdminProductAttributesController,
+    StorefrontProductsController,
+  ],
 })
 export class ProductsModule {}
