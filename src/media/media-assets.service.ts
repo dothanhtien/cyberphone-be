@@ -13,19 +13,16 @@ export class MediaAssetsService {
     private readonly mediaAssetRepository: Repository<MediaAsset>,
   ) {}
 
-  create(
-    createMediaAssetDto: CreateMediaAssetDto,
-    entityManager?: EntityManager,
-  ) {
-    const repository = entityManager
-      ? entityManager.getRepository(MediaAsset)
+  create(createMediaAssetDtos: CreateMediaAssetDto[], tx?: EntityManager) {
+    const repository = tx
+      ? tx.getRepository(MediaAsset)
       : this.mediaAssetRepository;
 
-    const mediaEntity = sanitizeEntityInput(
-      MediaAssetCreateEntityDto,
-      createMediaAssetDto,
+    const entities = createMediaAssetDtos.map((dto) =>
+      sanitizeEntityInput(MediaAssetCreateEntityDto, dto),
     );
-    return repository.save(mediaEntity);
+
+    return repository.save(entities);
   }
 
   async findByRefId({

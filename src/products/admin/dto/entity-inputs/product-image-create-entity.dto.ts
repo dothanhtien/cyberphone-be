@@ -3,6 +3,9 @@ import { ProductImageType } from '@/common/enums';
 
 export class ProductImageCreateEntityDto {
   @Expose()
+  id?: string;
+
+  @Expose()
   productId: string;
 
   @Expose()

@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { PaginationQueryDto } from '@/common/dto/paginations.dto';
+import { PaginationQueryDto } from '@/common/dto';
 import { ProductSortEnum } from '../../enums';
 
 export class FilterProductsDto extends PaginationQueryDto {

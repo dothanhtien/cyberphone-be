@@ -1,44 +1,28 @@
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { AdminProductImagesService } from './admin-product-images.service';
+import { AdminProductAttributesService } from './admin-product-attributes.service';
+import { AdminProductCategoriesService } from './admin-product-categories.service';
+import { AdminProductValidatorsService } from './admin-product-validators.service';
+import { AdminProductImageUploadService } from './admin-product-image-upload.service';
 import {
-  BadRequestException,
-  ConflictException,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Not, Repository } from 'typeorm';
-import { Product } from '@/products/entities/product.entity';
-import { ProductCategory } from '@/products/entities/product-category.entity';
-import { ProductImage } from '@/products/entities/product-image.entity';
-import { CreateProductDto } from './dto/requests/create-product.dto';
-import { UpdateProductDto } from './dto/requests/update-product.dto';
-import { MediaAsset } from '@/media/entities';
-import { ProductCreateEntityDto } from './dto/entity-inputs/product-create-entity.dto';
-import { ProductUpdateEntityDto } from './dto/entity-inputs/product-update-entity.dto';
-import { ProductImageCreateEntityDto } from './dto/entity-inputs/product-image-create-entity.dto';
-import { ProductResponseDto } from './dto/responses/product-response.dto';
-import { BrandsService } from '@/brands/brands.service';
-import { CategoriesService } from '@/categories/categories.service';
-import { sanitizeEntityInput } from '@/common/utils/entities.util';
-import { extractPaginationParams } from '@/common/utils/paginations.util';
-import { isUniqueConstraintError } from '@/common/utils/database-error.util';
-import { PaginationQueryDto } from '@/common/dto/paginations.dto';
-import { PaginatedEntity } from '@/common/types/paginations.type';
+  CreateProductDto,
+  UpdateProductDto,
+  ProductUpdateEntityDto,
+  ProductResponseDto,
+  ProductCreateEntityDto,
+} from './dto';
+import { Product } from '../entities';
+import { mapToProductResponseFromProductRaw } from './mappers';
+import { type IProductRepository, PRODUCT_REPOSITORY } from './repositories';
+import { PaginationQueryDto } from '@/common/dto';
+import { MediaAssetsService } from '@/media/media-assets.service';
+import { PaginatedEntity } from '@/common/types';
 import {
-  MediaAssetRefType,
-  MediaAssetUsageType,
-  ProductImageType,
-} from '@/common/enums';
-import { mapToProductResponse } from './mappers/product.mapper';
-import { STORAGE_PROVIDER } from '@/storage/storage.module';
-import type {
-  StorageProvider,
-  StorageUploadResult,
-} from '@/storage/storage.provider';
-import { PRODUCT_FOLDER } from '@/common/constants/paths';
-import { ProductAttribute } from '../entities/product-attribute.entity';
-import { ProductAttributeCreateEntityDto } from './dto/entity-inputs/product-attribute-create-entity.dto';
+  extractPaginationParams,
+  getErrorStack,
+  sanitizeEntityInput,
+} from '@/common/utils';
 
 @Injectable()
 export class AdminProductsService {
@@ -46,117 +30,146 @@ export class AdminProductsService {
 
   constructor(
     private readonly dataSource: DataSource,
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
-    @InjectRepository(ProductAttribute)
-    private readonly productAttributeRepository: Repository<ProductAttribute>,
-    private readonly brandsService: BrandsService,
-    private readonly categoriesService: CategoriesService,
-    @Inject(STORAGE_PROVIDER) private readonly storageProvider: StorageProvider,
+    @Inject(PRODUCT_REPOSITORY)
+    private readonly productRepository: IProductRepository,
+    private readonly productCategoriesService: AdminProductCategoriesService,
+    private readonly productImagesService: AdminProductImagesService,
+    private readonly productAttributesService: AdminProductAttributesService,
+    private readonly productValidatorsService: AdminProductValidatorsService,
+    private readonly mediaAssetsService: MediaAssetsService,
+    private readonly imageUploadService: AdminProductImageUploadService,
   ) {}
 
   async create(
     createProductDto: CreateProductDto,
     images: Express.Multer.File[] = [],
   ) {
-    this.validateImagesInput(createProductDto, images);
+    this.logger.log(`[create] Creating product slug=${createProductDto.slug}`);
+
+    const imageMetas = createProductDto.imageMetas ?? [];
+
+    this.logger.debug(
+      `[create] Validate images metadata count=${imageMetas.length}`,
+    );
+
+    this.productValidatorsService.validateImagesMetadata({
+      imageMetas,
+      images,
+    });
+
+    this.logger.debug(
+      `[create] Validating constraints slug=${createProductDto.slug}`,
+    );
 
     await Promise.all([
-      this.assertSlugAvailable(createProductDto.slug),
-      this.assertBrandExists(createProductDto.brandId),
-      this.assertCategoriesValid(createProductDto.categoryIds),
+      this.productValidatorsService.ensureSlugNotTaken(createProductDto.slug),
+      this.productValidatorsService.ensureBrandExists(createProductDto.brandId),
+      this.productValidatorsService.ensureCategoriesExistAndActive(
+        createProductDto.categoryIds,
+      ),
     ]);
 
-    let uploadResults: StorageUploadResult[] = [];
-    let result: Product;
-    try {
-      uploadResults = await this.uploadImages(images);
+    const uploadResults = images.length
+      ? await this.imageUploadService.upload(images)
+      : [];
 
+    this.logger.debug(`[create] Images uploaded count=${uploadResults.length}`);
+
+    let result: Product;
+
+    try {
       result = await this.dataSource.transaction(async (tx) => {
-        const savedProduct = await this.createProductEntity(
-          createProductDto,
+        this.logger.debug(
+          `[create] Transaction started slug=${createProductDto.slug}`,
+        );
+
+        const product = await this.productRepository.create(
+          sanitizeEntityInput(ProductCreateEntityDto, createProductDto),
           tx,
         );
 
-        await this.syncProductCategories({
-          productId: savedProduct.id,
-          categoryIds: createProductDto.categoryIds,
-          userId: createProductDto.createdBy,
-          tx,
+        const { id: productId, createdBy } = product;
+
+        this.logger.debug(`[create] Product created productId=${productId}`);
+
+        const [, , productImages] = await Promise.all([
+          this.productCategoriesService.create({
+            productId,
+            categoryIds: createProductDto.categoryIds,
+            tx,
+          }),
+          this.productAttributesService.create({
+            productId,
+            attributes: createProductDto.attributes ?? [],
+            actor: createdBy,
+            tx,
+          }),
+          this.productImagesService.create({
+            productId,
+            imageMetas,
+            actor: createdBy,
+            tx,
+          }),
+        ]);
+
+        this.logger.debug(`[create] Relations created productId=${productId}`);
+
+        const mediaAssets = this.productImagesService.buildMediaAssets({
+          productImages,
+          imageMetas,
+          uploadResults,
         });
 
-        await this.insertProductAttributes(
-          savedProduct,
-          createProductDto.attributes,
-          tx,
-        );
+        if (mediaAssets.length) {
+          await this.mediaAssetsService.create(mediaAssets, tx);
 
-        if (uploadResults.length) {
-          await this.insertProductImagesAndMediaAssets(
-            createProductDto,
-            uploadResults,
-            savedProduct,
-            tx,
+          this.logger.debug(
+            `[create] Media assets created count=${mediaAssets.length} productId=${productId}`,
           );
         }
 
-        return savedProduct;
+        this.logger.debug(
+          `[create] Transaction completed productId=${productId}`,
+        );
+
+        return product;
       });
     } catch (error) {
       this.logger.error(
-        `Failed to create product slug=${createProductDto.slug}`,
-        error,
+        `[create] Failed to create product slug=${createProductDto.slug}`,
+        getErrorStack(error),
       );
-
-      await this.cleanupUploads(uploadResults);
       throw error;
     }
 
-    return this.findOne(result.id);
+    this.logger.log(
+      `[create] Product created successfully productId=${result.id}`,
+    );
+
+    return { id: result.id };
   }
 
   async findAll(
     getProductsDto: PaginationQueryDto,
   ): Promise<PaginatedEntity<ProductResponseDto>> {
     const { page, limit } = extractPaginationParams(getProductsDto);
+    const offset = (page - 1) * limit;
 
-    const query = this.productRepository
-      .createQueryBuilder('product')
-      .leftJoinAndSelect('product.brand', 'brand')
-      .leftJoinAndSelect('product.categories', 'productCategory')
-      .leftJoinAndSelect('productCategory.category', 'category')
-      .leftJoinAndMapMany(
-        'product.productImages',
-        ProductImage,
-        'pi',
-        'pi.product_id = product.id AND pi.image_type = :imageType AND pi.is_active = true',
-        { imageType: ProductImageType.MAIN },
-      )
-      .leftJoinAndMapOne(
-        'pi.media',
-        MediaAsset,
-        'media',
-        `
-          media.ref_id::uuid = pi.id
-          AND media.ref_type = :refType
-          AND media.is_active = true
-        `,
-        { refType: MediaAssetRefType.PRODUCT },
-      )
-      .where('product.isActive = :isActive', { isActive: true })
-      .orderBy('product.updatedAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit);
+    this.logger.debug(
+      `[findAll] Fetching products page=${page}, limit=${limit}`,
+    );
 
     const [products, totalCount] = await Promise.all([
-      query.getMany(),
-      this.productRepository.count({
-        where: { isActive: true },
-      }),
+      this.productRepository.findAllRaw(limit, offset),
+      this.productRepository.countActive(),
     ]);
 
+    this.logger.log(
+      `[findAll] Fetched products page=${page}, count=${products.length}, total=${totalCount}`,
+    );
+
     return {
-      items: products.map(mapToProductResponse),
+      items: products.map(mapToProductResponseFromProductRaw),
       totalCount,
       currentPage: page,
       itemsPerPage: limit,
@@ -164,325 +177,114 @@ export class AdminProductsService {
   }
 
   async findOne(id: string) {
-    const product = await this.productRepository
-      .createQueryBuilder('product')
-      .leftJoinAndSelect('product.brand', 'brand')
-      .leftJoinAndSelect('product.categories', 'productCategory')
-      .leftJoinAndSelect('productCategory.category', 'category')
-      .leftJoinAndSelect(
-        'product.productImages',
-        'pi',
-        'pi.product_id = product.id AND pi.image_type = :imageType AND pi.is_active = true',
-        { imageType: ProductImageType.MAIN },
-      )
-      .leftJoinAndMapOne(
-        'pi.media',
-        MediaAsset,
-        'media',
-        `
-          media.ref_id::uuid = pi.id
-          AND media.ref_type = :refType
-          AND media.is_active = true
-        `,
-        { refType: MediaAssetRefType.PRODUCT },
-      )
-      .where('product.id = :id', { id })
-      .andWhere('product.is_active = true')
-      .getOne();
+    this.logger.debug(`[findOne] Fetching productId=${id}`);
+
+    const product = await this.productRepository.findOneRaw(id);
 
     if (!product) {
+      this.logger.warn(`[findOne] Product not found productId=${id}`);
       throw new NotFoundException('Product not found');
     }
 
-    return mapToProductResponse(product);
+    this.logger.log(`[findOne] Product fetched successfully productId=${id}`);
+
+    return mapToProductResponseFromProductRaw(product);
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
-    const product = await this.productRepository.findOne({
-      where: { id, isActive: true },
-    });
+  async update(
+    id: string,
+    updateProductDto: UpdateProductDto,
+    images: Express.Multer.File[] = [],
+  ) {
+    this.logger.log(`[update] Updating product productId=${id}`);
+
+    const product = await this.productRepository.findActiveById(id);
 
     if (!product) {
+      this.logger.warn(`[update] Product not found productId=${id}`);
       throw new NotFoundException('Product not found');
     }
 
-    await this.assertBrandExists(updateProductDto.brandId);
+    await this.productValidatorsService.validateUpdateConstraints(
+      updateProductDto,
+      product,
+      images,
+    );
 
-    if (updateProductDto.slug && updateProductDto.slug !== product.slug) {
-      await this.assertSlugAvailable(updateProductDto.slug, id);
-    }
+    const uploadResults = images.length
+      ? await this.imageUploadService.upload(images)
+      : [];
 
-    await this.dataSource.transaction(async (tx) => {
-      const productInput = sanitizeEntityInput(
-        ProductUpdateEntityDto,
-        updateProductDto,
-      );
+    this.logger.debug(
+      `[update] Images uploaded count=${uploadResults.length} productId=${id}`,
+    );
 
-      await tx.update(Product, id, {
-        ...productInput,
-        updatedBy: updateProductDto.updatedBy,
-      });
+    try {
+      await this.dataSource.transaction(async (tx) => {
+        this.logger.debug(`[update] Transaction started productId=${id}`);
 
-      if (updateProductDto.categoryIds) {
-        await this.assertCategoriesValid(updateProductDto.categoryIds, tx);
-
-        await this.syncProductCategories({
-          productId: id,
-          categoryIds: updateProductDto.categoryIds,
-          userId: updateProductDto.updatedBy,
+        await this.productRepository.update(
+          id,
+          sanitizeEntityInput(ProductUpdateEntityDto, updateProductDto),
           tx,
-        });
-      }
-    });
+        );
 
-    return this.findOne(id);
-  }
+        const [, , productImages] = await Promise.all([
+          updateProductDto.categoryIds?.length
+            ? this.productCategoriesService.sync({
+                productId: product.id,
+                categoryIds: updateProductDto.categoryIds,
+                tx,
+              })
+            : Promise.resolve(),
+          updateProductDto.attributes?.length
+            ? this.productAttributesService.sync({
+                productId: product.id,
+                attributes: updateProductDto.attributes,
+                actor: updateProductDto.updatedBy,
+                tx,
+              })
+            : Promise.resolve(),
+          updateProductDto.imageMetas?.length
+            ? this.productImagesService.sync({
+                imageMetas: updateProductDto.imageMetas,
+                productId: product.id,
+                actor: updateProductDto.updatedBy,
+                tx,
+              })
+            : Promise.resolve([]),
+        ]);
 
-  async findAttributes(productId: string) {
-    const exists = await this.productRepository.exists({
-      where: { id: productId, isActive: true },
-    });
+        this.logger.debug(`[update] Relations synced productId=${id}`);
 
-    if (!exists) {
-      throw new NotFoundException('Product not found');
-    }
+        if (productImages.length) {
+          const mediaAssets = this.productImagesService.buildMediaAssets({
+            productImages,
+            imageMetas: updateProductDto.imageMetas ?? [],
+            uploadResults,
+          });
 
-    return this.productAttributeRepository.find({
-      where: {
-        productId,
-        isActive: true,
-      },
-      order: { displayOrder: 'ASC' },
-    });
-  }
+          if (mediaAssets.length) {
+            await this.mediaAssetsService.create(mediaAssets, tx);
+          }
 
-  private async assertBrandExists(brandId?: string) {
-    if (!brandId) return;
-
-    const exists = await this.brandsService.exists(brandId);
-
-    if (!exists) {
-      throw new NotFoundException('Brand not found');
-    }
-  }
-
-  private async assertSlugAvailable(slug: string, productId?: string) {
-    const existing = await this.productRepository.findOne({
-      where: {
-        slug,
-        isActive: true,
-        ...(productId && { id: Not(productId) }),
-      },
-    });
-
-    if (existing) {
-      throw new ConflictException('Slug already exists');
-    }
-  }
-
-  private async assertCategoriesValid(
-    categoryIds: string[],
-    tx?: EntityManager,
-  ) {
-    const categories = await this.categoriesService.findActiveByIds(
-      categoryIds,
-      tx,
-    );
-
-    if (categories.length !== categoryIds.length) {
-      throw new BadRequestException(
-        'One or more categories are invalid or inactive',
-      );
-    }
-  }
-
-  private async syncProductCategories({
-    productId,
-    categoryIds,
-    userId,
-    tx,
-  }: {
-    productId: string;
-    categoryIds: string[];
-    userId: string;
-    tx: EntityManager;
-  }) {
-    await tx.update(
-      ProductCategory,
-      { productId },
-      {
-        isActive: false,
-        updatedBy: userId,
-      },
-    );
-
-    await tx
-      .createQueryBuilder()
-      .update(ProductCategory)
-      .set({
-        isActive: true,
-        updatedBy: userId,
-      })
-      .where('product_id = :productId', { productId })
-      .andWhere('category_id IN (:...categoryIds)', { categoryIds })
-      .execute();
-
-    await tx
-      .createQueryBuilder()
-      .insert()
-      .into(ProductCategory)
-      .values(
-        categoryIds.map((categoryId) => ({
-          productId,
-          categoryId,
-          isActive: true,
-          createdBy: userId,
-        })),
-      )
-      .orIgnore()
-      .execute();
-  }
-
-  private validateImagesInput(
-    createProductDto: CreateProductDto,
-    images: Express.Multer.File[],
-  ) {
-    if (!images.length) return;
-
-    if (!Array.isArray(createProductDto.imageMetas)) {
-      throw new BadRequestException(
-        'imageMetas is required when uploading images',
-      );
-    }
-
-    if (createProductDto.imageMetas.length !== images.length) {
-      throw new BadRequestException(
-        'Images and imageMetas must have the same length',
-      );
-    }
-  }
-
-  private async uploadImages(images?: Express.Multer.File[]) {
-    if (!images?.length) return [];
-
-    try {
-      return await Promise.all(
-        images.map((file) =>
-          this.storageProvider.upload(file, {
-            folder: PRODUCT_FOLDER,
-          }),
-        ),
-      );
-    } catch (error) {
-      this.logger.error(`Image upload failed`, error);
-      throw new BadRequestException('Image upload failed');
-    }
-  }
-
-  private async createProductEntity(
-    createProductDto: CreateProductDto,
-    tx: EntityManager,
-  ): Promise<Product> {
-    try {
-      const product = tx.create(Product, {
-        ...sanitizeEntityInput(ProductCreateEntityDto, createProductDto),
-        createdBy: createProductDto.createdBy,
-      });
-
-      return await tx.save(product);
-    } catch (error) {
-      if (isUniqueConstraintError(error)) {
-        this.logger.warn(`Unique constraint violation on slug`);
-        throw new ConflictException('Slug already exists');
-      }
-      this.logger.error(`Failed to create product entity`, error);
-      throw error;
-    }
-  }
-
-  private async insertProductImagesAndMediaAssets(
-    createProductDto: CreateProductDto,
-    uploadResults: StorageUploadResult[],
-    savedProduct: Product,
-    tx: EntityManager,
-  ) {
-    const imageMetas = createProductDto.imageMetas;
-
-    const productImages = uploadResults.map((_, index) => {
-      const meta = imageMetas[index];
-
-      const productImageInput = sanitizeEntityInput(
-        ProductImageCreateEntityDto,
-        {
-          productId: savedProduct.id,
-          variantId: null,
-          imageType: meta.imageType,
-          altText: meta.altText,
-          title: meta.title,
-          displayOrder: meta.displayOrder ?? index,
-          isActive: true,
-          createdBy: savedProduct.createdBy,
-        },
-      );
-
-      return tx.create(ProductImage, productImageInput);
-    });
-
-    const savedProductImages = await tx.save(ProductImage, productImages);
-
-    const mediaAssets = savedProductImages.map((productImage, index) => {
-      const meta = imageMetas[index];
-      const upload = uploadResults[index];
-
-      return tx.create(MediaAsset, {
-        publicId: upload.key,
-        url: upload.url,
-        resourceType: upload.resourceType,
-        refType: MediaAssetRefType.PRODUCT,
-        refId: productImage.id,
-        usageType: (meta.imageType ??
-          MediaAssetUsageType.OTHER) as MediaAssetUsageType,
-        createdBy: savedProduct.createdBy,
-      });
-    });
-
-    await tx.save(MediaAsset, mediaAssets);
-  }
-
-  private async insertProductAttributes(
-    product: Product,
-    attributes: CreateProductDto['attributes'],
-    tx: EntityManager,
-  ) {
-    if (!attributes?.length) return;
-
-    const entities = attributes.map((attr) => {
-      const entityInput = sanitizeEntityInput(ProductAttributeCreateEntityDto, {
-        ...attr,
-        productId: product.id,
-        createdBy: product.createdBy,
-      });
-
-      return tx.create(ProductAttribute, entityInput);
-    });
-
-    await tx.save(ProductAttribute, entities);
-  }
-
-  private async cleanupUploads(uploads: StorageUploadResult[]) {
-    if (!uploads.length) return;
-
-    await Promise.all(
-      uploads.map(async (file) => {
-        try {
-          await this.storageProvider.delete(file.key);
-        } catch (error) {
-          this.logger.error(
-            `Failed to cleanup uploaded file: ${file.key}`,
-            error,
+          this.logger.debug(
+            `[update] Media processed count=${mediaAssets.length} productId=${id}`,
           );
         }
-      }),
-    );
+
+        this.logger.debug(`[update] Transaction completed productId=${id}`);
+      });
+    } catch (error) {
+      this.logger.error(
+        `[update] Failed to update product productId=${id}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
+
+    this.logger.log(`[update] Product updated successfully productId=${id}`);
+
+    return { id };
   }
 }

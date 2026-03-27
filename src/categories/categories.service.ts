@@ -10,11 +10,11 @@ import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import {
   buildPaginationParams,
   extractPaginationParams,
-} from '@/common/utils/paginations.util';
+  toEntity,
+} from '@/common/utils';
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/requests/create-category.dto';
 import { UpdateCategoryDto } from './dto/requests/update-category.dto';
-import { toEntity } from '@/common/utils/entities.util';
 import { MediaAssetsService } from '@/media/media-assets.service';
 import { MediaAsset } from '@/media/entities';
 import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
@@ -59,16 +59,18 @@ export class CategoriesService {
             folder: CATEGORY_FOLDER,
           });
 
-          media = await this.mediaAssetService.create(
-            {
-              publicId: uploadResult.key,
-              url: uploadResult.url,
-              resourceType: uploadResult.resourceType,
-              refType: MediaAssetRefType.CATEGORY,
-              refId: savedCategory.id,
-              usageType: MediaAssetUsageType.LOGO,
-              createdBy: savedCategory.createdBy,
-            },
+          [media] = await this.mediaAssetService.create(
+            [
+              {
+                publicId: uploadResult.key,
+                url: uploadResult.url,
+                resourceType: uploadResult.resourceType,
+                refType: MediaAssetRefType.CATEGORY,
+                refId: savedCategory.id,
+                usageType: MediaAssetUsageType.LOGO,
+                createdBy: savedCategory.createdBy,
+              },
+            ],
             tx,
           );
         }
@@ -185,16 +187,18 @@ export class CategoriesService {
             folder: CATEGORY_FOLDER,
           });
 
-          const newMedia = await this.mediaAssetService.create(
-            {
-              publicId: uploadResult.key,
-              url: uploadResult.url,
-              resourceType: uploadResult.resourceType,
-              refType: MediaAssetRefType.CATEGORY,
-              refId: id,
-              usageType: MediaAssetUsageType.LOGO,
-              createdBy: updateCategoryDto.updatedBy,
-            },
+          const [newMedia] = await this.mediaAssetService.create(
+            [
+              {
+                publicId: uploadResult.key,
+                url: uploadResult.url,
+                resourceType: uploadResult.resourceType,
+                refType: MediaAssetRefType.CATEGORY,
+                refId: id,
+                usageType: MediaAssetUsageType.LOGO,
+                createdBy: updateCategoryDto.updatedBy,
+              },
+            ],
             tx,
           );
 

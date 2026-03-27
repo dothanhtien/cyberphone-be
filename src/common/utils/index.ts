@@ -3,5 +3,6 @@ export * from './entities.util';
 export * from './get-error-stack.util';
 export * from './mapper.util';
 export * from './paginations.util';
-export * from './parsers';
-export * from './slugs';
+export * from './parsers.util';
+export * from './slugs.util';
+export * from './files.util';

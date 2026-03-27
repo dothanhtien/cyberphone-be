@@ -1,8 +1,20 @@
-import { IsInt, IsNotEmpty, IsString, MaxLength, Min } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 const MAX_LENGTH = 255;
 
 export class CreateProductAttributeDto {
+  @IsUUID('4', { message: 'Id is invalid' })
+  @IsOptional()
+  id?: string;
+
   @MaxLength(MAX_LENGTH, {
     message: `Attribute key must not exceed ${MAX_LENGTH} characters`,
   })

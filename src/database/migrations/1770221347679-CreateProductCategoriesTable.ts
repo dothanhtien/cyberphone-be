@@ -10,11 +10,6 @@ export class CreateProductCategoriesTable1770221347679 implements MigrationInter
           "id" uuid NOT NULL DEFAULT uuid_generate_v4(), 
           "product_id" uuid NOT NULL, 
           "category_id" uuid NOT NULL, 
-          "is_active" boolean NOT NULL DEFAULT true, 
-          "created_at" TIMESTAMP NOT NULL DEFAULT now(), 
-          "created_by" character varying(100) NOT NULL, 
-          "updated_at" TIMESTAMP NOT NULL DEFAULT now(), 
-          "updated_by" character varying(100), 
           CONSTRAINT "pk_product_categories_id" PRIMARY KEY ("id")
         )
       `,

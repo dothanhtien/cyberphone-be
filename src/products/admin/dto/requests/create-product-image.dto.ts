@@ -1,24 +1,32 @@
 import {
+  IsBoolean,
   IsEmpty,
   IsEnum,
   IsInt,
+  IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   MaxLength,
   Min,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ProductImageType } from '@/common/enums';
 
 const MAX_TITLE_LENGTH = 255;
 const MAX_ALT_TEXT_LENGTH = 255;
 
 export class CreateProductImageDto {
+  @IsUUID('4', { message: 'id must be a valid UUID' })
+  @IsNotEmpty({ message: 'id is required' })
+  id: string;
+
   @IsEnum(ProductImageType, {
     message: `imageType must be one of: ${Object.values(ProductImageType).join(', ')}`,
   })
   @IsString({ message: 'imageType must be a string' })
-  @IsOptional()
-  imageType?: ProductImageType;
+  @IsNotEmpty({ message: 'imageType is required' })
+  imageType: ProductImageType;
 
   @MaxLength(MAX_ALT_TEXT_LENGTH, {
     message: `altText must not exceed ${MAX_ALT_TEXT_LENGTH} characters`,
@@ -38,6 +46,16 @@ export class CreateProductImageDto {
   @Min(0, { message: 'displayOrder must be greater than or equal to 0' })
   @IsOptional()
   displayOrder?: number;
+
+  @IsBoolean({ message: 'isDeleted must be a boolean' })
+  @Transform(({ value }: { value: unknown }) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    if (value === true || value === 'true') return true;
+    if (value === false || value === 'false') return false;
+    return value;
+  })
+  @IsOptional()
+  isDeleted?: boolean;
 
   @IsEmpty()
   createdBy: string;

@@ -3,6 +3,9 @@ import { ProductStatus } from '@/common/enums';
 
 export class ProductCreateEntityDto {
   @Expose()
+  id?: string;
+
+  @Expose()
   name: string;
 
   @Expose()

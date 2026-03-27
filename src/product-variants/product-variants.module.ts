@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductVariantsService } from './product-variants.service';
 import { VariantAttributesService } from './variant-attributes.service';
 import { ProductVariantsController } from './product-variants.controller';
-import { Product } from '@/products/entities/product.entity';
+import { Product } from '@/products/entities';
 import { ProductVariant } from './entities/product-variant.entity';
 import { VariantAttribute } from './entities/variant-attribute.entity';
 

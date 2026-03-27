@@ -83,16 +83,18 @@ export class BrandsService {
             folder: BRAND_FOLDER,
           });
 
-          media = await this.mediaAssetsService.create(
-            {
-              publicId: uploadResult.key,
-              url: uploadResult.url,
-              resourceType: uploadResult.resourceType,
-              refType: MediaAssetRefType.BRAND,
-              refId: savedBrand.id,
-              usageType: MediaAssetUsageType.LOGO,
-              createdBy: savedBrand.createdBy,
-            },
+          [media] = await this.mediaAssetsService.create(
+            [
+              {
+                publicId: uploadResult.key,
+                url: uploadResult.url,
+                resourceType: uploadResult.resourceType,
+                refType: MediaAssetRefType.BRAND,
+                refId: savedBrand.id,
+                usageType: MediaAssetUsageType.LOGO,
+                createdBy: savedBrand.createdBy,
+              },
+            ],
             tx,
           );
 
@@ -266,16 +268,18 @@ export class BrandsService {
             folder: BRAND_FOLDER,
           });
 
-          const newLogo = await this.mediaAssetsService.create(
-            {
-              publicId: uploadResult.key,
-              url: uploadResult.url,
-              resourceType: uploadResult.resourceType,
-              refType: MediaAssetRefType.BRAND,
-              refId: id,
-              usageType: MediaAssetUsageType.LOGO,
-              createdBy: updatedBrand.updatedBy,
-            },
+          const [newLogo] = await this.mediaAssetsService.create(
+            [
+              {
+                publicId: uploadResult.key,
+                url: uploadResult.url,
+                resourceType: uploadResult.resourceType,
+                refType: MediaAssetRefType.BRAND,
+                refId: id,
+                usageType: MediaAssetUsageType.LOGO,
+                createdBy: updatedBrand.updatedBy,
+              },
+            ],
             tx,
           );
 

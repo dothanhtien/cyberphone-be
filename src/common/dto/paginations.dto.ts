@@ -8,7 +8,7 @@ export class PaginationQueryDto {
   @IsOptional()
   page?: number = 1;
 
-  @Max(100, { message: 'Limit cannot exceed 100' })
+  @Max(1000, { message: 'Limit cannot exceed 1000' })
   @Min(1, { message: 'Limit must be at least 1' })
   @IsNumber({}, { message: 'Limit must be a number' })
   @Type(() => Number)

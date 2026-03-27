@@ -15,15 +15,18 @@ import {
 import { plainToInstance, Transform } from 'class-transformer';
 import { ProductStatus } from '@/common/enums';
 import { CreateProductImageDto } from './create-product-image.dto';
-import { safeJsonParse } from '@/common/utils/parsers';
-import { normalizeSlug } from '@/common/utils/slugs';
 import { CreateProductAttributeDto } from './create-product-attribute.dto';
+import { normalizeSlug, safeJsonParse } from '@/common/utils';
 import { ArrayUniqueBy } from '@/common/validators/array-unique-by.decorator';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SLUG_LENGTH = 255;
 
 export class CreateProductDto {
+  @IsUUID('4', { message: 'Product Id must be a valid UUID' })
+  @IsOptional()
+  id?: string;
+
   @MaxLength(MAX_NAME_LENGTH, {
     message: `Product name must not exceed ${MAX_NAME_LENGTH} characters`,
   })
@@ -54,13 +57,24 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'Status is required' })
   status: ProductStatus;
 
-  @Transform(({ value }) => value === 'true')
   @IsBoolean({ message: 'isFeatured must be a boolean' })
+  @Transform(({ value }: { value: unknown }) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    if (value === true || value === 'true') return true;
+    if (value === false || value === 'false') return false;
+    return value;
+  })
   @IsOptional()
   isFeatured?: boolean;
 
   @Transform(({ value }) => value === 'true')
   @IsBoolean({ message: 'isBestseller must be a boolean' })
+  @Transform(({ value }: { value: unknown }) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    if (value === true || value === 'true') return true;
+    if (value === false || value === 'false') return false;
+    return value;
+  })
   @IsOptional()
   isBestseller?: boolean;
 
@@ -104,7 +118,7 @@ export class CreateProductDto {
     return parsed.map((item) => plainToInstance(CreateProductImageDto, item));
   })
   @IsOptional()
-  imageMetas: CreateProductImageDto[];
+  imageMetas?: CreateProductImageDto[];
 
   @ValidateNested({ each: true })
   @IsArray({ message: 'Attributes must be an array' })
@@ -130,7 +144,7 @@ export class CreateProductDto {
     );
   })
   @IsOptional()
-  attributes: CreateProductAttributeDto[];
+  attributes?: CreateProductAttributeDto[];
 
   @IsEmpty()
   createdBy: string;

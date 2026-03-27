@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from './product.entity';
+import { Product } from '.';
 import { ProductVariant } from '../../product-variants/entities/product-variant.entity';
 import { ProductImageType } from '../../common/enums';
 

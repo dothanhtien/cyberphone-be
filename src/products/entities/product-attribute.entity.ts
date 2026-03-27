@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from './product.entity';
+import { Product } from '.';
 import { VariantAttribute } from '../../product-variants/entities/variant-attribute.entity';
 
 @Entity('product_attributes')
@@ -23,9 +23,12 @@ import { VariantAttribute } from '../../product-variants/entities/variant-attrib
   },
 )
 @Index(
-  'uq_product_attributes_product_id_display_order',
+  'uq_product_attributes_product_id_display_order_active',
   ['productId', 'displayOrder'],
-  { unique: true },
+  {
+    unique: true,
+    where: `"is_active" = true`,
+  },
 )
 export class ProductAttribute {
   @PrimaryGeneratedColumn('uuid', {

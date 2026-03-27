@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ProductVariant } from './product-variant.entity';
-import { ProductAttribute } from '../../products/entities/product-attribute.entity';
+import { ProductAttribute } from '../../products/entities';
 
 @Entity('variant_attributes')
 @Index(
