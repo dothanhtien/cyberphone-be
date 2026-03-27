@@ -62,6 +62,8 @@ export class ProductAttributeRepository implements IProductAttributeRepository {
     ids: string[],
     tx: EntityManager,
   ): Promise<{ id: string }[]> {
+    if (!ids.length) return [];
+
     return tx
       .createQueryBuilder()
       .select('va.productAttributeId', 'id')
@@ -97,6 +99,8 @@ export class ProductAttributeRepository implements IProductAttributeRepository {
   }
 
   async delete(ids: string[], tx: EntityManager): Promise<void> {
+    if (!ids.length) return;
+
     await tx.delete(ProductAttribute, { id: In(ids) });
   }
 }

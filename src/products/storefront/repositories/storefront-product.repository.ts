@@ -41,15 +41,27 @@ export class StorefrontProductRepository implements IStorefrontProductRepository
       whereClause += ` AND p.name ILIKE $${values.length}`;
     }
 
-    let orderClause = `ORDER BY p.created_at DESC`;
+    let orderClause = `ORDER BY p.created_at DESC, p.id DESC`;
 
     if (params.sort === ProductSortEnum.PRICE_ASC) {
-      orderClause = `ORDER BY COALESCE(v.sale_price, v.price) ASC`;
+      orderClause = `ORDER BY COALESCE(v.sale_price, v.price) ASC, p.created_at DESC, p.id DESC`;
     }
 
     if (params.sort === ProductSortEnum.PRICE_DESC) {
-      orderClause = `ORDER BY COALESCE(v.sale_price, v.price) DESC`;
+      orderClause = `ORDER BY COALESCE(v.sale_price, v.price) DESC, p.created_at DESC, p.id DESC`;
     }
+
+    values.push(MediaAssetRefType.PRODUCT);
+    const mediaAssetRefTypeParamIndex = values.length;
+
+    values.push(ProductImageType.MAIN);
+    const mainImageTypeParamIndex = values.length;
+
+    values.push(limit);
+    const limitParamIndex = values.length;
+
+    values.push(offset);
+    const offsetParamIndex = values.length;
 
     const query = `
       SELECT 
@@ -57,6 +69,8 @@ export class StorefrontProductRepository implements IStorefrontProductRepository
         p.name,
         p.slug,
         p.short_description,
+        p.is_featured,
+        p.is_bestseller,
         v.id as variant_id,
         v.price,
         v.sale_price,
@@ -64,11 +78,12 @@ export class StorefrontProductRepository implements IStorefrontProductRepository
         (
           SELECT ma.url 
           FROM product_images pi
-          JOIN media_assets ma ON pi.id = ma.ref_id::uuid
+          JOIN media_assets ma ON ma.ref_type = $${mediaAssetRefTypeParamIndex} 
+            AND ma.ref_id = pi.id::text
+            AND ma.is_active = true
           WHERE pi.product_id = p.id 
             AND pi.is_active = true 
-            AND ma.is_active = true
-          ORDER BY pi.image_type = '${ProductImageType.MAIN}' DESC, pi.display_order ASC
+          ORDER BY pi.image_type = $${mainImageTypeParamIndex} DESC, pi.display_order ASC
           LIMIT 1
         ) AS main_image
       FROM products p
@@ -86,7 +101,8 @@ export class StorefrontProductRepository implements IStorefrontProductRepository
       ${whereClause}
       ${orderClause}
 
-      LIMIT ${limit} OFFSET ${offset}
+      LIMIT $${limitParamIndex}
+      OFFSET $${offsetParamIndex}
     `;
 
     const items = await this.dataSource.query<RawProductRow[]>(query, values);
@@ -94,12 +110,20 @@ export class StorefrontProductRepository implements IStorefrontProductRepository
     const countQuery = `
       SELECT COUNT(*) 
       FROM products p 
+      JOIN LATERAL (
+        SELECT 1
+        FROM product_variants pv
+        WHERE pv.product_id = p.id 
+          AND pv.is_active = true
+          AND pv.is_default = true
+        LIMIT 1
+      ) v ON true
       ${whereClause}
     `;
 
     const totalResult = await this.dataSource.query<{ count: string }[]>(
       countQuery,
-      values,
+      values.slice(0, values.length - 4),
     );
 
     const total = Number(totalResult[0].count);

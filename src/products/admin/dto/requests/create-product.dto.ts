@@ -14,7 +14,8 @@ import {
 } from 'class-validator';
 import { plainToInstance, Transform } from 'class-transformer';
 import { ProductStatus } from '@/common/enums';
-import { CreateProductImageDto, CreateProductAttributeDto } from '.';
+import { CreateProductImageDto } from './create-product-image.dto';
+import { CreateProductAttributeDto } from './create-product-attribute.dto';
 import { normalizeSlug, safeJsonParse } from '@/common/utils';
 import { ArrayUniqueBy } from '@/common/validators/array-unique-by.decorator';
 
@@ -67,6 +68,7 @@ export class CreateProductDto {
   isFeatured?: boolean;
 
   @Transform(({ value }) => value === 'true')
+  @IsBoolean({ message: 'isBestseller must be a boolean' })
   @Transform(({ value }: { value: unknown }) => {
     if (value === undefined || value === null || value === '') return undefined;
     if (value === true || value === 'true') return true;

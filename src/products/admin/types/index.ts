@@ -30,7 +30,7 @@ export interface ProductRaw {
     id: string;
     attributeKey: string;
     attributeKeyDisplay: string;
-    displayOrder: string;
+    displayOrder: number;
   }[];
 
   variantCount?: string;

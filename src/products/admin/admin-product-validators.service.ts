@@ -29,7 +29,7 @@ export class AdminProductValidatorsService {
 
     if (!exists) {
       this.logger.warn(
-        `[ensureBrandExists] Brand not found — brandId=${brandId}`,
+        `[ensureBrandExists] Brand not found brandId=${brandId}`,
       );
       throw new NotFoundException('Brand not found');
     }
@@ -43,7 +43,7 @@ export class AdminProductValidatorsService {
 
     if (existing) {
       this.logger.warn(
-        `[ensureSlugNotTaken] Slug already taken — slug=${slug}${
+        `[ensureSlugNotTaken] Slug already taken slug=${slug}${
           excludeId ? `, excludeId=${excludeId}` : ''
         }`,
       );
@@ -54,19 +54,29 @@ export class AdminProductValidatorsService {
   async ensureCategoriesExistAndActive(categoryIds: string[]): Promise<void> {
     if (!categoryIds.length) {
       this.logger.debug(
-        `[ensureCategoriesExistAndActive] Empty categoryIds, skip`,
+        `[ensureCategoriesExistAndActive] No categories provided`,
       );
       return;
     }
 
-    const found = await this.categoriesService.findActiveByIds(categoryIds);
+    const uniqueCategoryIds = [...new Set(categoryIds)];
+    if (uniqueCategoryIds.length !== categoryIds.length) {
+      this.logger.debug(
+        `[ensureCategoriesExistAndActive] categoryIds must be unique uniuniqueCategoryIds=${uniqueCategoryIds.length}, categoryIds=${categoryIds.length}`,
+      );
 
-    if (found.length !== categoryIds.length) {
+      throw new BadRequestException('categoryIds must be unique');
+    }
+
+    const found =
+      await this.categoriesService.findActiveByIds(uniqueCategoryIds);
+
+    if (found.length !== uniqueCategoryIds.length) {
       const foundIds = new Set(found.map((c) => c.id));
-      const invalidIds = categoryIds.filter((id) => !foundIds.has(id));
+      const invalidIds = uniqueCategoryIds.filter((id) => !foundIds.has(id));
 
       this.logger.warn(
-        `[ensureCategoriesExistAndActive] Invalid or inactive categories — ids=[${invalidIds.join(', ')}]`,
+        `[ensureCategoriesExistAndActive] Invalid or inactive categories ids=[${invalidIds.join(', ')}]`,
       );
 
       throw new BadRequestException(
@@ -83,12 +93,12 @@ export class AdminProductValidatorsService {
     images: Express.Multer.File[];
   }): void {
     if (!images.length) {
-      this.logger.debug(`[validateImagesMetadata] No images uploaded, skip`);
+      this.logger.debug(`[validateImagesMetadata] No images uploaded`);
       return;
     }
 
     if (!imageMetas.length) {
-      this.logger.warn(`[validateImagesMetadata] Missing imageMetas`);
+      this.logger.warn(`[validateImagesMetadata] No imageMetas provided`);
 
       throw new BadRequestException(
         'imageMetas is required when uploading images',
@@ -130,7 +140,7 @@ export class AdminProductValidatorsService {
     images: Express.Multer.File[],
   ): Promise<void> {
     this.logger.debug(
-      `[validateUpdateConstraints] Validating update constrants productId=${product.id}`,
+      `[validateUpdateConstraints] Validating update constraints productId=${product.id}`,
     );
 
     if (updateProductDto.brandId) {
