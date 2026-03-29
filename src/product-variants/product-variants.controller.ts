@@ -7,11 +7,11 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ProductVariantsService } from './product-variants.service';
-import { LoggedInUser } from '@/auth/decorators/logged-in-user.decorator';
-import { User } from '@/users/entities/user.entity';
 import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
+import { ProductVariantsService } from './product-variants.service';
+import { LoggedInUser } from '@/auth/decorators';
+import { User } from '@/users/entities/user.entity';
 
 @Controller('admin')
 export class ProductVariantsController {

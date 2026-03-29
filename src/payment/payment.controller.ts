@@ -7,10 +7,10 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { PaymentService } from './payment.service';
-import { Public } from '@/auth/decorators/public.decorator';
 import { CreatePaymentDto } from './dto/requests/create-payment.dto';
+import { PaymentService } from './payment.service';
 import type { MomoCallback, MomoReturnQuery } from './types';
+import { Public } from '@/auth/decorators';
 
 @Public()
 @Controller('payment')
