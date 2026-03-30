@@ -16,12 +16,13 @@ export class SeedSuperAdminRunner {
   async run(): Promise<void> {
     const username = process.env.SUPER_ADMIN_USERNAME;
     const phone = process.env.SUPER_ADMIN_PHONE;
-    const fullName = process.env.SUPER_ADMIN_FULL_NAME;
+    const firstName = process.env.SUPER_ADMIN_FIRST_NAME;
+    const lastName = process.env.SUPER_ADMIN_LAST_NAME;
     const password = process.env.SUPER_ADMIN_PASSWORD;
 
-    if (!username || !phone || !password || !fullName) {
+    if (!username || !phone || !password || !firstName || !lastName) {
       this.logger.warn(
-        'SUPER_ADMIN_USERNAME or SUPER_ADMIN_PASSWORD or SUPER_ADMIN_PHONE or SUPER_ADMIN_FULL_NAME not provided. Skipping super admin seed.',
+        'SUPER_ADMIN_USERNAME or SUPER_ADMIN_PASSWORD or SUPER_ADMIN_PHONE, SUPER_ADMIN_FIRST_NAME or SUPER_ADMIN_LAST_NAME not provided. Skipping super admin seed.',
       );
       return;
     }
@@ -62,7 +63,8 @@ export class SeedSuperAdminRunner {
         username,
         passwordHash: hashedPassword,
         phone,
-        fullName,
+        firstName,
+        lastName,
         isActive: true,
         createdBy: 'system',
         roleId: superAdminRole.id,

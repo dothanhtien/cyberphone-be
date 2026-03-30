@@ -8,6 +8,9 @@ import { getErrorStack, isUniqueConstraintError } from '@/common/utils';
 export interface ICustomerRepository {
   create(data: CustomerCreateEntityInput): Promise<Customer>;
   existsByUsernameOrPhone(username: string, phone: string): Promise<boolean>;
+  findOneByUsernameOrPhone(identifier: string): Promise<Customer | null>;
+  findOne(id: string): Promise<Customer | null>;
+  updateLastLogin(id: string): Promise<void>;
 }
 
 export const CUSTOMER_REPOSITORY = Symbol('ICustomerRepository');
@@ -58,5 +61,22 @@ export class CustomerRepository implements ICustomerRepository {
         { phone: phone, isActive: true },
       ],
     });
+  }
+
+  async findOneByUsernameOrPhone(identifier: string): Promise<Customer | null> {
+    return this.customerRepository.findOne({
+      where: [
+        { username: identifier, isActive: true },
+        { phone: identifier, isActive: true },
+      ],
+    });
+  }
+
+  async findOne(id: string): Promise<Customer | null> {
+    return this.customerRepository.findOne({ where: { id, isActive: true } });
+  }
+
+  async updateLastLogin(id: string): Promise<void> {
+    await this.customerRepository.update(id, { lastLogin: new Date() });
   }
 }

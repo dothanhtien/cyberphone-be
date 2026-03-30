@@ -102,6 +102,7 @@ export class UsersService {
         { username: normalizedIdentifier, isActive: true },
         { phone: normalizedIdentifier, isActive: true },
       ],
+      relations: { role: true },
     });
   }
 
@@ -175,5 +176,15 @@ export class UsersService {
     this.userRepository.merge(user, toEntity(User, updateUserDto));
 
     return this.userRepository.save(user);
+  }
+
+  async findOneById(id: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { id, isActive: true },
+    });
+  }
+
+  async updateLastLogin(id: string): Promise<void> {
+    await this.userRepository.update(id, { lastLogin: new Date() });
   }
 }

@@ -47,9 +47,13 @@ export class User {
   @Expose()
   email: string | null;
 
-  @Column({ name: 'full_name', type: 'varchar', length: 255 })
+  @Column({ name: 'first_name', type: 'varchar', length: 255 })
   @Expose()
-  fullName: string;
+  firstName: string;
+
+  @Column({ name: 'last_name', type: 'varchar', length: 255 })
+  @Expose()
+  lastName: string;
 
   @Column({ name: 'last_login', type: 'timestamp', nullable: true })
   @Expose()

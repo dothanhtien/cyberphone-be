@@ -1,16 +1,18 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/entities/user.entity';
-import { JwtPayload } from '@/common/types/requests.type';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { IdentityService } from '../identity.service';
+import { AuthUser, JwtPayload } from '../types';
+import { getErrorStack } from '@/common/utils';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  private readonly logger = new Logger(JwtStrategy.name);
+
   constructor(
     configService: ConfigService,
-    private readonly usersService: UsersService,
+    private readonly identityService: IdentityService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -19,17 +21,30 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload) {
-    const userId = payload.sub;
+  async validate(payload: JwtPayload): Promise<AuthUser> {
+    const { sub: userId, type } = payload;
+    this.logger.debug(
+      `[validate] Validating JWT userId=${userId}, type=${type}`,
+    );
 
-    let user: User | null = null;
     try {
-      user = await this.usersService.findOne(userId);
-    } catch (err) {
-      console.log('User not found', err);
-      throw new UnauthorizedException('User is invalid');
-    }
+      const user = await this.identityService.findById(userId, type);
 
-    return user;
+      if (!user) {
+        this.logger.warn(
+          `[validate] User not found userId=${userId}, type=${type}`,
+        );
+        throw new UnauthorizedException('User not found');
+      }
+
+      this.logger.log(`[validate] JWT validated successfully userId=${userId}`);
+      return user;
+    } catch (err) {
+      this.logger.error(
+        `[validate] JWT validation failed userId=${userId}`,
+        getErrorStack(err),
+      );
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 }

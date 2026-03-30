@@ -57,4 +57,16 @@ export class CustomersService {
       throw error;
     }
   }
+
+  async findOneByEmailOrPhone(identifier: string) {
+    return this.customerRepository.findOneByUsernameOrPhone(identifier);
+  }
+
+  async findOne(id: string) {
+    return this.customerRepository.findOne(id);
+  }
+
+  async updateLastLogin(id: string) {
+    await this.customerRepository.updateLastLogin(id);
+  }
 }

@@ -8,10 +8,13 @@ import { JwtAuthGuard } from './guards';
 import { LocalStrategy, JwtStrategy } from './strategies';
 import { PasswordModule } from '@/password/password.module';
 import { UsersModule } from '@/users/users.module';
+import { CustomersModule } from '@/customers/customers.module';
+import { IdentityService } from './identity.service';
 
 @Module({
   imports: [
     UsersModule,
+    CustomersModule,
     PasswordModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -40,6 +43,7 @@ import { UsersModule } from '@/users/users.module';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    IdentityService,
   ],
   controllers: [AuthController],
 })

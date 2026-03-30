@@ -10,8 +10,8 @@ import {
 import { AuthService } from './auth.service';
 import { LoggedInUser, Public } from './decorators';
 import { LocalAuthGuard, JwtAuthGuard } from './guards';
-import type { RequestWithUser } from '@/common/types/requests.type';
-import { User } from '@/users/entities/user.entity';
+import { AuthMapper } from './mappers';
+import { type AuthUser, type RequestWithUser } from './types';
 
 @Controller('auth')
 export class AuthController {
@@ -27,7 +27,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  getMe(@LoggedInUser() loggedInUser: User) {
-    return loggedInUser;
+  getMe(@LoggedInUser() loggedInUser: AuthUser) {
+    return AuthMapper.mapToAuthResponse(loggedInUser);
   }
 }

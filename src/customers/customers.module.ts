@@ -16,5 +16,6 @@ import { PasswordModule } from '@/password/password.module';
     },
   ],
   controllers: [CustomersController],
+  exports: [CustomersService],
 })
 export class CustomersModule {}
