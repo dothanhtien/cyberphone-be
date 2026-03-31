@@ -13,16 +13,12 @@ import {
 } from 'class-validator';
 
 const MAX_USERNAME_LENGTH = 255;
-const MIN_USERNAME_LENGTH = 3;
 const MAX_NAME_LENGTH = 255;
 const MAX_EMAIL_LENGTH = 320;
 
 export class UpdateUserDto {
   @MaxLength(MAX_USERNAME_LENGTH, {
     message: `Username must not exceed ${MAX_USERNAME_LENGTH} characters`,
-  })
-  @MinLength(MIN_USERNAME_LENGTH, {
-    message: `Username must be at least ${MIN_USERNAME_LENGTH} characters long`,
   })
   @Matches(/^[a-zA-Z0-9_.]+$/, {
     message:

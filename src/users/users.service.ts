@@ -1,145 +1,165 @@
 import {
   BadRequestException,
+  ConflictException,
+  Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { CreateUserDto, UserCreateEntityDto, UpdateUserDto } from './dto';
 import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
 import { Role } from './entities/role.entity';
-import { PasswordService } from '@/password/password.service';
-import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import {
-  buildPaginationParams,
+  type IUserRepository,
+  USER_REPOSITORY,
+} from './repositories/user.repository';
+import { PaginationQueryDto } from '@/common/dto/paginations.dto';
+import { PasswordService } from '@/password/password.service';
+import { PaginatedEntity } from '@/common/types';
+import {
   extractPaginationParams,
-  toEntity,
+  getErrorStack,
+  isUniqueConstraintError,
+  sanitizeEntityInput,
 } from '@/common/utils';
-import { PaginatedEntity } from '@/common/types/paginations.type';
-import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+    @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
     private readonly passwordService: PasswordService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    createUserDto.username = createUserDto.username.toLowerCase();
-
-    const isUsernameExist = await this.userRepository.exists({
-      where: {
-        username: createUserDto.username,
-        isActive: true,
-      },
-    });
-    if (isUsernameExist) {
-      throw new BadRequestException('Username already exists');
-    }
-
-    const isPhoneExists = await this.userRepository.exists({
-      where: {
-        phone: createUserDto.phone,
-        isActive: true,
-      },
-    });
-    if (isPhoneExists) {
-      throw new BadRequestException('Phone already exists');
-    }
-
-    const isRoleExist = await this.roleRepository.existsBy({
-      id: createUserDto.roleId,
-    });
-    if (!isRoleExist) {
-      throw new BadRequestException('Role not found');
-    }
-
-    const user = toEntity(User, createUserDto);
-
-    user.passwordHash = await this.passwordService.hashPassword(
-      createUserDto.password,
+    this.logger.log(
+      `[create] Creating user username=${createUserDto.username}, phone=${createUserDto.phone}`,
     );
 
-    return this.userRepository.save(user);
+    createUserDto.username = createUserDto.username.toLowerCase();
+
+    try {
+      const [isUsernameExist, isPhoneExists, isRoleExist] = await Promise.all([
+        this.userRepository.existsActiveByUsername(createUserDto.username),
+        this.userRepository.existsActiveByPhone(createUserDto.phone),
+        this.roleRepository.existsBy({
+          id: createUserDto.roleId,
+        }),
+      ]);
+
+      if (isUsernameExist) {
+        throw new BadRequestException('Username already exists');
+      }
+
+      if (isPhoneExists) {
+        throw new BadRequestException('Phone already exists');
+      }
+
+      if (!isRoleExist) {
+        throw new BadRequestException('Role not found');
+      }
+
+      const user = sanitizeEntityInput(UserCreateEntityDto, createUserDto);
+
+      user.passwordHash = await this.passwordService.hashPassword(
+        createUserDto.password,
+      );
+
+      const savedUser = await this.userRepository.create(user);
+
+      this.logger.log(`[create] User created successfully id=${savedUser.id}`);
+
+      return { id: savedUser.id };
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        this.logger.warn(
+          `[create] Unique constraint violation username=${createUserDto.username}, phone=${createUserDto.phone}`,
+        );
+
+        throw new ConflictException('Username or phone already exists');
+      }
+
+      this.logger.error(
+        `[create] Failed to create user username=${createUserDto.username}`,
+        getErrorStack(error),
+      );
+
+      throw error;
+    }
   }
 
   async findAll(
     paginationQueryDto: PaginationQueryDto,
   ): Promise<PaginatedEntity<User>> {
     const { page, limit } = extractPaginationParams(paginationQueryDto);
+    this.logger.debug(`[findAll] Fetching users page=${page}, limit=${limit}`);
 
-    const [users, totalCount] = await this.userRepository.findAndCount({
-      where: { isActive: true },
-      ...buildPaginationParams(page, limit),
-      order: { updatedAt: 'DESC' },
-    });
+    try {
+      const result = await this.userRepository.findAllActive(page, limit);
 
-    return {
-      items: users,
-      totalCount,
-      currentPage: page,
-      itemsPerPage: limit,
-    };
+      this.logger.debug(`[findAll] Fetched ${result.items.length} users`);
+
+      return result;
+    } catch (error) {
+      this.logger.error(
+        `[findAll] Failed to fetch users page=${page}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ id, isActive: true });
+    this.logger.debug(`[findOne] Fetching user id=${id}`);
+
+    const user = await this.userRepository.findOneActiveById(id);
 
     if (!user) {
+      this.logger.warn(`[findOne] User not found id=${id}`);
       throw new NotFoundException('User not found');
     }
 
     return user;
   }
 
-  async findOneByEmailOrPhone(identifier: string) {
-    const normalizedIdentifier = identifier.trim().toLowerCase();
-
-    return this.userRepository.findOne({
-      where: [
-        { username: normalizedIdentifier, isActive: true },
-        { phone: normalizedIdentifier, isActive: true },
-      ],
-      relations: { role: true },
-    });
+  async findOneActiveByIdentifier(identifier: string) {
+    this.logger.log(
+      `[findOneActiveByIdentifier] Fetching user identifier=${identifier}`,
+    );
+    return this.userRepository.findOneActiveByIdentifier(identifier);
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.findOne({
-      where: { id, isActive: true },
-    });
+    this.logger.debug(`[update] Updating user id=${id}`);
 
-    if (!user) {
+    const userExists = await this.userRepository.findOneActiveById(id);
+    if (!userExists) {
       throw new NotFoundException('User not found');
     }
 
     if (updateUserDto.username) {
       updateUserDto.username = updateUserDto.username.toLowerCase();
-    }
+      const exists =
+        await this.userRepository.existsActiveByUsernameExcludingId(
+          updateUserDto.username,
+          id,
+        );
 
-    if (updateUserDto.username) {
-      const exists = await this.userRepository.exists({
-        where: {
-          username: updateUserDto.username,
-          isActive: true,
-          id: Not(id),
-        },
-      });
       if (exists) {
         throw new BadRequestException('Username already exists');
       }
     }
 
     if (updateUserDto.phone) {
-      const exists = await this.userRepository.exists({
-        where: {
-          phone: updateUserDto.phone,
-          isActive: true,
-          id: Not(id),
-        },
-      });
+      const exists = await this.userRepository.existsActiveByPhoneExcludingId(
+        updateUserDto.phone,
+        id,
+      );
+
       if (exists) {
         throw new BadRequestException('Phone already exists');
       }
@@ -149,6 +169,7 @@ export class UsersService {
       const roleExists = await this.roleRepository.existsBy({
         id: updateUserDto.roleId,
       });
+
       if (!roleExists) {
         throw new BadRequestException('Role not found');
       }
@@ -161,30 +182,39 @@ export class UsersService {
 
       const isPasswordValid = await this.passwordService.comparePassword(
         updateUserDto.currentPassword,
-        user.passwordHash,
+        userExists.passwordHash,
       );
-
       if (!isPasswordValid) {
         throw new BadRequestException('Current password is incorrect');
       }
 
-      user.passwordHash = await this.passwordService.hashPassword(
+      updateUserDto.password = await this.passwordService.hashPassword(
         updateUserDto.password,
       );
     }
 
-    this.userRepository.merge(user, toEntity(User, updateUserDto));
-
-    return this.userRepository.save(user);
+    try {
+      const result = await this.userRepository.update(id, updateUserDto);
+      this.logger.log(`[update] User updated successfully id=${id}`);
+      return result;
+    } catch (error) {
+      this.logger.error(
+        `[update] Failed to update user id=${id}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
   }
 
-  async findOneById(id: string): Promise<User | null> {
-    return this.userRepository.findOne({
-      where: { id, isActive: true },
-    });
+  findOneActiveById(id: string): Promise<User | null> {
+    this.logger.debug(`[findOneById] Fetching user id=${id}`);
+    return this.userRepository.findOneActiveById(id);
   }
 
-  async updateLastLogin(id: string): Promise<void> {
-    await this.userRepository.update(id, { lastLogin: new Date() });
+  updateLastLogin(id: string): Promise<void> {
+    this.logger.debug(
+      `[updateLastLogin] Updating last login for user id=${id}`,
+    );
+    return this.userRepository.updateLastLogin(id);
   }
 }

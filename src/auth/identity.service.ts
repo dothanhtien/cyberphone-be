@@ -8,7 +8,7 @@ import { getErrorStack } from '@/common/utils';
 
 @Injectable()
 export class IdentityService {
-  private readonly logger = new Logger();
+  private readonly logger = new Logger(IdentityService.name);
 
   constructor(
     private readonly usersService: UsersService,
@@ -21,31 +21,32 @@ export class IdentityService {
     );
 
     try {
-      const user = await this.usersService.findOneByEmailOrPhone(identifier);
+      const user =
+        await this.usersService.findOneActiveByIdentifier(identifier);
       if (user) {
-        this.logger.log(
+        this.logger.debug(
           `[findByIdentifier] Found user identifier=${identifier}`,
         );
         return AuthMapper.mapToAuthUser(user);
       }
 
       const customer =
-        await this.customersService.findOneByEmailOrPhone(identifier);
+        await this.customersService.findOneActiveByIdentifier(identifier);
       if (customer) {
-        this.logger.log(
+        this.logger.debug(
           `[findByIdentifier] Found customer identifier=${identifier}`,
         );
         return AuthMapper.mapToAuthUser(customer);
       }
 
-      this.logger.warn(
+      this.logger.debug(
         `[findByIdentifier] Identity not found identifier=${identifier}`,
       );
 
       return null;
     } catch (error) {
       this.logger.error(
-        `[findByIdentifier] Failed to find identity identifier=${identifier}`,
+        `[findByIdentifier] Failed to fetch identity identifier=${identifier}`,
         getErrorStack(error),
       );
       throw error;
@@ -57,31 +58,31 @@ export class IdentityService {
 
     try {
       if (type === AuthUserType.USER) {
-        const user = await this.usersService.findOne(id);
+        const user = await this.usersService.findOneActiveById(id);
 
         if (!user) {
-          this.logger.warn(`[findById] User not found id=${id}`);
+          this.logger.debug(`[findById] User not found id=${id}`);
           return null;
         }
 
-        this.logger.log(`[findById] Found user id=${id}`);
+        this.logger.debug(`[findById] Found user id=${id}`);
 
         return AuthMapper.mapToAuthUser(user);
       }
 
-      const customer = await this.customersService.findOne(id);
+      const customer = await this.customersService.findOneActiveById(id);
 
       if (!customer) {
-        this.logger.warn(`[findById] Customer not found id=${id}`);
+        this.logger.debug(`[findById] Customer not found id=${id}`);
         return null;
       }
 
-      this.logger.log(`[findById] Found customer id=${id}`);
+      this.logger.debug(`[findById] Found customer id=${id}`);
 
       return AuthMapper.mapToAuthUser(customer);
     } catch (error) {
       this.logger.error(
-        `[findById] Failed to find entity id=${id}, type=${type}`,
+        `[findById] Failed to fetch entity id=${id}, type=${type}`,
         getErrorStack(error),
       );
       throw error;

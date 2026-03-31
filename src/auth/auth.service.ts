@@ -26,7 +26,7 @@ export class AuthService {
     password: string,
   ): Promise<AuthUser | null> {
     this.logger.debug(
-      `[validateUser] Validating user with identifier=${identifier}`,
+      `[validateUser] Validating user identifier=${identifier}`,
     );
 
     try {
@@ -58,8 +58,8 @@ export class AuthService {
         return null;
       }
 
-      this.logger.log(
-        `[validateUser] User validated successfully identifier=${identifier}`,
+      this.logger.debug(
+        `[validateUser] User validated identifier=${identifier}`,
       );
 
       return identity;
@@ -73,7 +73,7 @@ export class AuthService {
   }
 
   async login(user: AuthUser) {
-    this.logger.log(`[login] Logging in id=${user.id}, type=${user.type}`);
+    this.logger.debug(`[login] Attempt login id=${user.id}, type=${user.type}`);
 
     try {
       const payload: JwtPayload = {
@@ -86,7 +86,7 @@ export class AuthService {
 
       const accessToken = this.jwtService.sign(payload);
 
-      this.logger.debug(`[login] JWT generated for user id=${user.id}`);
+      this.logger.debug(`[login] Login success id=${user.id}`);
 
       return {
         data: AuthMapper.mapToAuthResponse(user),
@@ -94,7 +94,7 @@ export class AuthService {
       };
     } catch (error) {
       this.logger.error(
-        `[Login] Login failed id=${user.id}`,
+        `[login] Login failed id=${user.id}`,
         getErrorStack(error),
       );
       throw error;
@@ -112,12 +112,8 @@ export class AuthService {
       } else {
         await this.customersService.updateLastLogin(user.id);
       }
-
-      this.logger.debug(
-        `[updateLastLogin] Updated last login successfully id=${user.id}`,
-      );
     } catch (error) {
-      this.logger.error(
+      this.logger.warn(
         `[updateLastLogin] Failed to update last login id=${user.id}`,
         getErrorStack(error),
       );

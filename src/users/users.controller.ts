@@ -9,10 +9,10 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { CreateUserDto, UpdateUserDto } from './dto';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { PaginationQueryDto } from '@/common/dto/paginations.dto';
+import { LoggedInUser } from '@/auth/decorators';
+import { PaginationQueryDto } from '@/common/dto';
 import { NonEmptyBodyPipe } from '@/common/pipes/non-empty-body.pipe';
 
 @Controller('admin/users')
@@ -20,8 +20,11 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    createUserDto.createdBy = 'admin'; // TODO: replace with actual user
+  create(
+    @Body() createUserDto: CreateUserDto,
+    @LoggedInUser('id') loggedInUserId: string,
+  ) {
+    createUserDto.createdBy = loggedInUserId;
     return this.usersService.create(createUserDto);
   }
 
@@ -39,16 +42,20 @@ export class UsersController {
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body(new NonEmptyBodyPipe()) updateUserDto: UpdateUserDto,
+    @LoggedInUser('id') loggedInUserId: string,
   ) {
-    updateUserDto.updatedBy = 'admin'; // TODO: replace with actual user
+    updateUserDto.updatedBy = loggedInUserId;
     return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  async remove(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @LoggedInUser('id') loggedInUserId: string,
+  ) {
     await this.usersService.update(id, {
       isActive: false,
-      updatedBy: 'admin', // TODO: replace with actual user
+      updatedBy: loggedInUserId,
     });
     return true;
   }

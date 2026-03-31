@@ -31,19 +31,23 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       const user = await this.identityService.findById(userId, type);
 
       if (!user) {
-        this.logger.warn(
+        this.logger.debug(
           `[validate] User not found userId=${userId}, type=${type}`,
         );
         throw new UnauthorizedException('User not found');
       }
 
-      this.logger.log(`[validate] JWT validated successfully userId=${userId}`);
       return user;
     } catch (err) {
+      if (err instanceof UnauthorizedException) {
+        throw err;
+      }
+
       this.logger.error(
         `[validate] JWT validation failed userId=${userId}`,
         getErrorStack(err),
       );
+
       throw new UnauthorizedException('Invalid token');
     }
   }

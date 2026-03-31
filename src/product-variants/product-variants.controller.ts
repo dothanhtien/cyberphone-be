@@ -11,7 +11,7 @@ import { CreateProductVariantDto } from './dto/requests/create-product-variant.d
 import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
 import { ProductVariantsService } from './product-variants.service';
 import { LoggedInUser } from '@/auth/decorators';
-import { User } from '@/users/entities/user.entity';
+import { User } from '@/users/entities';
 
 @Controller('admin')
 export class ProductVariantsController {
