@@ -8,13 +8,14 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUserDto, UserCreateEntityDto, UpdateUserDto } from './dto';
-import { User } from './entities/user.entity';
-import { Role } from './entities/role.entity';
 import {
-  type IUserRepository,
-  USER_REPOSITORY,
-} from './repositories/user.repository';
+  CreateUserDto,
+  UserCreateEntityDto,
+  UpdateUserDto,
+  UserResponseDto,
+} from './dto';
+import { User, Role } from './entities';
+import { type IUserRepository, USER_REPOSITORY } from './repositories';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
 import { PasswordService } from '@/password/password.service';
 import { PaginatedEntity } from '@/common/types';
@@ -24,6 +25,7 @@ import {
   isUniqueConstraintError,
   sanitizeEntityInput,
 } from '@/common/utils';
+import { UserMapper } from './mappers';
 
 @Injectable()
 export class UsersService {
@@ -94,7 +96,7 @@ export class UsersService {
 
   async findAll(
     paginationQueryDto: PaginationQueryDto,
-  ): Promise<PaginatedEntity<User>> {
+  ): Promise<PaginatedEntity<UserResponseDto>> {
     const { page, limit } = extractPaginationParams(paginationQueryDto);
     this.logger.debug(`[findAll] Fetching users page=${page}, limit=${limit}`);
 
@@ -103,7 +105,10 @@ export class UsersService {
 
       this.logger.debug(`[findAll] Fetched ${result.items.length} users`);
 
-      return result;
+      return {
+        ...result,
+        items: result.items.map((user) => UserMapper.mapToUserResponse(user)),
+      };
     } catch (error) {
       this.logger.error(
         `[findAll] Failed to fetch users page=${page}`,
@@ -113,7 +118,7 @@ export class UsersService {
     }
   }
 
-  async findOne(id: string): Promise<User> {
+  async findOne(id: string): Promise<UserResponseDto> {
     this.logger.debug(`[findOne] Fetching user id=${id}`);
 
     const user = await this.userRepository.findOneActiveById(id);
@@ -123,7 +128,7 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    return user;
+    return UserMapper.mapToUserResponse(user);
   }
 
   async findOneActiveByIdentifier(identifier: string) {

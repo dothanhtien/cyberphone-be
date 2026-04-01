@@ -13,7 +13,7 @@ export class AuthResponseDto {
   username: string;
 
   @Expose()
-  email: string;
+  email: string | null;
 
   @Expose()
   phone: string;
