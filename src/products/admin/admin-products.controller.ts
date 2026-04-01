@@ -16,7 +16,6 @@ import { AdminProductsService } from './admin-products.service';
 import { CreateProductDto, UpdateProductDto } from './dto';
 import { LoggedInUser } from '@/auth/decorators';
 import { PaginationQueryDto } from '@/common/dto';
-import { User } from '@/users/entities';
 
 @Controller('admin/products')
 export class AdminProductsController {
@@ -33,9 +32,9 @@ export class AdminProductsController {
   async create(
     @UploadedFiles() images: Express.Multer.File[],
     @Body() createProductDto: CreateProductDto,
-    @LoggedInUser() loggedInUser: User,
+    @LoggedInUser('id') loggedInUserId: string,
   ) {
-    createProductDto.createdBy = loggedInUser.id;
+    createProductDto.createdBy = loggedInUserId;
     return this.productsService.create(createProductDto, images);
   }
 
@@ -61,20 +60,20 @@ export class AdminProductsController {
     @UploadedFiles() images: Express.Multer.File[],
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateProductDto: UpdateProductDto,
-    @LoggedInUser() loggedInUser: User,
+    @LoggedInUser('id') loggedInUserId: string,
   ) {
-    updateProductDto.updatedBy = loggedInUser.id;
+    updateProductDto.updatedBy = loggedInUserId;
     return this.productsService.update(id, updateProductDto, images);
   }
 
   @Delete(':id')
   async remove(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @LoggedInUser() loggedInUser: User,
+    @LoggedInUser('id') loggedInUserId: string,
   ) {
     await this.productsService.update(id, {
       isActive: false,
-      updatedBy: loggedInUser.id,
+      updatedBy: loggedInUserId,
     });
 
     return true;

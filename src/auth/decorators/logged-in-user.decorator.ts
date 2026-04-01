@@ -1,9 +1,9 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
-import { User } from 'src/users/entities/user.entity';
+import { AuthUser } from '../types';
 
 interface AuthenticatedRequest extends Request {
-  user?: User;
+  user?: AuthUser;
 }
 
 /**
@@ -29,8 +29,8 @@ interface AuthenticatedRequest extends Request {
  */
 
 export const LoggedInUser = createParamDecorator<
-  keyof User | undefined,
-  User | User[keyof User] | undefined
+  keyof AuthUser | undefined,
+  AuthUser | AuthUser[keyof AuthUser] | undefined
 >((data, ctx: ExecutionContext) => {
   const request = ctx.switchToHttp().getRequest<AuthenticatedRequest>();
   const { user } = request;
