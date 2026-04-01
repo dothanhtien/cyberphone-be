@@ -4,7 +4,7 @@ import { AuthMapper } from './mappers';
 import { AuthUser } from './types';
 import { CustomersService } from '@/customers/customers.service';
 import { UsersService } from '@/users/users.service';
-import { getErrorStack } from '@/common/utils';
+import { getErrorStack, maskIdentifier } from '@/common/utils';
 
 @Injectable()
 export class IdentityService {
@@ -16,8 +16,10 @@ export class IdentityService {
   ) {}
 
   async findByIdentifier(identifier: string): Promise<AuthUser | null> {
+    const maskedIdentifier = maskIdentifier(identifier);
+
     this.logger.debug(
-      `[findByIdentifier] Searching identity identifier=${identifier}`,
+      `[findByIdentifier] Searching identity identifier=${maskedIdentifier}`,
     );
 
     try {
@@ -25,7 +27,7 @@ export class IdentityService {
         await this.usersService.findOneActiveByIdentifier(identifier);
       if (user) {
         this.logger.debug(
-          `[findByIdentifier] Found user identifier=${identifier}`,
+          `[findByIdentifier] Found user identifier=${maskedIdentifier}`,
         );
         return AuthMapper.mapToAuthUser(user);
       }
@@ -34,19 +36,19 @@ export class IdentityService {
         await this.customersService.findOneActiveByIdentifier(identifier);
       if (customer) {
         this.logger.debug(
-          `[findByIdentifier] Found customer identifier=${identifier}`,
+          `[findByIdentifier] Found customer identifier=${maskedIdentifier}`,
         );
         return AuthMapper.mapToAuthUser(customer);
       }
 
       this.logger.debug(
-        `[findByIdentifier] Identity not found identifier=${identifier}`,
+        `[findByIdentifier] Identity not found identifier=${maskedIdentifier}`,
       );
 
       return null;
     } catch (error) {
       this.logger.error(
-        `[findByIdentifier] Failed to fetch identity identifier=${identifier}`,
+        `[findByIdentifier] Failed to fetch identity identifier=${maskedIdentifier}`,
         getErrorStack(error),
       );
       throw error;
@@ -68,6 +70,11 @@ export class IdentityService {
         this.logger.debug(`[findById] Found user id=${id}`);
 
         return AuthMapper.mapToAuthUser(user);
+      }
+
+      if (type !== AuthUserType.CUSTOMER) {
+        this.logger.debug(`[findById] Unsupported auth type`);
+        return null;
       }
 
       const customer = await this.customersService.findOneActiveById(id);

@@ -4,7 +4,7 @@ import { UsersService } from '@/users/users.service';
 import { PasswordService } from '@/password/password.service';
 import { CustomersService } from '@/customers/customers.service';
 import { AuthUser, JwtPayload } from './types';
-import { getErrorStack } from '@/common/utils';
+import { getErrorStack, maskIdentifier } from '@/common/utils';
 import { IdentityService } from './identity.service';
 import { AuthMapper } from './mappers';
 import { AuthUserType } from './enums';
@@ -25,8 +25,10 @@ export class AuthService {
     identifier: string,
     password: string,
   ): Promise<AuthUser | null> {
+    const maskedIdentifier = maskIdentifier(identifier);
+
     this.logger.debug(
-      `[validateUser] Validating user identifier=${identifier}`,
+      `[validateUser] Validating user identifier=${maskedIdentifier}`,
     );
 
     try {
@@ -34,14 +36,14 @@ export class AuthService {
 
       if (!identity) {
         this.logger.warn(
-          `[validateUser] User not found identifier=${identifier}`,
+          `[validateUser] User not found identifier=${maskedIdentifier}`,
         );
         return null;
       }
 
       if (!identity.passwordHash) {
         this.logger.warn(
-          `[validateUser] User has no password identifier=${identifier}`,
+          `[validateUser] User has no password identifier=${maskedIdentifier}`,
         );
         return null;
       }
@@ -53,19 +55,19 @@ export class AuthService {
 
       if (!isMatch) {
         this.logger.warn(
-          `[validateUser] Invalid password identifier=${identifier}`,
+          `[validateUser] Invalid password identifier=${maskedIdentifier}`,
         );
         return null;
       }
 
       this.logger.debug(
-        `[validateUser] User validated identifier=${identifier}`,
+        `[validateUser] User validated identifier=${maskedIdentifier}`,
       );
 
       return identity;
     } catch (error) {
       this.logger.error(
-        `[validateUser] Error validating user identifier=${identifier}`,
+        `[validateUser] Error validating user identifier=${maskedIdentifier}`,
         getErrorStack(error),
       );
       throw error;

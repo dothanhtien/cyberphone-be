@@ -28,7 +28,7 @@ export class CreateCustomerDto {
   @IsNotEmpty({ message: 'Username is required' })
   username: string;
 
-  @Matches(/^[0-9+\-\s]{8,20}$/, {
+  @Matches(/^\+?[0-9](?:[0-9\s-]{6,18}[0-9])$/, {
     message: 'Phone number format is invalid',
   })
   @IsString({ message: 'Phone must be a string' })

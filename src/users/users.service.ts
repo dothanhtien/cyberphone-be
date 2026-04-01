@@ -23,6 +23,7 @@ import {
   extractPaginationParams,
   getErrorStack,
   isUniqueConstraintError,
+  maskIdentifier,
   sanitizeEntityInput,
 } from '@/common/utils';
 import { UserMapper } from './mappers';
@@ -38,8 +39,11 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
+    const maskedUsername = maskIdentifier(createUserDto.username);
+    const maskedPhone = maskIdentifier(createUserDto.phone);
+
     this.logger.log(
-      `[create] Creating user username=${createUserDto.username}, phone=${createUserDto.phone}`,
+      `[create] Creating user username=${maskedUsername}, phone=${maskedPhone}`,
     );
 
     createUserDto.username = createUserDto.username.toLowerCase();
@@ -79,14 +83,14 @@ export class UsersService {
     } catch (error) {
       if (isUniqueConstraintError(error)) {
         this.logger.warn(
-          `[create] Unique constraint violation username=${createUserDto.username}, phone=${createUserDto.phone}`,
+          `[create] Unique constraint violation username=${maskedUsername}, phone=${maskedPhone}`,
         );
 
         throw new ConflictException('Username or phone already exists');
       }
 
       this.logger.error(
-        `[create] Failed to create user username=${createUserDto.username}`,
+        `[create] Failed to create user username=${maskedUsername}, phone=${maskedPhone}`,
         getErrorStack(error),
       );
 
@@ -133,7 +137,7 @@ export class UsersService {
 
   async findOneActiveByIdentifier(identifier: string) {
     this.logger.log(
-      `[findOneActiveByIdentifier] Fetching user identifier=${identifier}`,
+      `[findOneActiveByIdentifier] Fetching user identifier=${maskIdentifier(identifier)}`,
     );
     return this.userRepository.findOneActiveByIdentifier(identifier);
   }

@@ -6,3 +6,4 @@ export * from './paginations.util';
 export * from './parsers.util';
 export * from './slugs.util';
 export * from './files.util';
+export * from './mask-identifier.util';

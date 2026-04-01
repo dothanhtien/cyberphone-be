@@ -45,9 +45,11 @@ export class CustomerRepository implements ICustomerRepository {
   }
 
   findOneActiveByIdentifier(identifier: string): Promise<Customer | null> {
+    const normalizedIdentifier = identifier.toLowerCase();
+
     return this.customerRepository.findOne({
       where: [
-        { username: identifier, isActive: true },
+        { username: normalizedIdentifier, isActive: true },
         { phone: identifier, isActive: true },
       ],
     });

@@ -24,4 +24,7 @@ export class UserCreateEntityDto {
 
   @Expose()
   roleId: string;
+
+  @Expose()
+  createdBy: string;
 }

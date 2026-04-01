@@ -1,7 +1,12 @@
 import { ConflictException, Inject, Injectable, Logger } from '@nestjs/common';
 import { CUSTOMER_REPOSITORY, type ICustomerRepository } from './repositories';
 import { CreateCustomerDto, CustomerCreateEntityInput } from './dtos';
-import { getErrorStack, sanitizeEntityInput } from '@/common/utils';
+import {
+  getErrorStack,
+  isUniqueConstraintError,
+  maskIdentifier,
+  sanitizeEntityInput,
+} from '@/common/utils';
 import { PasswordService } from '@/password/password.service';
 
 @Injectable()
@@ -15,8 +20,11 @@ export class CustomersService {
   ) {}
 
   async create(createCustomerDto: CreateCustomerDto) {
+    const maskedUsername = maskIdentifier(createCustomerDto.username);
+    const maskedPhone = maskIdentifier(createCustomerDto.phone);
+
     this.logger.debug(
-      `[create] Creating customer username=${createCustomerDto.username}, phone=${createCustomerDto.phone}`,
+      `[create] Creating customer username=${maskedUsername}, phone=${maskedPhone}`,
     );
 
     createCustomerDto.username = createCustomerDto.username.toLowerCase();
@@ -30,7 +38,7 @@ export class CustomersService {
 
       if (exists) {
         this.logger.warn(
-          `[create] Username or Phone already in use username=${createCustomerDto.username}, phone=${createCustomerDto.phone}`,
+          `[create] Username or Phone already in use username=${maskedUsername}, phone=${maskedPhone}`,
         );
         throw new ConflictException('Username or Phone already in use');
       }
@@ -41,7 +49,7 @@ export class CustomersService {
       );
 
       this.logger.debug(
-        `[create] Hashing password username=${createCustomerDto.username}, phone=${createCustomerDto.phone}`,
+        `[create] Hashing password username=${maskedUsername}, phone=${maskedPhone}`,
       );
 
       entity.passwordHash = await this.passwordService.hashPassword(
@@ -51,13 +59,17 @@ export class CustomersService {
       const customer = await this.customerRepository.create(entity);
 
       this.logger.log(
-        `[create] Customer created successfully id=${customer.id}, username=${createCustomerDto.username}, phone=${createCustomerDto.phone}`,
+        `[create] Customer created successfully id=${customer.id}, username=${maskedUsername}, phone=${maskedPhone}`,
       );
 
       return { id: customer.id };
     } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        throw new ConflictException('Username or Phone already in use');
+      }
+
       this.logger.error(
-        `[create] Failed to create customer username=${createCustomerDto.username}, phone=${createCustomerDto.phone}`,
+        `[create] Failed to create customer username=${maskedUsername}, phone=${maskedPhone}`,
         getErrorStack(error),
       );
       throw error;
@@ -65,13 +77,15 @@ export class CustomersService {
   }
 
   async findOneActiveByIdentifier(identifier: string) {
+    const maskedIdentifier = maskIdentifier(identifier);
+
     try {
       const customer =
         await this.customerRepository.findOneActiveByIdentifier(identifier);
 
       if (!customer) {
         this.logger.debug(
-          `[findOneActiveByIdentifier] Customer not found identifier=${identifier}`,
+          `[findOneActiveByIdentifier] Customer not found identifier=${maskedIdentifier}`,
         );
         return null;
       }
@@ -83,7 +97,7 @@ export class CustomersService {
       return customer;
     } catch (error) {
       this.logger.error(
-        `[findOneActiveByIdentifier] Error fetching customer identifier=${identifier}`,
+        `[findOneActiveByIdentifier] Error fetching customer identifier=${maskedIdentifier}`,
         getErrorStack(error),
       );
 

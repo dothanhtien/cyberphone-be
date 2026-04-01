@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { AuthService } from '../auth.service';
 import { AuthUser } from '../types';
-import { getErrorStack } from '@/common/utils';
+import { getErrorStack, maskIdentifier } from '@/common/utils';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -14,21 +14,27 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(identifier: string, password: string): Promise<AuthUser> {
-    this.logger.debug(`[validate] Attempting login identifier=${identifier}`);
+    const maskedIdentifier = maskIdentifier(identifier);
+
+    this.logger.debug(
+      `[validate] Attempting login identifier=${maskedIdentifier}`,
+    );
 
     try {
       const user = await this.authService.validateUser(identifier, password);
 
       if (!user) {
         this.logger.debug(
-          `[validate] Invalid credentials identifier=${identifier}`,
+          `[validate] Invalid credentials identifier=${maskedIdentifier}`,
         );
         throw new UnauthorizedException(
           'Username/Phone or Password is invalid',
         );
       }
 
-      this.logger.log(`[validate] Login successful identifier=${identifier}`);
+      this.logger.log(
+        `[validate] Login successful identifier=${maskedIdentifier}`,
+      );
       return user;
     } catch (error) {
       if (error instanceof UnauthorizedException) {
@@ -36,7 +42,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       }
 
       this.logger.error(
-        `[validate] Login error identifier=${identifier}`,
+        `[validate] Login error identifier=${maskedIdentifier}`,
         getErrorStack(error),
       );
 

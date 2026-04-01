@@ -22,7 +22,7 @@ export class SeedSuperAdminRunner {
 
     if (!username || !phone || !password || !firstName || !lastName) {
       this.logger.warn(
-        'SUPER_ADMIN_USERNAME or SUPER_ADMIN_PASSWORD or SUPER_ADMIN_PHONE, SUPER_ADMIN_FIRST_NAME or SUPER_ADMIN_LAST_NAME not provided. Skipping super admin seed.',
+        'Missing required env vars: SUPER_ADMIN_USERNAME, SUPER_ADMIN_PASSWORD, SUPER_ADMIN_PHONE, SUPER_ADMIN_FIRST_NAME, SUPER_ADMIN_LAST_NAME. Skipping super admin seed.',
       );
       return;
     }
