@@ -75,9 +75,11 @@ export class UserRepository implements IUserRepository {
   }
 
   findOneActiveByIdentifier(identifier: string): Promise<User | null> {
+    const normalizedIdentifier = identifier.toLowerCase();
+
     return this.userRepository.findOne({
       where: [
-        { username: identifier, isActive: true },
+        { username: normalizedIdentifier, isActive: true },
         { phone: identifier, isActive: true },
       ],
       relations: ['role'],

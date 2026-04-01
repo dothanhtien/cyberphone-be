@@ -207,6 +207,9 @@ export class UsersService {
       this.logger.log(`[update] User updated successfully id=${id}`);
       return result;
     } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        throw new ConflictException('Username or phone already exists');
+      }
       this.logger.error(
         `[update] Failed to update user id=${id}`,
         getErrorStack(error),

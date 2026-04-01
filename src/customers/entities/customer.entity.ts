@@ -56,10 +56,10 @@ export class Customer {
   lastLogin?: Date | null;
 
   @Column({ name: 'phone_verified', type: 'boolean', default: false })
-  phoneVerfified: boolean = false;
+  phoneVerified: boolean = false;
 
   @Column({ name: 'email_verified', type: 'boolean', default: false })
-  emailVerfified: boolean = false;
+  emailVerified: boolean = false;
 
   @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean = true;
