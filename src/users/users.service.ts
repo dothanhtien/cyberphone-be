@@ -184,6 +184,8 @@ export class UsersService {
       }
     }
 
+    let hashedPassword: string | undefined = undefined;
+
     if (updateUserDto.password) {
       if (!updateUserDto.currentPassword) {
         throw new BadRequestException('Current password is required');
@@ -197,13 +199,16 @@ export class UsersService {
         throw new BadRequestException('Current password is incorrect');
       }
 
-      updateUserDto.password = await this.passwordService.hashPassword(
+      hashedPassword = await this.passwordService.hashPassword(
         updateUserDto.password,
       );
     }
 
     try {
-      const result = await this.userRepository.update(id, updateUserDto);
+      const result = await this.userRepository.update(id, {
+        ...updateUserDto,
+        passwordHash: hashedPassword,
+      });
       this.logger.log(`[update] User updated successfully id=${id}`);
       return result;
     } catch (error) {
