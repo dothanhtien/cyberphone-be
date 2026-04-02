@@ -19,6 +19,7 @@ import { CartsModule } from './carts/carts.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentModule } from './payment/payment.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { CustomersModule } from './customers/customers.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     OrdersModule,
     PaymentModule,
     DashboardModule,
+    CustomersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

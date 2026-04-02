@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -7,17 +8,26 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import type { RequestWithUser } from '@/common/types/requests.type';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './local-auth.guard';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { LoggedInUser } from './decorators/logged-in-user.decorator';
-import { User } from '@/users/entities/user.entity';
-import { Public } from './decorators/public.decorator';
+import { LoggedInUser, Public } from './decorators';
+import { LocalAuthGuard, JwtAuthGuard } from './guards';
+import { AuthMapper } from './mappers';
+import { type AuthUser, type RequestWithUser } from './types';
+import { CreateCustomerDto } from '@/customers/dtos';
+import { CustomersService } from '@/customers/customers.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly customersService: CustomersService,
+  ) {}
+
+  @Public()
+  @Post('/register')
+  create(@Body() createCustomerDto: CreateCustomerDto) {
+    return this.customersService.create(createCustomerDto);
+  }
 
   @Public()
   @UseGuards(LocalAuthGuard)
@@ -29,7 +39,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  getMe(@LoggedInUser() loggedInUser: User) {
-    return loggedInUser;
+  getMe(@LoggedInUser() loggedInUser: AuthUser) {
+    return AuthMapper.mapToAuthResponse(loggedInUser);
   }
 }

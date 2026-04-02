@@ -10,7 +10,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Exclude, Expose } from 'class-transformer';
 import { Role } from './role.entity';
 import { Cart } from '../../carts/entities/cart.entity';
 import { Order } from '../../orders/entities/order.entity';
@@ -28,39 +27,33 @@ export class User {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'pk_users_id',
   })
-  @Expose()
   id: string;
 
   @Column({ type: 'varchar', length: 255 })
-  @Expose()
   username: string;
 
   @Column({ type: 'varchar', length: 30 })
-  @Expose()
   phone: string;
 
   @Column({ name: 'password_hash', type: 'text' })
-  @Exclude()
   passwordHash: string;
 
   @Column({ type: 'varchar', length: 320, nullable: true })
-  @Expose()
   email: string | null;
 
-  @Column({ name: 'full_name', type: 'varchar', length: 255 })
-  @Expose()
-  fullName: string;
+  @Column({ name: 'first_name', type: 'varchar', length: 255 })
+  firstName: string;
+
+  @Column({ name: 'last_name', type: 'varchar', length: 255 })
+  lastName: string;
 
   @Column({ name: 'last_login', type: 'timestamp', nullable: true })
-  @Expose()
-  lastLogin?: Date;
+  lastLogin?: Date | null;
 
   @Column({ name: 'is_active', type: 'boolean', default: true })
-  @Expose()
   isActive: boolean = true;
 
   @Column({ name: 'role_id', type: 'uuid' })
-  @Expose()
   roleId: string;
 
   @ManyToOne(() => Role, (role) => role.users, {
@@ -74,7 +67,6 @@ export class User {
   role: Role;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
-  @Expose()
   createdAt: Date;
 
   @Column({
@@ -82,11 +74,9 @@ export class User {
     type: 'varchar',
     length: 100,
   })
-  @Expose()
   createdBy: string;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
-  @Expose()
   updatedAt?: Date;
 
   @Column({
@@ -95,7 +85,6 @@ export class User {
     length: 100,
     nullable: true,
   })
-  @Expose()
   updatedBy: string | null;
 
   @OneToOne(() => Cart, (cart) => cart.user)

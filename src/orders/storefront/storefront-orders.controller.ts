@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { CreateOrderDto } from './dto/requests/create-order.dto';
 import { StorefrontOrdersService } from './storefront-orders.service';
-import { Public } from '@/auth/decorators/public.decorator';
+import { Public } from '@/auth/decorators';
 
 @Public()
 @Controller('orders')

@@ -1,55 +1,124 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@/users/users.service';
 import { PasswordService } from '@/password/password.service';
-import { User } from '@/users/entities/user.entity';
+import { CustomersService } from '@/customers/customers.service';
+import { AuthUser, JwtPayload } from './types';
+import { getErrorStack, maskIdentifier } from '@/common/utils';
+import { IdentityService } from './identity.service';
+import { AuthMapper } from './mappers';
+import { AuthUserType } from './enums';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
+    private readonly identityService: IdentityService,
     private readonly usersService: UsersService,
+    private readonly customersService: CustomersService,
     private readonly passwordService: PasswordService,
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(identifier: string, password: string) {
-    const user = await this.usersService.findOneByEmailOrPhone(identifier);
+  async validateUser(
+    identifier: string,
+    password: string,
+  ): Promise<AuthUser | null> {
+    const maskedIdentifier = maskIdentifier(identifier);
 
-    if (user && user.passwordHash) {
-      const doesPasswordMatch = await this.passwordService.comparePassword(
+    this.logger.debug(
+      `[validateUser] Validating user identifier=${maskedIdentifier}`,
+    );
+
+    try {
+      const identity = await this.identityService.findByIdentifier(identifier);
+
+      if (!identity) {
+        this.logger.warn(
+          `[validateUser] User not found identifier=${maskedIdentifier}`,
+        );
+        return null;
+      }
+
+      if (!identity.passwordHash) {
+        this.logger.warn(
+          `[validateUser] User has no password identifier=${maskedIdentifier}`,
+        );
+        return null;
+      }
+
+      const isMatch = await this.passwordService.comparePassword(
         password,
-        user.passwordHash,
+        identity.passwordHash,
       );
 
-      if (doesPasswordMatch) {
-        return user;
+      if (!isMatch) {
+        this.logger.warn(
+          `[validateUser] Invalid password identifier=${maskedIdentifier}`,
+        );
+        return null;
       }
-    }
 
-    return null;
+      this.logger.debug(
+        `[validateUser] User validated identifier=${maskedIdentifier}`,
+      );
+
+      return identity;
+    } catch (error) {
+      this.logger.error(
+        `[validateUser] Error validating user identifier=${maskedIdentifier}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
   }
 
-  async login(user: User) {
-    const payload = { sub: user.id };
+  async login(user: AuthUser) {
+    this.logger.debug(`[login] Attempt login id=${user.id}, type=${user.type}`);
 
-    let updatedUser: User = user;
     try {
-      updatedUser = await this.usersService.update(user.id, {
-        lastLogin: new Date(),
-      });
-    } catch (err) {
-      console.log(
-        `An error occurred when updating lastLogin of user ${user.id}`,
-        err,
+      const payload: JwtPayload = {
+        sub: user.id,
+        type: user.type,
+        role: user.role ?? undefined,
+      };
+
+      await this.updateLastLogin(user);
+
+      const accessToken = this.jwtService.sign(payload);
+
+      this.logger.debug(`[login] Login success id=${user.id}`);
+
+      return {
+        data: AuthMapper.mapToAuthResponse(user),
+        accessToken,
+      };
+    } catch (error) {
+      this.logger.error(
+        `[login] Login failed id=${user.id}`,
+        getErrorStack(error),
       );
-      throw new InternalServerErrorException(
-        'An error occurred when logging in',
+      throw error;
+    }
+  }
+
+  private async updateLastLogin(user: AuthUser) {
+    try {
+      this.logger.debug(
+        `[updateLastLogin] Updating last login id=${user.id}, type=${user.type}`,
+      );
+
+      if (user.type === AuthUserType.USER) {
+        await this.usersService.updateLastLogin(user.id);
+      } else {
+        await this.customersService.updateLastLogin(user.id);
+      }
+    } catch (error) {
+      this.logger.warn(
+        `[updateLastLogin] Failed to update last login id=${user.id}`,
+        getErrorStack(error),
       );
     }
-
-    return {
-      data: updatedUser,
-      accessToken: this.jwtService.sign(payload),
-    };
   }
 }

@@ -1,9 +1,9 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
-import { User } from 'src/users/entities/user.entity';
+import { AuthUser } from '../types';
 
 interface AuthenticatedRequest extends Request {
-  user?: User;
+  user?: AuthUser;
 }
 
 /**
@@ -12,34 +12,32 @@ interface AuthenticatedRequest extends Request {
  * Retrieves the authenticated user from `request.user`, which is populated
  * by Passport (e.g. JWT strategy) after successful authentication.
  *
- * This decorator can return either the full `User` entity or a specific
- * property of the user.
+ * This decorator can return either the full `AuthUser` or a specific property of the AuthUser.
  *
  * @example
- * ```@LoggedInUser()``` → returns the full User object
+ * ```@LoggedInUser()``` → returns the full AuthUser object
  *
  * @example
- * ```@LoggedInUser('id')``` → returns the user's id
+ * ```@LoggedInUser('id')``` → returns the AuthUser's id
  *
  * @example
- * ```@LoggedInUser('email')``` → returns the user's email
+ * ```@LoggedInUser('email')``` → returns the AuthUser's email
  *
  * @returns The authenticated user, a selected user property,
  * or `undefined` if the request is not authenticated.
  */
 
-export const LoggedInUser = createParamDecorator<
-  keyof User | undefined,
-  User | User[keyof User] | undefined
->((data, ctx: ExecutionContext) => {
-  const request = ctx.switchToHttp().getRequest<AuthenticatedRequest>();
-  const { user } = request;
+export const LoggedInUser = createParamDecorator<keyof AuthUser | undefined>(
+  (data, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest<AuthenticatedRequest>();
+    const { user } = request;
 
-  if (!user) return undefined;
+    if (!user) return undefined;
 
-  if (data) {
-    return user[data];
-  }
+    if (data) {
+      return user[data];
+    }
 
-  return user;
-});
+    return user;
+  },
+);

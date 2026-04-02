@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from '@/users/entities/user.entity';
-import { IS_PUBLIC_KEY } from './decorators/public.decorator';
+import { IS_PUBLIC_KEY } from '../decorators';
+import { AuthUser } from '../types';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -14,7 +14,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
-  handleRequest<TUser = User>(err: unknown, user: TUser, info: unknown): TUser {
+  handleRequest<TUser = AuthUser>(
+    err: unknown,
+    user: TUser,
+    info: unknown,
+  ): TUser {
     if (err || !user) {
       if (info instanceof Error) {
         if (info.name === 'TokenExpiredError') {

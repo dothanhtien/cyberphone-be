@@ -7,11 +7,10 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ProductVariantsService } from './product-variants.service';
-import { LoggedInUser } from '@/auth/decorators/logged-in-user.decorator';
-import { User } from '@/users/entities/user.entity';
 import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
+import { ProductVariantsService } from './product-variants.service';
+import { LoggedInUser } from '@/auth/decorators';
 
 @Controller('admin')
 export class ProductVariantsController {
@@ -23,9 +22,9 @@ export class ProductVariantsController {
   async create(
     @Param('productId', new ParseUUIDPipe({ version: '4' })) productId: string,
     @Body() createProductVariantDto: CreateProductVariantDto,
-    @LoggedInUser() loggedInUser: User,
+    @LoggedInUser('id') loggedInUserId: string,
   ) {
-    createProductVariantDto.createdBy = loggedInUser.id;
+    createProductVariantDto.createdBy = loggedInUserId;
     return this.productVariantsService.create(
       productId,
       createProductVariantDto,
@@ -43,9 +42,9 @@ export class ProductVariantsController {
   async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateProductVariantDto: UpdateProductVariantDto,
-    @LoggedInUser() loggedInUser: User,
+    @LoggedInUser('id') loggedInUserId: string,
   ) {
-    updateProductVariantDto.updatedBy = loggedInUser.id;
+    updateProductVariantDto.updatedBy = loggedInUserId;
     return this.productVariantsService.update(id, updateProductVariantDto);
   }
 }

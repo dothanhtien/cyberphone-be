@@ -1,4 +1,3 @@
-import { Match } from '@/common/validators/match.decorator';
 import {
   IsString,
   IsNotEmpty,
@@ -10,18 +9,15 @@ import {
   IsUUID,
   IsEmpty,
 } from 'class-validator';
+import { Match } from '@/common/validators/match.decorator';
 
 const MAX_USERNAME_LENGTH = 255;
-const MIN_USERNAME_LENGTH = 3;
-const MAX_FULL_NAME_LENGTH = 255;
+const MAX_NAME_LENGTH = 255;
 const MAX_EMAIL_LENGTH = 320;
 
 export class CreateUserDto {
   @MaxLength(MAX_USERNAME_LENGTH, {
     message: `Username must not exceed ${MAX_USERNAME_LENGTH} characters`,
-  })
-  @MinLength(MIN_USERNAME_LENGTH, {
-    message: `Username must be at least ${MIN_USERNAME_LENGTH} characters long`,
   })
   @Matches(/^[a-zA-Z0-9_.]+$/, {
     message:
@@ -62,13 +58,19 @@ export class CreateUserDto {
   @IsOptional()
   email?: string;
 
-  @MaxLength(MAX_FULL_NAME_LENGTH, {
-    message: `Full name must not exceed ${MAX_FULL_NAME_LENGTH} characters`,
+  @MaxLength(MAX_NAME_LENGTH, {
+    message: `First name must not exceed ${MAX_NAME_LENGTH} characters`,
   })
-  @MinLength(2, { message: 'Full name must be at least 2 characters long' })
-  @IsString({ message: 'Full name must be a string' })
-  @IsNotEmpty({ message: 'Full name is required' })
-  fullName: string;
+  @IsString({ message: 'First name must be a string' })
+  @IsNotEmpty({ message: 'First name is required' })
+  firstName: string;
+
+  @MaxLength(MAX_NAME_LENGTH, {
+    message: `Last name must not exceed ${MAX_NAME_LENGTH} characters`,
+  })
+  @IsString({ message: 'Last name must be a string' })
+  @IsNotEmpty({ message: 'Last name is required' })
+  lastName: string;
 
   @IsUUID('4', { message: 'roleId must be a valid UUID' })
   @IsNotEmpty({ message: 'roleId is required' })
