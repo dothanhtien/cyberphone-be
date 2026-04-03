@@ -1,24 +1,27 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '@/users/users.service';
-import { PasswordService } from '@/password/password.service';
-import { CustomersService } from '@/customers/customers.service';
-import { AuthUser, JwtPayload } from './types';
-import { getErrorStack, maskIdentifier } from '@/common/utils';
-import { IdentityService } from './identity.service';
-import { AuthMapper } from './mappers';
+import { DataSource } from 'typeorm';
+import { RegisterDto } from './dto';
 import { AuthUserType } from './enums';
+import { AuthMapper } from './mappers';
+import { AuthUser, JwtPayload } from './types';
+import { CustomersService } from '@/customers/customers.service';
+import { IdentitiesService } from '@/identities/identities.service';
+import { PasswordService } from '@/password/password.service';
+import { UsersService } from '@/users/users.service';
+import { getErrorStack, maskIdentifier } from '@/common/utils';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
-    private readonly identityService: IdentityService,
+    private readonly identitiesService: IdentitiesService,
     private readonly usersService: UsersService,
     private readonly customersService: CustomersService,
     private readonly passwordService: PasswordService,
     private readonly jwtService: JwtService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async validateUser(
@@ -32,11 +35,18 @@ export class AuthService {
     );
 
     try {
-      const identity = await this.identityService.findByIdentifier(identifier);
+      const identity = await this.identitiesService.findOneLocal(identifier);
 
       if (!identity) {
         this.logger.warn(
-          `[validateUser] User not found identifier=${maskedIdentifier}`,
+          `[validateUser] Identity not found identifier=${maskedIdentifier}`,
+        );
+        return null;
+      }
+
+      if (!identity.user && !identity.customer) {
+        this.logger.error(
+          `[validateUser] Identity has no owner id=${identity.id}`,
         );
         return null;
       }
@@ -60,11 +70,15 @@ export class AuthService {
         return null;
       }
 
+      const account = identity.user ?? identity.customer;
+
+      const authUser = AuthMapper.mapToAuthUser(account!);
+
       this.logger.debug(
-        `[validateUser] User validated identifier=${maskedIdentifier}`,
+        `[validateUser] Success identifier=${maskedIdentifier}, id=${authUser.id}, type=${authUser.type}`,
       );
 
-      return identity;
+      return authUser;
     } catch (error) {
       this.logger.error(
         `[validateUser] Error validating user identifier=${maskedIdentifier}`,
@@ -120,5 +134,46 @@ export class AuthService {
         getErrorStack(error),
       );
     }
+  }
+
+  async register(registerDto: RegisterDto) {
+    const maskedPhone = maskIdentifier(registerDto.phone);
+    const maskedEmail = registerDto.email
+      ? maskIdentifier(registerDto.email)
+      : undefined;
+
+    this.logger.debug(
+      `[register] Start registering phone=${maskedPhone}, email=${maskedEmail}`,
+    );
+
+    return await this.dataSource.transaction(async (tx) => {
+      if (registerDto.phone) {
+        const existingPhoneIdentify =
+          await this.identitiesService.existsByValue({
+            value: registerDto.phone,
+            tx,
+          });
+
+        if (existingPhoneIdentify) {
+          throw new ConflictException('Phone already exists');
+        }
+      }
+
+      if (registerDto.email) {
+        const existingEmailIdentify =
+          await this.identitiesService.existsByValue({
+            value: registerDto.email,
+            tx,
+          });
+
+        if (existingEmailIdentify) {
+          throw new ConflictException('Email already exists');
+        }
+      }
+
+      // const customer = await this.customersService.findOneActiveByIdentifiers()
+    });
+
+    // return this.customersService.create(registerDto);
   }
 }

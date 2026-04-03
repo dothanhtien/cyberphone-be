@@ -3,9 +3,11 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Identity } from '../../identities/entities';
 import { Gender } from '../enums';
 
 @Entity('customers')
@@ -85,4 +87,7 @@ export class Customer {
     nullable: true,
   })
   updatedBy: string | null;
+
+  @OneToMany(() => Identity, (i) => i.customer)
+  identities: Identity[];
 }

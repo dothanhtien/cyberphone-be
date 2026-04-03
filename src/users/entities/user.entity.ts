@@ -10,6 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Identity } from '../../identities/entities';
 import { Role } from './role.entity';
 import { Cart } from '../../carts/entities/cart.entity';
 import { Order } from '../../orders/entities/order.entity';
@@ -86,6 +87,9 @@ export class User {
     nullable: true,
   })
   updatedBy: string | null;
+
+  @OneToMany(() => Identity, (i) => i.user)
+  identities: Identity[];
 
   @OneToOne(() => Cart, (cart) => cart.user)
   cart: Cart;

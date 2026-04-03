@@ -4,18 +4,19 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { IdentityService } from './identity.service';
 import { JwtAuthGuard } from './guards';
 import { LocalStrategy, JwtStrategy } from './strategies';
 import { CustomersModule } from '@/customers/customers.module';
 import { PasswordModule } from '@/password/password.module';
 import { UsersModule } from '@/users/users.module';
+import { IdentitiesModule } from '@/identities/identities.module';
 
 @Module({
   imports: [
     UsersModule,
     CustomersModule,
     PasswordModule,
+    IdentitiesModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -43,7 +44,6 @@ import { UsersModule } from '@/users/users.module';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
-    IdentityService,
   ],
   controllers: [AuthController],
 })

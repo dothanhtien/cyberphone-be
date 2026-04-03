@@ -10,23 +10,19 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoggedInUser, Public } from './decorators';
+import { RegisterDto } from './dto';
 import { LocalAuthGuard, JwtAuthGuard } from './guards';
 import { AuthMapper } from './mappers';
 import { type AuthUser, type RequestWithUser } from './types';
-import { CreateCustomerDto } from '@/customers/dtos';
-import { CustomersService } from '@/customers/customers.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly customersService: CustomersService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('/register')
-  create(@Body() createCustomerDto: CreateCustomerDto) {
-    return this.customersService.create(createCustomerDto);
+  create(@Body() registerDto: RegisterDto) {
+    return this.authService.register(registerDto);
   }
 
   @Public()
