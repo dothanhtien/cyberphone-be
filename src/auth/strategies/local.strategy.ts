@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { AuthService } from '../auth.service';
+import { AuthMapper } from '../mappers';
 import { AuthUser } from '../types';
 import { getErrorStack, maskIdentifier } from '@/common/utils';
 
@@ -35,7 +36,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       this.logger.log(
         `[validate] Login successful identifier=${maskedIdentifier}`,
       );
-      return user;
+
+      return AuthMapper.mapToAuthUser(user);
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         throw error;

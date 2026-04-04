@@ -13,5 +13,6 @@ import { IDENTITY_REPOSITORY, IdentityRepository } from './repositories';
       useClass: IdentityRepository,
     },
   ],
+  exports: [IdentitiesService],
 })
 export class IdentitiesModule {}

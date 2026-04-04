@@ -13,4 +13,10 @@ export class IdentityCreateEntity {
 
   @Expose()
   passwordHash: string;
+
+  @Expose()
+  userId?: string;
+
+  @Expose()
+  customerId?: string;
 }

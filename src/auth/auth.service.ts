@@ -6,10 +6,13 @@ import { AuthUserType } from './enums';
 import { AuthMapper } from './mappers';
 import { AuthUser, JwtPayload } from './types';
 import { CustomersService } from '@/customers/customers.service';
+import { Customer } from '@/customers/entities';
+import { AuthProvider } from '@/identities/enums';
 import { IdentitiesService } from '@/identities/identities.service';
 import { PasswordService } from '@/password/password.service';
 import { UsersService } from '@/users/users.service';
 import { getErrorStack, maskIdentifier } from '@/common/utils';
+import { User } from '@/users/entities';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +30,7 @@ export class AuthService {
   async validateUser(
     identifier: string,
     password: string,
-  ): Promise<AuthUser | null> {
+  ): Promise<User | Customer | null> {
     const maskedIdentifier = maskIdentifier(identifier);
 
     this.logger.debug(
@@ -35,12 +38,16 @@ export class AuthService {
     );
 
     try {
-      const identity = await this.identitiesService.findOneLocal(identifier);
+      const identity = await this.identitiesService.findOne(
+        identifier,
+        AuthProvider.LOCAL,
+      );
 
       if (!identity) {
-        this.logger.warn(
+        this.logger.debug(
           `[validateUser] Identity not found identifier=${maskedIdentifier}`,
         );
+
         return null;
       }
 
@@ -48,13 +55,15 @@ export class AuthService {
         this.logger.error(
           `[validateUser] Identity has no owner id=${identity.id}`,
         );
+
         return null;
       }
 
       if (!identity.passwordHash) {
-        this.logger.warn(
+        this.logger.debug(
           `[validateUser] User has no password identifier=${maskedIdentifier}`,
         );
+
         return null;
       }
 
@@ -64,43 +73,45 @@ export class AuthService {
       );
 
       if (!isMatch) {
-        this.logger.warn(
+        this.logger.debug(
           `[validateUser] Invalid password identifier=${maskedIdentifier}`,
         );
+
         return null;
       }
 
       const account = identity.user ?? identity.customer;
 
-      const authUser = AuthMapper.mapToAuthUser(account!);
-
       this.logger.debug(
-        `[validateUser] Success identifier=${maskedIdentifier}, id=${authUser.id}, type=${authUser.type}`,
+        `[validateUser] Validate successful identifier=${maskedIdentifier}, id=${account?.id}, type=${identity.user ? 'user' : 'customer'}`,
       );
 
-      return authUser;
+      return account!;
     } catch (error) {
       this.logger.error(
         `[validateUser] Error validating user identifier=${maskedIdentifier}`,
         getErrorStack(error),
       );
+
       throw error;
     }
   }
 
   async login(user: AuthUser) {
-    this.logger.debug(`[login] Attempt login id=${user.id}, type=${user.type}`);
+    this.logger.debug(
+      `[login] Attemptinng login id=${user.id}, type=${user.type}`,
+    );
+
+    const payload: JwtPayload = {
+      sub: user.id,
+      type: user.type,
+      roleId: user.roleId,
+    };
 
     try {
-      const payload: JwtPayload = {
-        sub: user.id,
-        type: user.type,
-        role: user.role ?? undefined,
-      };
+      const accessToken = this.jwtService.sign(payload);
 
       await this.updateLastLogin(user);
-
-      const accessToken = this.jwtService.sign(payload);
 
       this.logger.debug(`[login] Login success id=${user.id}`);
 
@@ -113,6 +124,7 @@ export class AuthService {
         `[login] Login failed id=${user.id}`,
         getErrorStack(error),
       );
+
       throw error;
     }
   }
@@ -128,6 +140,10 @@ export class AuthService {
       } else {
         await this.customersService.updateLastLogin(user.id);
       }
+
+      this.logger.debug(
+        `[updateLastLogin] Update last loggin success id=${user.id}`,
+      );
     } catch (error) {
       this.logger.warn(
         `[updateLastLogin] Failed to update last login id=${user.id}`,
@@ -137,43 +153,85 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
-    const maskedPhone = maskIdentifier(registerDto.phone);
-    const maskedEmail = registerDto.email
-      ? maskIdentifier(registerDto.email)
-      : undefined;
+    const { phone, email, password } = registerDto;
+
+    const maskedPhone = maskIdentifier(phone);
+    const maskedEmail = email ? maskIdentifier(email) : undefined;
 
     this.logger.debug(
-      `[register] Start registering phone=${maskedPhone}, email=${maskedEmail}`,
+      `[register] Registering phone=${maskedPhone}, email=${maskedEmail}`,
     );
 
-    return await this.dataSource.transaction(async (tx) => {
-      if (registerDto.phone) {
-        const existingPhoneIdentify =
-          await this.identitiesService.existsByValue({
-            value: registerDto.phone,
-            tx,
-          });
+    try {
+      const result = await this.dataSource.transaction(async (tx) => {
+        const identifiers = [phone, ...(email ? [email] : [])];
 
-        if (existingPhoneIdentify) {
-          throw new ConflictException('Phone already exists');
+        this.logger.debug(`[register] Checking existing identities`);
+
+        const existed = await this.identitiesService.existsByValues({
+          values: identifiers,
+          tx,
+        });
+
+        if (existed) {
+          throw new ConflictException('Phone or email already exists');
         }
-      }
 
-      if (registerDto.email) {
-        const existingEmailIdentify =
-          await this.identitiesService.existsByValue({
-            value: registerDto.email,
-            tx,
-          });
+        this.logger.debug(`[register] Resolving customer`);
 
-        if (existingEmailIdentify) {
-          throw new ConflictException('Email already exists');
+        const customers = await this.customersService.findActiveByPhoneOrEmail({
+          phone,
+          email,
+          tx,
+        });
+
+        if (customers.length > 1) {
+          this.logger.warn(
+            `[register] Conflict: phone & email belong to different customers`,
+          );
+
+          throw new ConflictException(
+            'Phone and email belong to different accounts',
+          );
         }
-      }
 
-      // const customer = await this.customersService.findOneActiveByIdentifiers()
-    });
+        if (customers.length === 0) {
+          const newCustomer = await this.customersService.create(
+            registerDto,
+            tx,
+          );
+          customers.push(newCustomer);
+        }
 
-    // return this.customersService.create(registerDto);
+        const customer = customers[0];
+
+        const passwordHash = await this.passwordService.hashPassword(password);
+
+        this.logger.debug(`[register] Creating identities`);
+
+        await this.identitiesService.create(
+          {
+            phone,
+            email,
+            passwordHash,
+            provider: AuthProvider.LOCAL,
+            customerId: customer.id,
+          },
+          tx,
+        );
+
+        return { id: customer.id };
+      });
+
+      this.logger.log(`[register] Success customerId=${result.id}`);
+
+      return result;
+    } catch (error) {
+      this.logger.error(
+        `[register] Failed phone=${maskedPhone}, email=${maskedEmail}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
   }
 }

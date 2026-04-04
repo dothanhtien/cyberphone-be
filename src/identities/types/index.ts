@@ -1,7 +1,10 @@
-import { AuthProvider, IdentityType } from '../enums';
+import { AuthProvider } from '../enums';
 
 export interface CreateIdentityParams {
-  type: IdentityType;
-  value: string;
+  phone: string;
+  email?: string;
+  passwordHash: string;
   provider: AuthProvider;
+  customerId?: string;
+  userId?: string;
 }

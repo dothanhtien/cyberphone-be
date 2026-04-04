@@ -1,15 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CustomerCreateEntityInput } from '../dtos';
 import { Customer } from '../entities';
 
 export interface ICustomerRepository {
-  create(data: CustomerCreateEntityInput): Promise<Customer>;
+  create(data: CustomerCreateEntityInput, tx: EntityManager): Promise<Customer>;
   existsActiveByUsernameOrPhone(
     username: string,
     phone: string,
+    tx: EntityManager,
   ): Promise<boolean>;
+  findActiveByPhoneOrEmail({
+    phone,
+    email,
+    tx,
+  }: {
+    phone: string;
+    email?: string;
+    tx: EntityManager;
+  }): Promise<Customer[]>;
   findOneActiveById(id: string): Promise<Customer | null>;
   findOneActiveByIdentifier(identifier: string): Promise<Customer | null>;
   updateLastLogin(id: string): Promise<void>;
@@ -24,20 +34,46 @@ export class CustomerRepository implements ICustomerRepository {
     private readonly customerRepository: Repository<Customer>,
   ) {}
 
-  create(data: CustomerCreateEntityInput): Promise<Customer> {
-    return this.customerRepository.save(data);
+  create(
+    data: CustomerCreateEntityInput,
+    tx: EntityManager,
+  ): Promise<Customer> {
+    return tx.getRepository(Customer).save(data);
   }
 
   async existsActiveByUsernameOrPhone(
     username: string,
     phone: string,
+    tx: EntityManager,
   ): Promise<boolean> {
-    return this.customerRepository.exists({
+    return tx.getRepository(Customer).exists({
       where: [
         { username: username, isActive: true },
         { phone: phone, isActive: true },
       ],
     });
+  }
+
+  findActiveByPhoneOrEmail({
+    phone,
+    email,
+    tx,
+  }: {
+    phone: string;
+    email?: string;
+    tx: EntityManager;
+  }): Promise<Customer[]> {
+    const whereOptions: {
+      phone?: string;
+      email?: string;
+      isActive: boolean;
+    }[] = [{ phone, isActive: true }];
+
+    if (email) {
+      whereOptions.push({ email, isActive: true });
+    }
+
+    return tx.getRepository(Customer).find({ where: whereOptions });
   }
 
   findOneActiveById(id: string): Promise<Customer | null> {

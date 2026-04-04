@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { AuthProvider, IdentityType } from '../enums';
-import { User } from '../../users/entities';
 import { Customer } from '../../customers/entities';
+import { User } from '../../users/entities';
 
 @Entity('identities')
 @Index('uq_identities_type_value_provider', ['type', 'value', 'provider'], {
@@ -34,6 +34,12 @@ export class Identity {
 
   @Column({ type: 'boolean', name: 'is_verified', default: false })
   isVerified: boolean = false;
+
+  @Column({ name: 'user_id', type: 'uuid', nullable: true })
+  userId: string | null;
+
+  @Column({ name: 'customer_id', type: 'uuid', nullable: true })
+  customerId: string | null;
 
   @ManyToOne(() => User, (user) => user.identities, { nullable: true })
   @JoinColumn({

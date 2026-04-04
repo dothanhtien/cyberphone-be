@@ -9,7 +9,11 @@ import { IdentityCreateEntity } from './dto';
 import { AuthProvider, IdentityType } from './enums';
 import { IDENTITY_REPOSITORY, type IIdentityRepository } from './repositories';
 import { CreateIdentityParams } from './types';
-import { maskIdentifier, sanitizeEntityInput } from '@/common/utils';
+import {
+  getErrorStack,
+  maskIdentifier,
+  sanitizeEntityInput,
+} from '@/common/utils';
 
 @Injectable()
 export class IdentitiesService {
@@ -20,40 +24,117 @@ export class IdentitiesService {
     private readonly identityRepository: IIdentityRepository,
   ) {}
 
-  create(data: CreateIdentityParams, tx: EntityManager) {
-    const entity = sanitizeEntityInput(IdentityCreateEntity, data);
+  async create(data: CreateIdentityParams, tx: EntityManager) {
+    const maskedPhone = maskIdentifier(data.phone);
+    const maskedEmail = data.email ? maskIdentifier(data.email) : undefined;
 
-    return this.identityRepository.create(entity, tx);
+    this.logger.debug(
+      `[create] Start phone=${maskedPhone}, email=${maskedEmail}, provider=${data.provider}`,
+    );
+
+    try {
+      const entities = [
+        sanitizeEntityInput(IdentityCreateEntity, {
+          value: data.phone,
+          type: IdentityType.PHONE,
+          provider: data.provider,
+          passwordHash: data.passwordHash,
+          customerId: data.customerId,
+          userId: data.userId,
+        }),
+      ];
+
+      if (data.email) {
+        entities.push(
+          sanitizeEntityInput(IdentityCreateEntity, {
+            value: data.email,
+            type: IdentityType.EMAIL,
+            provider: data.provider,
+            passwordHash: data.passwordHash,
+            customerId: data.customerId,
+            userId: data.userId,
+          }),
+        );
+      }
+
+      const result = await this.identityRepository.save(entities, tx);
+
+      this.logger.debug(
+        `[create] Success phone=${maskedPhone}, email=${maskedEmail}, count=${result.length}`,
+      );
+
+      return result;
+    } catch (error) {
+      this.logger.error(
+        `[create] Failed phone=${maskedPhone}, email=${maskedEmail}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
   }
 
-  existsByValue({
-    value,
+  async existsByValues({
+    values,
     provider = AuthProvider.LOCAL,
     tx,
   }: {
-    value: string;
+    values: string[];
     provider?: AuthProvider;
     tx: EntityManager;
   }) {
-    return this.identityRepository.existsByValue({ value, provider, tx });
+    const maskedValues = values.map(maskIdentifier);
+
+    this.logger.debug(
+      `[existsByValues] Checking values=${maskedValues.join(',')}, provider=${provider}`,
+    );
+
+    try {
+      return await this.identityRepository.existsByValues({
+        values,
+        provider,
+        tx,
+      });
+    } catch (error) {
+      this.logger.error(
+        `[existsByValues] Failed values=${maskedValues.join(',')}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
   }
 
-  findOneLocal(identifier: string) {
-    const type = this.detectType(identifier);
-    const value = this.normalize(identifier, type);
+  async findOne(identifier: string, provider: AuthProvider) {
+    const maskedIdentifier = maskIdentifier(identifier);
 
-    return this.identityRepository.findOne({
-      type,
-      value,
-      provider: AuthProvider.LOCAL,
-    });
+    this.logger.debug(
+      `[findOne] Start identifier=${maskedIdentifier}, provider=${provider}`,
+    );
+
+    try {
+      const type = this.detectType(identifier);
+      const value = this.normalize(identifier, type);
+
+      const identity = await this.identityRepository.findOne({
+        type,
+        value,
+        provider,
+      });
+
+      if (!identity) {
+        this.logger.debug(`[findOne] Not found identifier=${maskedIdentifier}`);
+      }
+
+      return identity;
+    } catch (error) {
+      this.logger.error(
+        `[findOne] Failed identifier=${maskedIdentifier}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
   }
 
   private detectType(identifier: string): IdentityType {
-    this.logger.debug(
-      `[detectType] Detecting type identifier=${maskIdentifier(identifier)}`,
-    );
-
     if (identifier.includes('@')) return IdentityType.EMAIL;
     if (/^\d+$/.test(identifier)) return IdentityType.PHONE;
 

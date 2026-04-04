@@ -32,7 +32,7 @@ export class AuthMapper {
       firstName: user.firstName,
       lastName: user.lastName,
       isActive: user.isActive,
-      role: user.role,
+      roleId: user.role.id,
       passwordHash: user.passwordHash,
     };
   }

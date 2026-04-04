@@ -1,21 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { IdentityCreateEntity } from '../dto';
 import { AuthProvider, IdentityType } from '../enums';
 import { Identity } from '../entities';
 
 export interface IIdentityRepository {
-  create(
-    data: IdentityCreateEntity,
-    tx: EntityManager,
-  ): Promise<{ id: string }>;
-  existsByValue({
-    value,
+  existsByValues({
+    values,
     provider,
     tx,
   }: {
-    value: string;
+    values: string[];
     provider: AuthProvider;
     tx: EntityManager;
   }): Promise<boolean>;
@@ -31,6 +27,10 @@ export interface IIdentityRepository {
     },
     tx?: EntityManager,
   ): Promise<Identity | null>;
+  save(
+    data: IdentityCreateEntity[],
+    tx: EntityManager,
+  ): Promise<{ id: string }[]>;
 }
 
 export const IDENTITY_REPOSITORY = Symbol('IIdentityRepository');
@@ -42,28 +42,19 @@ export class IdentityRepository implements IIdentityRepository {
     private readonly identityRepository: Repository<Identity>,
   ) {}
 
-  async create(
-    data: IdentityCreateEntity,
-    tx: EntityManager,
-  ): Promise<{ id: string }> {
-    const repository = tx.getRepository(Identity);
-
-    const result = await repository.save(data);
-
-    return { id: result.id };
-  }
-
-  existsByValue({
-    value,
+  existsByValues({
+    values,
     provider,
     tx,
   }: {
-    value: string;
+    values: string[];
     provider: AuthProvider;
     tx: EntityManager;
   }): Promise<boolean> {
+    if (!values.length) return Promise.resolve(false);
+
     return tx.getRepository(Identity).exists({
-      where: { value, provider },
+      where: { value: In(values), provider },
     });
   }
 
@@ -87,5 +78,14 @@ export class IdentityRepository implements IIdentityRepository {
       where: { type, value, provider },
       relations: ['user', 'customer'],
     });
+  }
+
+  async save(
+    data: IdentityCreateEntity[],
+    tx: EntityManager,
+  ): Promise<{ id: string }[]> {
+    const result = await tx.getRepository(Identity).save(data);
+
+    return result.map((item) => ({ id: item.id }));
   }
 }

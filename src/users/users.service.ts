@@ -228,10 +228,20 @@ export class UsersService {
     return this.userRepository.findOneActiveById(id);
   }
 
-  updateLastLogin(id: string): Promise<void> {
-    this.logger.debug(
-      `[updateLastLogin] Updating last login for user id=${id}`,
-    );
-    return this.userRepository.updateLastLogin(id);
+  async updateLastLogin(id: string): Promise<void> {
+    try {
+      await this.userRepository.updateLastLogin(id);
+
+      this.logger.debug(
+        `[updateLastLogin] Last login updated successfully id=${id}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `[updateLastLogin] Failed to update last login id=${id}`,
+        getErrorStack(error),
+      );
+
+      throw error;
+    }
   }
 }

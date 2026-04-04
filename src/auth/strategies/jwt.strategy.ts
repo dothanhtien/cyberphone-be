@@ -31,6 +31,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const { sub: userId, type } = payload;
 
     if (!userId || !type) {
+      this.logger.debug(
+        `[validate] Missing params userId=${userId}, type=${type}`,
+      );
+
       throw new UnauthorizedException('Invalid token');
     }
 
