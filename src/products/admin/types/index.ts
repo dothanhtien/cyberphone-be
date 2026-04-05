@@ -5,15 +5,15 @@ export interface ProductRaw {
   name: string;
   slug: string;
   status: ProductStatus;
-  shortDescription?: string | null;
-  longDescription?: string | null;
+  shortDescription: string | null;
+  longDescription: string | null;
   isFeatured: boolean;
   isBestseller: boolean;
   isActive: boolean;
-  createdAt: string;
+  createdAt: Date;
   createdBy: string;
-  updatedAt: string | null;
-  updatedBy: string;
+  updatedAt: Date | null;
+  updatedBy: string | null;
 
   brand: { id: string; name: string };
 

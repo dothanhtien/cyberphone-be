@@ -7,9 +7,9 @@ import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards';
 import { LocalStrategy, JwtStrategy } from './strategies';
 import { CustomersModule } from '@/customers/customers.module';
+import { IdentitiesModule } from '@/identities/identities.module';
 import { PasswordModule } from '@/password/password.module';
 import { UsersModule } from '@/users/users.module';
-import { IdentitiesModule } from '@/identities/identities.module';
 
 @Module({
   imports: [

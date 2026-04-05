@@ -1,7 +1,8 @@
 import { Expose, Type } from 'class-transformer';
 import { BrandResponseDto } from '@/brands/dto';
 import { CategoryResponseDto } from '@/categories/dto/responses/category-response.dto';
-import { ProductAttributeResponseDto, ProductImageResponseDto } from '.';
+import { ProductAttributeResponseDto } from './product-attribute-response.dto';
+import { ProductImageResponseDto } from './product-image-response.dto';
 
 export class ProductResponseDto {
   @Expose()
@@ -30,7 +31,7 @@ export class ProductResponseDto {
 
   @Expose()
   @Type(() => BrandResponseDto)
-  brand: BrandResponseDto;
+  brand: Pick<BrandResponseDto, 'id' | 'name'>;
 
   @Expose()
   isActive: boolean;
@@ -42,14 +43,14 @@ export class ProductResponseDto {
   createdBy: string;
 
   @Expose()
-  updatedAt: Date;
+  updatedAt: Date | null;
 
   @Expose()
   updatedBy: string | null;
 
   @Expose()
   @Type(() => CategoryResponseDto)
-  categories: CategoryResponseDto[];
+  categories: Pick<CategoryResponseDto, 'id' | 'name'>[];
 
   @Expose()
   @Type(() => ProductImageResponseDto)
@@ -57,7 +58,7 @@ export class ProductResponseDto {
 
   @Expose()
   @Type(() => ProductAttributeResponseDto)
-  attributes: ProductAttributeResponseDto[];
+  attributes: ProductAttributeResponseDto[] | undefined;
 
   @Expose()
   variantCount?: number;

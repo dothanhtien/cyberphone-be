@@ -20,7 +20,7 @@ import { Order } from '../../orders/entities/order.entity';
   unique: true,
   where: `"is_active" = true`,
 })
-@Index('uq_users_username_active', ['username'], {
+@Index('uq_users_email_active', ['email'], {
   unique: true,
   where: `"is_active" = true`,
 })
@@ -30,14 +30,8 @@ export class User {
   })
   id: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  username: string;
-
   @Column({ type: 'varchar', length: 30 })
   phone: string;
-
-  @Column({ name: 'password_hash', type: 'text' })
-  passwordHash: string;
 
   @Column({ type: 'varchar', length: 320, nullable: true })
   email: string | null;
@@ -48,8 +42,14 @@ export class User {
   @Column({ name: 'last_name', type: 'varchar', length: 255 })
   lastName: string;
 
-  @Column({ name: 'last_login', type: 'timestamp', nullable: true })
-  lastLogin?: Date | null;
+  @Column({ name: 'last_login', type: 'timestamptz', nullable: true })
+  lastLogin: Date | null;
+
+  @Column({ name: 'phone_verified', type: 'boolean', default: false })
+  phoneVerified: boolean = false;
+
+  @Column({ name: 'email_verified', type: 'boolean', default: false })
+  emailVerified: boolean = false;
 
   @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean = true;
@@ -67,7 +67,7 @@ export class User {
   })
   role: Role;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
   @Column({
@@ -77,8 +77,8 @@ export class User {
   })
   createdBy: string;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
-  updatedAt?: Date;
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: true })
+  updatedAt: Date | null;
 
   @Column({
     name: 'updated_by',

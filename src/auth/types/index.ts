@@ -5,7 +5,6 @@ export interface AuthUser {
   id: string;
   type: AuthUserType;
 
-  username: string;
   phone: string;
   email: string | null;
   firstName: string;
@@ -14,7 +13,6 @@ export interface AuthUser {
   roleId?: string;
 
   isActive: boolean;
-  passwordHash: string | null;
 }
 
 export type RequestWithUser = Request & { user: AuthUser };

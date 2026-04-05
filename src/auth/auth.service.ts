@@ -5,32 +5,30 @@ import { RegisterDto } from './dto';
 import { AuthUserType } from './enums';
 import { AuthMapper } from './mappers';
 import { AuthUser, JwtPayload } from './types';
+import { getErrorStack, maskIdentifier } from '@/common/utils';
 import { CustomersService } from '@/customers/customers.service';
-import { Customer } from '@/customers/entities';
 import { AuthProvider } from '@/identities/enums';
 import { IdentitiesService } from '@/identities/identities.service';
 import { PasswordService } from '@/password/password.service';
 import { UsersService } from '@/users/users.service';
-import { getErrorStack, maskIdentifier } from '@/common/utils';
-import { User } from '@/users/entities';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
+    private readonly dataSource: DataSource,
     private readonly identitiesService: IdentitiesService,
-    private readonly usersService: UsersService,
     private readonly customersService: CustomersService,
     private readonly passwordService: PasswordService,
+    private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly dataSource: DataSource,
   ) {}
 
   async validateUser(
     identifier: string,
     password: string,
-  ): Promise<User | Customer | null> {
+  ): Promise<AuthUser | null> {
     const maskedIdentifier = maskIdentifier(identifier);
 
     this.logger.debug(
@@ -51,7 +49,9 @@ export class AuthService {
         return null;
       }
 
-      if (!identity.user && !identity.customer) {
+      const account = identity.user ?? identity.customer;
+
+      if (!account) {
         this.logger.error(
           `[validateUser] Identity has no owner id=${identity.id}`,
         );
@@ -80,13 +80,11 @@ export class AuthService {
         return null;
       }
 
-      const account = identity.user ?? identity.customer;
-
       this.logger.debug(
-        `[validateUser] Validate successful identifier=${maskedIdentifier}, id=${account?.id}, type=${identity.user ? 'user' : 'customer'}`,
+        `[validateUser] Validate successful identifier=${maskedIdentifier}`,
       );
 
-      return account!;
+      return AuthMapper.mapToAuthUser(account);
     } catch (error) {
       this.logger.error(
         `[validateUser] Error validating user identifier=${maskedIdentifier}`,
@@ -187,7 +185,7 @@ export class AuthService {
 
         if (customers.length > 1) {
           this.logger.warn(
-            `[register] Conflict: phone & email belong to different customers`,
+            `[register] Conflict: phone and email belong to different customers`,
           );
 
           throw new ConflictException(
@@ -231,6 +229,7 @@ export class AuthService {
         `[register] Failed phone=${maskedPhone}, email=${maskedEmail}`,
         getErrorStack(error),
       );
+
       throw error;
     }
   }

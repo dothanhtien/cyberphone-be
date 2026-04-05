@@ -32,7 +32,7 @@ export class BrandResponseDto {
   createdBy: string;
 
   @Expose()
-  updatedAt: Date;
+  updatedAt: Date | null;
 
   @Expose()
   updatedBy: string | null;

@@ -8,7 +8,6 @@ import {
   maskIdentifier,
   sanitizeEntityInput,
 } from '@/common/utils';
-import { PasswordService } from '@/password/password.service';
 
 @Injectable()
 export class CustomersService {
@@ -17,32 +16,30 @@ export class CustomersService {
   constructor(
     @Inject(CUSTOMER_REPOSITORY)
     private readonly customerRepository: ICustomerRepository,
-    private readonly passwordService: PasswordService,
   ) {}
 
   async create(createCustomerDto: CreateCustomerDto, tx: EntityManager) {
-    const maskedUsername = maskIdentifier(createCustomerDto.username);
-    const maskedPhone = maskIdentifier(createCustomerDto.phone);
+    const { phone, email } = createCustomerDto;
+
+    const maskedPhone = maskIdentifier(phone);
+    const maskedEmail = email ? maskIdentifier(email) : undefined;
 
     this.logger.debug(
-      `[create] Creating customer username=${maskedUsername}, phone=${maskedPhone}`,
+      `[create] Creating customer phone=${maskedPhone}, email=${maskedEmail}`,
     );
 
-    createCustomerDto.username = createCustomerDto.username.toLowerCase();
-
     try {
-      const exists =
-        await this.customerRepository.existsActiveByUsernameOrPhone(
-          createCustomerDto.username,
-          createCustomerDto.phone,
-          tx,
-        );
+      const exists = await this.customerRepository.existsActiveByPhoneOrEmail({
+        phone,
+        email,
+        tx,
+      });
 
       if (exists) {
         this.logger.warn(
-          `[create] Username or Phone already in use username=${maskedUsername}, phone=${maskedPhone}`,
+          `[create] Phone or Email already in use phone=${maskedPhone}, email=${maskedEmail}`,
         );
-        throw new ConflictException('Username or Phone already in use');
+        throw new ConflictException('Phone or Email already in use');
       }
 
       const entity = sanitizeEntityInput(
@@ -50,14 +47,10 @@ export class CustomersService {
         createCustomerDto,
       );
 
-      entity.passwordHash = await this.passwordService.hashPassword(
-        createCustomerDto.password,
-      );
-
       const customer = await this.customerRepository.create(entity, tx);
 
       this.logger.log(
-        `[create] Customer created successfully id=${customer.id}, username=${maskedUsername}, phone=${maskedPhone}`,
+        `[create] Customer created successfully id=${customer.id}, phone=${maskedPhone}, email=${maskedEmail}`,
       );
 
       return customer;
@@ -67,7 +60,7 @@ export class CustomersService {
       }
 
       this.logger.error(
-        `[create] Failed to create customer username=${maskedUsername}, phone=${maskedPhone}`,
+        `[create] Failed to create customer phone=${maskedPhone}, email=${maskedEmail}`,
         getErrorStack(error),
       );
       throw error;

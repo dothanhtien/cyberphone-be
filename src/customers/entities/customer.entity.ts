@@ -15,7 +15,7 @@ import { Gender } from '../enums';
   unique: true,
   where: `"is_active" = true`,
 })
-@Index('uq_customers_username_active', ['username'], {
+@Index('uq_customers_email_active', ['email'], {
   unique: true,
   where: `"is_active" = true`,
 })
@@ -25,14 +25,8 @@ export class Customer {
   })
   id: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  username: string;
-
   @Column({ type: 'varchar', length: 30 })
   phone: string;
-
-  @Column({ name: 'password_hash', type: 'text', nullable: true })
-  passwordHash: string | null;
 
   @Column({ type: 'varchar', length: 320, nullable: true })
   email: string | null;

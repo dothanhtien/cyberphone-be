@@ -2,13 +2,7 @@ import { Expose } from 'class-transformer';
 
 export class UserCreateEntityDto {
   @Expose()
-  username: string;
-
-  @Expose()
   phone: string;
-
-  @Expose()
-  passwordHash: string;
 
   @Expose()
   email?: string | null;
@@ -20,7 +14,7 @@ export class UserCreateEntityDto {
   lastName: string;
 
   @Expose()
-  lastLogin?: Date;
+  lastLogin?: Date | null;
 
   @Expose()
   roleId: string;

@@ -11,25 +11,19 @@ import {
 } from 'class-validator';
 import { Gender } from '@/customers/enums';
 import { Match } from '@/common/validators/match.decorator';
-
-const MAX_USERNAME_LENGTH = 255;
-const MAX_EMAIL_LENGTH = 320;
-const MAX_NAME_LENGTH = 255;
+import {
+  MAX_EMAIL_LENGTH,
+  MAX_FIRST_NAME_LENGTH,
+  MAX_LAST_NAME_LENGTH,
+  MAX_PHONE_LENGTH,
+} from '@/common/constants';
 
 export class RegisterDto {
-  @MaxLength(MAX_USERNAME_LENGTH, {
-    message: `Username must not exceed ${MAX_USERNAME_LENGTH} characters`,
-  })
-  @Matches(/^[a-zA-Z0-9_.]+$/, {
-    message:
-      'Username can only contain letters, numbers, dots, and underscores',
-  })
-  @IsString({ message: 'Username must be a string' })
-  @IsNotEmpty({ message: 'Username is required' })
-  username: string;
-
-  @Matches(/^\+?[0-9](?:[0-9\s-]{6,18}[0-9])$/, {
+  @Matches(/^\+?[0-9](?:[0-9\s-]{6,30}[0-9])$/, {
     message: 'Phone number format is invalid',
+  })
+  @MaxLength(MAX_PHONE_LENGTH, {
+    message: `Phone must not exceed ${MAX_PHONE_LENGTH} characters`,
   })
   @IsString({ message: 'Phone must be a string' })
   @IsNotEmpty({ message: 'Phone is required' })
@@ -38,7 +32,10 @@ export class RegisterDto {
   @MaxLength(MAX_EMAIL_LENGTH, {
     message: `Email must not exceed ${MAX_EMAIL_LENGTH} characters`,
   })
-  @IsEmail({}, { message: 'Email must be a valid email address' })
+  @IsEmail(
+    { ignore_max_length: true },
+    { message: 'Email must be a valid email address' },
+  )
   @IsOptional()
   email?: string;
 
@@ -58,15 +55,15 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'Password confirmation is required' })
   passwordConfirmation: string;
 
-  @MaxLength(MAX_NAME_LENGTH, {
-    message: `First name must not exceed ${MAX_NAME_LENGTH} characters`,
+  @MaxLength(MAX_FIRST_NAME_LENGTH, {
+    message: `First name must not exceed ${MAX_FIRST_NAME_LENGTH} characters`,
   })
   @IsString({ message: 'First name must be a string' })
   @IsNotEmpty({ message: 'First name is required' })
   firstName: string;
 
-  @MaxLength(MAX_NAME_LENGTH, {
-    message: `Last name must not exceed ${MAX_NAME_LENGTH} characters`,
+  @MaxLength(MAX_LAST_NAME_LENGTH, {
+    message: `Last name must not exceed ${MAX_LAST_NAME_LENGTH} characters`,
   })
   @IsString({ message: 'Last name must be a string' })
   @IsNotEmpty({ message: 'Last name is required' })
@@ -82,7 +79,6 @@ export class RegisterDto {
   @IsEnum(Gender, {
     message: `Gender must be one of: ${Object.values(Gender).join(', ')}`,
   })
-  @IsString({ message: 'Gender must be a string' })
   @IsOptional()
   gender?: Gender;
 }

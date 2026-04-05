@@ -6,11 +6,15 @@ import { Customer } from '../entities';
 
 export interface ICustomerRepository {
   create(data: CustomerCreateEntityInput, tx: EntityManager): Promise<Customer>;
-  existsActiveByUsernameOrPhone(
-    username: string,
-    phone: string,
-    tx: EntityManager,
-  ): Promise<boolean>;
+  existsActiveByPhoneOrEmail({
+    phone,
+    email,
+    tx,
+  }: {
+    phone: string;
+    email?: string;
+    tx: EntityManager;
+  }): Promise<boolean>;
   findActiveByPhoneOrEmail({
     phone,
     email,
@@ -41,16 +45,25 @@ export class CustomerRepository implements ICustomerRepository {
     return tx.getRepository(Customer).save(data);
   }
 
-  async existsActiveByUsernameOrPhone(
-    username: string,
-    phone: string,
-    tx: EntityManager,
-  ): Promise<boolean> {
+  async existsActiveByPhoneOrEmail({
+    phone,
+    email,
+    tx,
+  }: {
+    phone: string;
+    email?: string;
+    tx: EntityManager;
+  }): Promise<boolean> {
+    const whereOptions: {
+      phone?: string;
+      email?: string;
+      isActive: boolean;
+    }[] = [{ phone, isActive: true }];
+
+    if (email) whereOptions.push({ email, isActive: true });
+
     return tx.getRepository(Customer).exists({
-      where: [
-        { username: username, isActive: true },
-        { phone: phone, isActive: true },
-      ],
+      where: whereOptions,
     });
   }
 
@@ -81,12 +94,10 @@ export class CustomerRepository implements ICustomerRepository {
   }
 
   findOneActiveByIdentifier(identifier: string): Promise<Customer | null> {
-    const normalizedIdentifier = identifier.toLowerCase();
-
     return this.customerRepository.findOne({
       where: [
-        { username: normalizedIdentifier, isActive: true },
         { phone: identifier, isActive: true },
+        { email: identifier, isActive: true },
       ],
     });
   }

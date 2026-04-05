@@ -8,6 +8,7 @@ export function mapToBrandResponse(brand: BrandWithExtras): BrandResponseDto {
     name: brand.name,
     slug: brand.slug,
     description: brand.description,
+    websiteUrl: brand.websiteUrl,
     logo: brand.logo,
     productCount:
       brand.productCount !== null ? Number(brand.productCount) : undefined,
