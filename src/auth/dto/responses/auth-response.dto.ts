@@ -10,13 +10,10 @@ export class AuthResponseDto {
   type: AuthUserType;
 
   @Expose()
-  username: string;
+  phone: string;
 
   @Expose()
   email: string | null;
-
-  @Expose()
-  phone: string;
 
   @Expose()
   firstName: string;

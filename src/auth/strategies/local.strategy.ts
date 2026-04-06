@@ -27,14 +27,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         this.logger.debug(
           `[validate] Invalid credentials identifier=${maskedIdentifier}`,
         );
-        throw new UnauthorizedException(
-          'Username/Phone or Password is invalid',
-        );
+        throw new UnauthorizedException('Identifier or Password is invalid');
       }
 
       this.logger.log(
         `[validate] Login successful identifier=${maskedIdentifier}`,
       );
+
       return user;
     } catch (error) {
       if (error instanceof UnauthorizedException) {

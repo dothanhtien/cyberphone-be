@@ -32,11 +32,11 @@ export class Brand {
 
   @Column({ type: 'text', nullable: true })
   @Expose()
-  description?: string;
+  description: string | null;
 
   @Column({ name: 'website_url', type: 'text', nullable: true })
   @Expose()
-  websiteUrl?: string;
+  websiteUrl: string | null;
 
   @OneToMany(() => Product, (product) => product.brand)
   products: Product[];
@@ -67,7 +67,7 @@ export class Brand {
     nullable: true,
   })
   @Expose()
-  updatedAt?: Date | null;
+  updatedAt: Date | null;
 
   @Column({
     name: 'updated_by',
@@ -76,5 +76,5 @@ export class Brand {
     nullable: true,
   })
   @Expose()
-  updatedBy?: string;
+  updatedBy: string | null;
 }

@@ -8,9 +8,7 @@ export class CreateCustomersTable1774756416234 implements MigrationInterface {
       `
         CREATE TABLE "customers" (
           "id" uuid NOT NULL DEFAULT uuid_generate_v4(), 
-          "username" character varying(255) NOT NULL, 
           "phone" character varying(30) NOT NULL, 
-          "password_hash" text, 
           "email" character varying(320), 
           "first_name" character varying(255) NOT NULL, 
           "last_name" character varying(255) NOT NULL, 
@@ -29,18 +27,16 @@ export class CreateCustomersTable1774756416234 implements MigrationInterface {
       `,
     );
     await queryRunner.query(
-      `CREATE UNIQUE INDEX "uq_customers_username_active" ON "customers" ("username") WHERE "is_active" = true`,
+      `CREATE UNIQUE INDEX "uq_customers_phone_active" ON "customers" ("phone") WHERE "is_active" = true`,
     );
     await queryRunner.query(
-      `CREATE UNIQUE INDEX "uq_customers_phone_active" ON "customers" ("phone") WHERE "is_active" = true`,
+      `CREATE UNIQUE INDEX "uq_customers_email_active" ON "customers" ("email") WHERE "is_active" = true`,
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP INDEX "public"."uq_customers_email_active"`);
     await queryRunner.query(`DROP INDEX "public"."uq_customers_phone_active"`);
-    await queryRunner.query(
-      `DROP INDEX "public"."uq_customers_username_active"`,
-    );
     await queryRunner.query(`DROP TABLE "customers"`);
   }
 }

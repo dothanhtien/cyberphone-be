@@ -1,18 +1,25 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Role } from './entities/role.entity';
 import { User } from './entities/user.entity';
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
-import { PasswordModule } from '@/password/password.module';
+import { Role } from './entities/role.entity';
 import {
+  ROLE_REPOSITORY,
+  RoleRepository,
   USER_REPOSITORY,
   UserRepository,
-} from './repositories/user.repository';
+} from './repositories';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
+import { Identity } from '@/identities/entities';
+import { PasswordModule } from '@/password/password.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Role, User]), PasswordModule],
+  imports: [TypeOrmModule.forFeature([Identity, Role, User]), PasswordModule],
   providers: [
+    {
+      provide: ROLE_REPOSITORY,
+      useClass: RoleRepository,
+    },
     UsersService,
     {
       provide: USER_REPOSITORY,

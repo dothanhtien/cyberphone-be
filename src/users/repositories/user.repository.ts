@@ -8,11 +8,11 @@ import { PaginatedEntity } from '@/common/types';
 
 export interface IUserRepository {
   create(dto: UserCreateEntityDto): Promise<User>;
-  existsActiveByUsername(username: string): Promise<boolean>;
+  existsActiveByEmail(email: string): Promise<boolean>;
   existsActiveByPhone(phone: string): Promise<boolean>;
   existsActiveByRoleId(roleId: string): Promise<boolean>;
-  existsActiveByUsernameExcludingId(
-    username: string,
+  existsActiveByEmailExcludingId(
+    email: string,
     excludeId?: string,
   ): Promise<boolean>;
   existsActiveByPhoneExcludingId(
@@ -42,19 +42,19 @@ export class UserRepository implements IUserRepository {
     return this.userRepository.save(dto);
   }
 
-  existsActiveByUsername(username: string): Promise<boolean> {
-    return this.existsActive({ username });
+  existsActiveByEmail(email: string): Promise<boolean> {
+    return this.existsActive({ email });
   }
 
   existsActiveByPhone(phone: string): Promise<boolean> {
     return this.existsActive({ phone });
   }
 
-  existsActiveByUsernameExcludingId(
-    username: string,
+  existsActiveByEmailExcludingId(
+    email: string,
     excludeId?: string,
   ): Promise<boolean> {
-    return this.existsActiveWithExclude({ username }, excludeId);
+    return this.existsActiveWithExclude({ email }, excludeId);
   }
 
   existsActiveByPhoneExcludingId(
@@ -75,12 +75,10 @@ export class UserRepository implements IUserRepository {
   }
 
   findOneActiveByIdentifier(identifier: string): Promise<User | null> {
-    const normalizedIdentifier = identifier.toLowerCase();
-
     return this.userRepository.findOne({
       where: [
-        { username: normalizedIdentifier, isActive: true },
         { phone: identifier, isActive: true },
+        { email: identifier, isActive: true },
       ],
       relations: ['role'],
     });

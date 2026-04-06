@@ -32,10 +32,10 @@ export class Product {
   slug: string;
 
   @Column({ name: 'short_description', type: 'text', nullable: true })
-  shortDescription?: string;
+  shortDescription: string | null;
 
   @Column({ name: 'long_description', type: 'text', nullable: true })
-  longDescription?: string;
+  longDescription: string | null;
 
   @Column({ length: 100 })
   status: string;

@@ -2,9 +2,14 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { IdentityService } from '../identity.service';
+import { AuthUserType } from '../enums';
+import { AuthMapper } from '../mappers';
 import { AuthUser, JwtPayload } from '../types';
 import { getErrorStack } from '@/common/utils';
+import { CustomersService } from '@/customers/customers.service';
+import { Customer } from '@/customers/entities';
+import { User } from '@/users/entities';
+import { UsersService } from '@/users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -12,7 +17,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   constructor(
     configService: ConfigService,
-    private readonly identityService: IdentityService,
+    private readonly usersService: UsersService,
+    private readonly customersService: CustomersService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -23,24 +29,41 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: JwtPayload): Promise<AuthUser> {
     const { sub: userId, type } = payload;
+
     if (!userId || !type) {
+      this.logger.debug(
+        `[validate] Missing params userId=${userId}, type=${type}`,
+      );
+
       throw new UnauthorizedException('Invalid token');
     }
+
     this.logger.debug(
       `[validate] Validating JWT userId=${userId}, type=${type}`,
     );
 
     try {
-      const user = await this.identityService.findById(userId, type);
+      let account: User | Customer | null;
 
-      if (!user) {
-        this.logger.debug(
-          `[validate] User not found userId=${userId}, type=${type}`,
+      if (type === AuthUserType.USER) {
+        account = await this.usersService.findOneActiveById(userId);
+      } else if (type === AuthUserType.CUSTOMER) {
+        account = await this.customersService.findOneActiveById(userId);
+      } else {
+        this.logger.warn(
+          `[validate] Unknown type userId=${userId}, type=${type as any}`,
         );
-        throw new UnauthorizedException('User not found');
+        throw new UnauthorizedException('Invalid token');
       }
 
-      return user;
+      if (!account) {
+        this.logger.debug(
+          `[validate] Account not found userId=${userId}, type=${type}`,
+        );
+        throw new UnauthorizedException('Account not found');
+      }
+
+      return AuthMapper.mapToAuthUser(account);
     } catch (err) {
       if (err instanceof UnauthorizedException) {
         throw err;

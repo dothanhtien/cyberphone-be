@@ -1,8 +1,9 @@
-import { PasswordService } from '@/password/password.service';
-import { Role } from '@/users/entities/role.entity';
-import { User } from '@/users/entities/user.entity';
-import { Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
+import { Injectable, Logger } from '@nestjs/common';
+import { Identity } from '@/identities/entities';
+import { AuthProvider, IdentityType } from '@/identities/enums';
+import { PasswordService } from '@/password/password.service';
+import { Role, User } from '@/users/entities';
 
 @Injectable()
 export class SeedSuperAdminRunner {
@@ -14,42 +15,49 @@ export class SeedSuperAdminRunner {
   ) {}
 
   async run(): Promise<void> {
-    const username = process.env.SUPER_ADMIN_USERNAME;
     const phone = process.env.SUPER_ADMIN_PHONE;
+    const email = process.env.SUPER_ADMIN_EMAIL;
     const firstName = process.env.SUPER_ADMIN_FIRST_NAME;
     const lastName = process.env.SUPER_ADMIN_LAST_NAME;
     const password = process.env.SUPER_ADMIN_PASSWORD;
 
-    if (!username || !phone || !password || !firstName || !lastName) {
+    if (!phone || !password || !firstName || !lastName) {
       this.logger.warn(
-        'Missing required env vars: SUPER_ADMIN_USERNAME, SUPER_ADMIN_PASSWORD, SUPER_ADMIN_PHONE, SUPER_ADMIN_FIRST_NAME, SUPER_ADMIN_LAST_NAME. Skipping super admin seed.',
+        'Missing required env vars: SUPER_ADMIN_PHONE, SUPER_ADMIN_PASSWORD, SUPER_ADMIN_FIRST_NAME, SUPER_ADMIN_LAST_NAME. Skipping super admin seed.',
       );
       return;
     }
 
-    await this.dataSource.transaction(async (manager) => {
-      const userRepo = manager.getRepository(User);
-      const roleRepo = manager.getRepository(Role);
+    await this.dataSource.transaction(async (tx) => {
+      const userRepository = tx.getRepository(User);
+      const roleRepository = tx.getRepository(Role);
+      const identityRepository = tx.getRepository(Identity);
 
-      const existingUser = await userRepo.findOne({
-        where: [
-          { username, isActive: true },
-          { phone, isActive: true },
-        ],
+      const whereConditions: Array<{
+        phone?: string;
+        email?: string;
+        isActive: boolean;
+      }> = [{ phone, isActive: true }];
+      if (email) {
+        whereConditions.push({ email, isActive: true });
+      }
+
+      const existingUser = await userRepository.findOne({
+        where: whereConditions,
         relations: ['role'],
       });
 
       if (existingUser) {
         if (existingUser.role?.name !== 'SUPER_ADMIN') {
           throw new Error(
-            `User ${username} exists but is not SUPER_ADMIN. Resolve manually.`,
+            `User ${phone} exists but is not SUPER_ADMIN. Resolve manually.`,
           );
         }
-        this.logger.log(`Super admin already exists: ${username}`);
+        this.logger.log(`Super admin already exists: ${phone}`);
         return;
       }
 
-      const superAdminRole = await roleRepo.findOne({
+      const superAdminRole = await roleRepository.findOne({
         where: { name: 'SUPER_ADMIN', isActive: true },
       });
 
@@ -57,12 +65,9 @@ export class SeedSuperAdminRunner {
         throw new Error('SUPER_ADMIN role not found. Run role seeder first.');
       }
 
-      const hashedPassword = await this.passwordService.hashPassword(password);
-
-      const user = userRepo.create({
-        username,
-        passwordHash: hashedPassword,
+      const user = userRepository.create({
         phone,
+        email,
         firstName,
         lastName,
         isActive: true,
@@ -70,9 +75,33 @@ export class SeedSuperAdminRunner {
         roleId: superAdminRole.id,
       });
 
-      await userRepo.save(user);
+      await userRepository.save(user);
 
-      this.logger.log(`Super admin created: ${username}`);
+      const passwordHash = await this.passwordService.hashPassword(password);
+
+      const identitiesToCreate = [
+        {
+          value: phone,
+          type: IdentityType.PHONE,
+          provider: AuthProvider.LOCAL,
+          passwordHash: passwordHash,
+          userId: user.id,
+        },
+      ];
+
+      if (email) {
+        identitiesToCreate.push({
+          value: email,
+          type: IdentityType.EMAIL,
+          provider: AuthProvider.LOCAL,
+          passwordHash: passwordHash,
+          userId: user.id,
+        });
+      }
+
+      await identityRepository.insert(identitiesToCreate);
+
+      this.logger.log(`Super admin created: ${phone}`);
     });
   }
 }

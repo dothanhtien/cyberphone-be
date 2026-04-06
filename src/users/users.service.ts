@@ -6,18 +6,21 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import {
   CreateUserDto,
   UserCreateEntityDto,
   UpdateUserDto,
   UserResponseDto,
 } from './dto';
-import { User, Role } from './entities';
-import { type IUserRepository, USER_REPOSITORY } from './repositories';
+import { User } from './entities';
+import { UserMapper } from './mappers';
+import {
+  type IRoleRepository,
+  type IUserRepository,
+  ROLE_REPOSITORY,
+  USER_REPOSITORY,
+} from './repositories';
 import { PaginationQueryDto } from '@/common/dto/paginations.dto';
-import { PasswordService } from '@/password/password.service';
 import { PaginatedEntity } from '@/common/types';
 import {
   extractPaginationParams,
@@ -26,39 +29,37 @@ import {
   maskIdentifier,
   sanitizeEntityInput,
 } from '@/common/utils';
-import { UserMapper } from './mappers';
 
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
   constructor(
-    @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+    @Inject(ROLE_REPOSITORY) private readonly roleRepository: IRoleRepository,
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
-    private readonly passwordService: PasswordService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const maskedUsername = maskIdentifier(createUserDto.username);
-    const maskedPhone = maskIdentifier(createUserDto.phone);
+    const { phone, email } = createUserDto;
+
+    const maskedPhone = maskIdentifier(phone);
+    const maskedEmail = email ? maskIdentifier(email) : undefined;
 
     this.logger.log(
-      `[create] Creating user username=${maskedUsername}, phone=${maskedPhone}`,
+      `[create] Creating user phone=${maskedPhone}, email=${maskedEmail}`,
     );
 
-    createUserDto.username = createUserDto.username.toLowerCase();
-
     try {
-      const [isUsernameExist, isPhoneExists, isRoleExist] = await Promise.all([
-        this.userRepository.existsActiveByUsername(createUserDto.username),
+      const [isPhoneExists, isEmailExist, isRoleExist] = await Promise.all([
         this.userRepository.existsActiveByPhone(createUserDto.phone),
-        this.roleRepository.existsBy({
-          id: createUserDto.roleId,
-        }),
+        email
+          ? this.userRepository.existsActiveByEmail(email)
+          : Promise.resolve(false),
+        this.roleRepository.existsActiveById(createUserDto.roleId),
       ]);
 
-      if (isUsernameExist) {
-        throw new BadRequestException('Username already exists');
+      if (isEmailExist) {
+        throw new BadRequestException('Email already exists');
       }
 
       if (isPhoneExists) {
@@ -71,10 +72,6 @@ export class UsersService {
 
       const user = sanitizeEntityInput(UserCreateEntityDto, createUserDto);
 
-      user.passwordHash = await this.passwordService.hashPassword(
-        createUserDto.password,
-      );
-
       const savedUser = await this.userRepository.create(user);
 
       this.logger.log(`[create] User created successfully id=${savedUser.id}`);
@@ -83,14 +80,14 @@ export class UsersService {
     } catch (error) {
       if (isUniqueConstraintError(error)) {
         this.logger.warn(
-          `[create] Unique constraint violation username=${maskedUsername}, phone=${maskedPhone}`,
+          `[create] Unique constraint violation phone=${maskedPhone}, email=${maskedEmail}`,
         );
 
-        throw new ConflictException('Username or phone already exists');
+        throw new ConflictException('Phone or Email already exists');
       }
 
       this.logger.error(
-        `[create] Failed to create user username=${maskedUsername}, phone=${maskedPhone}`,
+        `[create] Failed to create user phone=${maskedPhone}, email=${maskedEmail}`,
         getErrorStack(error),
       );
 
@@ -146,21 +143,9 @@ export class UsersService {
     this.logger.debug(`[update] Updating user id=${id}`);
 
     const userExists = await this.userRepository.findOneActiveById(id);
+
     if (!userExists) {
       throw new NotFoundException('User not found');
-    }
-
-    if (updateUserDto.username) {
-      updateUserDto.username = updateUserDto.username.toLowerCase();
-      const exists =
-        await this.userRepository.existsActiveByUsernameExcludingId(
-          updateUserDto.username,
-          id,
-        );
-
-      if (exists) {
-        throw new BadRequestException('Username already exists');
-      }
     }
 
     if (updateUserDto.phone) {
@@ -174,51 +159,44 @@ export class UsersService {
       }
     }
 
+    if (updateUserDto.email) {
+      const exists = await this.userRepository.existsActiveByEmailExcludingId(
+        updateUserDto.email,
+        id,
+      );
+
+      if (exists) {
+        throw new BadRequestException('Email already exists');
+      }
+    }
+
+    // TODO: review role update permmision
     if (updateUserDto.roleId) {
-      const roleExists = await this.roleRepository.existsBy({
-        id: updateUserDto.roleId,
-      });
+      const roleExists = await this.roleRepository.existsActiveById(
+        updateUserDto.roleId,
+      );
 
       if (!roleExists) {
         throw new BadRequestException('Role not found');
       }
     }
 
-    let hashedPassword: string | undefined = undefined;
-
-    if (updateUserDto.password) {
-      if (!updateUserDto.currentPassword) {
-        throw new BadRequestException('Current password is required');
-      }
-
-      const isPasswordValid = await this.passwordService.comparePassword(
-        updateUserDto.currentPassword,
-        userExists.passwordHash,
-      );
-      if (!isPasswordValid) {
-        throw new BadRequestException('Current password is incorrect');
-      }
-
-      hashedPassword = await this.passwordService.hashPassword(
-        updateUserDto.password,
-      );
-    }
-
     try {
-      const result = await this.userRepository.update(id, {
-        ...updateUserDto,
-        passwordHash: hashedPassword,
-      });
+      // TODO: update password via identities table
+
+      const result = await this.userRepository.update(id, updateUserDto);
       this.logger.log(`[update] User updated successfully id=${id}`);
       return result;
     } catch (error) {
       if (isUniqueConstraintError(error)) {
-        throw new ConflictException('Username or phone already exists');
+        throw new ConflictException('Phone or Email already exists');
       }
+
       this.logger.error(
         `[update] Failed to update user id=${id}`,
         getErrorStack(error),
       );
+
       throw error;
     }
   }
@@ -228,10 +206,20 @@ export class UsersService {
     return this.userRepository.findOneActiveById(id);
   }
 
-  updateLastLogin(id: string): Promise<void> {
-    this.logger.debug(
-      `[updateLastLogin] Updating last login for user id=${id}`,
-    );
-    return this.userRepository.updateLastLogin(id);
+  async updateLastLogin(id: string): Promise<void> {
+    try {
+      await this.userRepository.updateLastLogin(id);
+
+      this.logger.debug(
+        `[updateLastLogin] Last login updated successfully id=${id}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `[updateLastLogin] Failed to update last login id=${id}`,
+        getErrorStack(error),
+      );
+
+      throw error;
+    }
   }
 }

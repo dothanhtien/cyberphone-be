@@ -1,23 +1,27 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '@/users/users.service';
-import { PasswordService } from '@/password/password.service';
-import { CustomersService } from '@/customers/customers.service';
+import { DataSource } from 'typeorm';
+import { RegisterDto } from './dto';
+import { AuthUserType } from './enums';
+import { AuthMapper } from './mappers';
 import { AuthUser, JwtPayload } from './types';
 import { getErrorStack, maskIdentifier } from '@/common/utils';
-import { IdentityService } from './identity.service';
-import { AuthMapper } from './mappers';
-import { AuthUserType } from './enums';
+import { CustomersService } from '@/customers/customers.service';
+import { AuthProvider } from '@/identities/enums';
+import { IdentitiesService } from '@/identities/identities.service';
+import { PasswordService } from '@/password/password.service';
+import { UsersService } from '@/users/users.service';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
-    private readonly identityService: IdentityService,
-    private readonly usersService: UsersService,
+    private readonly dataSource: DataSource,
+    private readonly identitiesService: IdentitiesService,
     private readonly customersService: CustomersService,
     private readonly passwordService: PasswordService,
+    private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -32,19 +36,34 @@ export class AuthService {
     );
 
     try {
-      const identity = await this.identityService.findByIdentifier(identifier);
+      const identity = await this.identitiesService.findOne(
+        identifier,
+        AuthProvider.LOCAL,
+      );
 
       if (!identity) {
-        this.logger.warn(
-          `[validateUser] User not found identifier=${maskedIdentifier}`,
+        this.logger.debug(
+          `[validateUser] Identity not found identifier=${maskedIdentifier}`,
         );
+
+        return null;
+      }
+
+      const account = identity.user ?? identity.customer;
+
+      if (!account) {
+        this.logger.error(
+          `[validateUser] Identity has no owner id=${identity.id}`,
+        );
+
         return null;
       }
 
       if (!identity.passwordHash) {
-        this.logger.warn(
+        this.logger.debug(
           `[validateUser] User has no password identifier=${maskedIdentifier}`,
         );
+
         return null;
       }
 
@@ -54,39 +73,43 @@ export class AuthService {
       );
 
       if (!isMatch) {
-        this.logger.warn(
+        this.logger.debug(
           `[validateUser] Invalid password identifier=${maskedIdentifier}`,
         );
+
         return null;
       }
 
       this.logger.debug(
-        `[validateUser] User validated identifier=${maskedIdentifier}`,
+        `[validateUser] Validate successful identifier=${maskedIdentifier}`,
       );
 
-      return identity;
+      return AuthMapper.mapToAuthUser(account);
     } catch (error) {
       this.logger.error(
         `[validateUser] Error validating user identifier=${maskedIdentifier}`,
         getErrorStack(error),
       );
+
       throw error;
     }
   }
 
   async login(user: AuthUser) {
-    this.logger.debug(`[login] Attempt login id=${user.id}, type=${user.type}`);
+    this.logger.debug(
+      `[login] Attemptinng login id=${user.id}, type=${user.type}`,
+    );
+
+    const payload: JwtPayload = {
+      sub: user.id,
+      type: user.type,
+      roleId: user.roleId,
+    };
 
     try {
-      const payload: JwtPayload = {
-        sub: user.id,
-        type: user.type,
-        role: user.role ?? undefined,
-      };
+      const accessToken = this.jwtService.sign(payload);
 
       await this.updateLastLogin(user);
-
-      const accessToken = this.jwtService.sign(payload);
 
       this.logger.debug(`[login] Login success id=${user.id}`);
 
@@ -99,6 +122,7 @@ export class AuthService {
         `[login] Login failed id=${user.id}`,
         getErrorStack(error),
       );
+
       throw error;
     }
   }
@@ -114,11 +138,104 @@ export class AuthService {
       } else {
         await this.customersService.updateLastLogin(user.id);
       }
+
+      this.logger.debug(
+        `[updateLastLogin] Update last loggin success id=${user.id}`,
+      );
     } catch (error) {
       this.logger.warn(
         `[updateLastLogin] Failed to update last login id=${user.id}`,
         getErrorStack(error),
       );
+    }
+  }
+
+  async register(registerDto: RegisterDto) {
+    const { phone, email, password } = registerDto;
+
+    const maskedPhone = maskIdentifier(phone);
+    const maskedEmail = email ? maskIdentifier(email) : undefined;
+
+    this.logger.debug(
+      `[register] Registering phone=${maskedPhone}, email=${maskedEmail}`,
+    );
+
+    try {
+      const result = await this.dataSource.transaction(async (tx) => {
+        const identifiers = [phone, ...(email ? [email] : [])];
+
+        this.logger.debug(`[register] Checking existing identities`);
+
+        const existed = await this.identitiesService.existsByValues({
+          values: identifiers,
+          tx,
+        });
+
+        if (existed) {
+          throw new ConflictException('Phone or email already exists');
+        }
+
+        this.logger.debug(`[register] Resolving customer`);
+
+        const customers = await this.customersService.findActiveByPhoneOrEmail({
+          phone,
+          email,
+          tx,
+        });
+
+        if (customers.length > 1) {
+          this.logger.warn(
+            `[register] Conflict: phone and email belong to different customers`,
+          );
+
+          throw new ConflictException(
+            'Phone and email belong to different accounts',
+          );
+        }
+
+        let customer = customers[0];
+
+        if (customer) {
+          const matchesPhone = customer.phone === phone;
+          const matchesEmail = !email || customer.email === email;
+
+          if (!matchesPhone || !matchesEmail) {
+            throw new ConflictException(
+              'Phone and email must match the same existing account',
+            );
+          }
+        } else {
+          customer = await this.customersService.create(registerDto, tx);
+        }
+
+        const passwordHash = await this.passwordService.hashPassword(password);
+
+        this.logger.debug(`[register] Creating identities`);
+
+        await this.identitiesService.create(
+          {
+            phone,
+            email,
+            passwordHash,
+            provider: AuthProvider.LOCAL,
+            customerId: customer.id,
+          },
+          tx,
+        );
+
+        return { id: customer.id };
+      });
+
+      this.logger.log(`[register] Success customerId=${result.id}`);
+
+      return result;
+    } catch (error) {
+      this.logger.error(
+        `[register] Failed phone=${maskedPhone}, email=${maskedEmail}`,
+        getErrorStack(error),
+      );
+
+      throw error;
     }
   }
 }

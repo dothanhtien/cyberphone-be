@@ -20,6 +20,7 @@ import { OrdersModule } from './orders/orders.module';
 import { PaymentModule } from './payment/payment.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { CustomersModule } from './customers/customers.module';
+import { IdentitiesModule } from './identities/identities.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { CustomersModule } from './customers/customers.module';
     PaymentModule,
     DashboardModule,
     CustomersModule,
+    IdentitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
