@@ -195,7 +195,16 @@ export class AuthService {
 
         let customer = customers[0];
 
-        if (!customer) {
+        if (customer) {
+          const matchesPhone = customer.phone === phone;
+          const matchesEmail = !email || customer.email === email;
+
+          if (!matchesPhone || !matchesEmail) {
+            throw new ConflictException(
+              'Phone and email must match the same existing account',
+            );
+          }
+        } else {
           customer = await this.customersService.create(registerDto, tx);
         }
 
