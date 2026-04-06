@@ -29,19 +29,6 @@ export class CustomersService {
     );
 
     try {
-      const exists = await this.customerRepository.existsActiveByPhoneOrEmail({
-        phone,
-        email,
-        tx,
-      });
-
-      if (exists) {
-        this.logger.warn(
-          `[create] Phone or Email already in use phone=${maskedPhone}, email=${maskedEmail}`,
-        );
-        throw new ConflictException('Phone or Email already in use');
-      }
-
       const entity = sanitizeEntityInput(
         CustomerCreateEntityInput,
         createCustomerDto,
@@ -56,7 +43,7 @@ export class CustomersService {
       return customer;
     } catch (error) {
       if (isUniqueConstraintError(error)) {
-        throw new ConflictException('Username or Phone already in use');
+        throw new ConflictException('Phone or Email already in use');
       }
 
       this.logger.error(

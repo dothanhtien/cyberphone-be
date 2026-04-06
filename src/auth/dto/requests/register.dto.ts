@@ -73,6 +73,9 @@ export class RegisterDto {
     {},
     { message: 'Date of birth must be a valid ISO date (YYYY-MM-DD)' },
   )
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
+    message: 'Date of birth must be in YYYY-MM-DD format',
+  })
   @IsOptional()
   dateOfBirth?: string;
 

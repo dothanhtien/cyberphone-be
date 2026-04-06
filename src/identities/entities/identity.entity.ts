@@ -1,4 +1,5 @@
 import {
+  Check,
   Column,
   Entity,
   Index,
@@ -14,6 +15,10 @@ import { User } from '../../users/entities';
 @Index('uq_identities_type_value_provider', ['type', 'value', 'provider'], {
   unique: true,
 })
+@Check(
+  'chk_identity_exactly_one_owner',
+  `(user_id IS NOT NULL AND customer_id IS NULL) OR (user_id IS NULL AND customer_id IS NOT NULL)`,
+)
 export class Identity {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'pk_identities_id',

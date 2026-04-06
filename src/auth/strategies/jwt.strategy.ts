@@ -58,9 +58,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
       if (!account) {
         this.logger.debug(
-          `[validate] User not found userId=${userId}, type=${type}`,
+          `[validate] Account not found userId=${userId}, type=${type}`,
         );
-        throw new UnauthorizedException('User not found');
+        throw new UnauthorizedException('Account not found');
       }
 
       return AuthMapper.mapToAuthUser(account);

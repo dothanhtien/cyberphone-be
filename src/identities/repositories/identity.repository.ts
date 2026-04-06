@@ -27,10 +27,7 @@ export interface IIdentityRepository {
     },
     tx?: EntityManager,
   ): Promise<Identity | null>;
-  save(
-    data: IdentityCreateEntity[],
-    tx: EntityManager,
-  ): Promise<{ id: string }[]>;
+  save(data: IdentityCreateEntity, tx: EntityManager): Promise<Identity>;
 }
 
 export const IDENTITY_REPOSITORY = Symbol('IIdentityRepository');
@@ -80,12 +77,7 @@ export class IdentityRepository implements IIdentityRepository {
     });
   }
 
-  async save(
-    data: IdentityCreateEntity[],
-    tx: EntityManager,
-  ): Promise<{ id: string }[]> {
-    const result = await tx.getRepository(Identity).save(data);
-
-    return result.map((item) => ({ id: item.id }));
+  async save(data: IdentityCreateEntity, tx: EntityManager): Promise<Identity> {
+    return tx.getRepository(Identity).save(data);
   }
 }

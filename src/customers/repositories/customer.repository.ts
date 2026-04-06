@@ -6,15 +6,6 @@ import { Customer } from '../entities';
 
 export interface ICustomerRepository {
   create(data: CustomerCreateEntityInput, tx: EntityManager): Promise<Customer>;
-  existsActiveByPhoneOrEmail({
-    phone,
-    email,
-    tx,
-  }: {
-    phone: string;
-    email?: string;
-    tx: EntityManager;
-  }): Promise<boolean>;
   findActiveByPhoneOrEmail({
     phone,
     email,
@@ -43,28 +34,6 @@ export class CustomerRepository implements ICustomerRepository {
     tx: EntityManager,
   ): Promise<Customer> {
     return tx.getRepository(Customer).save(data);
-  }
-
-  async existsActiveByPhoneOrEmail({
-    phone,
-    email,
-    tx,
-  }: {
-    phone: string;
-    email?: string;
-    tx: EntityManager;
-  }): Promise<boolean> {
-    const whereOptions: {
-      phone?: string;
-      email?: string;
-      isActive: boolean;
-    }[] = [{ phone, isActive: true }];
-
-    if (email) whereOptions.push({ email, isActive: true });
-
-    return tx.getRepository(Customer).exists({
-      where: whereOptions,
-    });
   }
 
   findActiveByPhoneOrEmail({

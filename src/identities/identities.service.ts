@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Inject,
   Injectable,
   Logger,
@@ -7,10 +8,12 @@ import {
 import { EntityManager } from 'typeorm';
 import { IdentityCreateEntity } from './dto';
 import { AuthProvider, IdentityType } from './enums';
+import { Identity } from './entities';
 import { IDENTITY_REPOSITORY, type IIdentityRepository } from './repositories';
 import { CreateIdentityParams } from './types';
 import {
   getErrorStack,
+  isUniqueConstraintError,
   maskIdentifier,
   sanitizeEntityInput,
 } from '@/common/utils';
@@ -33,42 +36,58 @@ export class IdentitiesService {
     );
 
     try {
-      const entities = [
-        sanitizeEntityInput(IdentityCreateEntity, {
-          value: data.phone,
-          type: IdentityType.PHONE,
+      const results: Identity[] = [];
+
+      const phoneEntity = sanitizeEntityInput(IdentityCreateEntity, {
+        value: data.phone,
+        type: IdentityType.PHONE,
+        provider: data.provider,
+        passwordHash: data.passwordHash,
+        customerId: data.customerId,
+        userId: data.userId,
+      });
+
+      const phoneIdentity = await this.identityRepository.save(phoneEntity, tx);
+
+      results.push(phoneIdentity);
+
+      if (data.email) {
+        const emailEntity = sanitizeEntityInput(IdentityCreateEntity, {
+          value: data.email,
+          type: IdentityType.EMAIL,
           provider: data.provider,
           passwordHash: data.passwordHash,
           customerId: data.customerId,
           userId: data.userId,
-        }),
-      ];
+        });
 
-      if (data.email) {
-        entities.push(
-          sanitizeEntityInput(IdentityCreateEntity, {
-            value: data.email,
-            type: IdentityType.EMAIL,
-            provider: data.provider,
-            passwordHash: data.passwordHash,
-            customerId: data.customerId,
-            userId: data.userId,
-          }),
+        const emailIdentity = await this.identityRepository.save(
+          emailEntity,
+          tx,
         );
+
+        results.push(emailIdentity);
       }
 
-      const result = await this.identityRepository.save(entities, tx);
-
       this.logger.debug(
-        `[create] Success phone=${maskedPhone}, email=${maskedEmail}, count=${result.length}`,
+        `[create] Success phone=${maskedPhone}, email=${maskedEmail}, count=${results.length}`,
       );
 
-      return result;
+      return results;
     } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        this.logger.warn(
+          `[create] Duplicate identity phone=${maskedPhone}, email=${maskedEmail}`,
+        );
+
+        throw new ConflictException('Identities already in use');
+      }
+
       this.logger.error(
         `[create] Failed phone=${maskedPhone}, email=${maskedEmail}`,
         getErrorStack(error),
       );
+
       throw error;
     }
   }

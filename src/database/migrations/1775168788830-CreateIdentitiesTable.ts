@@ -15,6 +15,16 @@ export class CreateIdentitiesTable1775168788830 implements MigrationInterface {
           "is_verified" boolean NOT NULL DEFAULT false, 
           "user_id" uuid, 
           "customer_id" uuid, 
+          CONSTRAINT "chk_identity_exactly_one_owner" CHECK (
+            (
+              user_id IS NOT NULL 
+              AND customer_id IS NULL
+            ) 
+            OR (
+              user_id IS NULL 
+              AND customer_id IS NOT NULL
+            )
+          ), 
           CONSTRAINT "pk_identities_id" PRIMARY KEY ("id")
         )
       `,

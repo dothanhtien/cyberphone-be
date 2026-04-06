@@ -33,11 +33,17 @@ export class SeedSuperAdminRunner {
       const roleRepository = tx.getRepository(Role);
       const identityRepository = tx.getRepository(Identity);
 
+      const whereConditions: Array<{
+        phone?: string;
+        email?: string;
+        isActive: boolean;
+      }> = [{ phone, isActive: true }];
+      if (email) {
+        whereConditions.push({ email, isActive: true });
+      }
+
       const existingUser = await userRepository.findOne({
-        where: [
-          { phone, isActive: true },
-          { email, isActive: true },
-        ],
+        where: whereConditions,
         relations: ['role'],
       });
 

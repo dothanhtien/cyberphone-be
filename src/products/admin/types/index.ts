@@ -10,9 +10,9 @@ export interface ProductRaw {
   isFeatured: boolean;
   isBestseller: boolean;
   isActive: boolean;
-  createdAt: Date;
+  createdAt: string;
   createdBy: string;
-  updatedAt: Date | null;
+  updatedAt: string | null;
   updatedBy: string | null;
 
   brand: { id: string; name: string };

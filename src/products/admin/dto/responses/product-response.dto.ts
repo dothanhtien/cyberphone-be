@@ -37,13 +37,13 @@ export class ProductResponseDto {
   isActive: boolean;
 
   @Expose()
-  createdAt: Date;
+  createdAt: string;
 
   @Expose()
   createdBy: string;
 
   @Expose()
-  updatedAt: Date | null;
+  updatedAt: string | null;
 
   @Expose()
   updatedBy: string | null;

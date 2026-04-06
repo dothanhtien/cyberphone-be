@@ -193,15 +193,11 @@ export class AuthService {
           );
         }
 
-        if (customers.length === 0) {
-          const newCustomer = await this.customersService.create(
-            registerDto,
-            tx,
-          );
-          customers.push(newCustomer);
-        }
+        let customer = customers[0];
 
-        const customer = customers[0];
+        if (!customer) {
+          customer = await this.customersService.create(registerDto, tx);
+        }
 
         const passwordHash = await this.passwordService.hashPassword(password);
 
