@@ -39,10 +39,7 @@ export class ProductAttribute {
   @Column({ name: 'product_id', type: 'uuid' })
   productId: string;
 
-  @ManyToOne(() => Product, {
-    nullable: false,
-    onDelete: 'RESTRICT',
-  })
+  @ManyToOne(() => Product, { nullable: false, onDelete: 'RESTRICT' })
   @JoinColumn({
     name: 'product_id',
     foreignKeyConstraintName: 'fk_product_attributes_product_id',
@@ -56,22 +53,18 @@ export class ProductAttribute {
   attributeKeyDisplay: string;
 
   @Column({ name: 'display_order', type: 'integer', default: 0 })
-  displayOrder: number;
+  displayOrder: number = 0;
 
   @Column({ name: 'is_active', type: 'boolean', default: true })
-  isActive: boolean;
+  isActive: boolean = true;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @Column({
-    name: 'created_by',
-    type: 'varchar',
-    length: 100,
-  })
+  @Column({ name: 'created_by', type: 'varchar', length: 100 })
   createdBy: string;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', nullable: true })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: true })
   updatedAt: Date | null;
 
   @Column({
@@ -80,7 +73,7 @@ export class ProductAttribute {
     length: 100,
     nullable: true,
   })
-  updatedBy?: string | null;
+  updatedBy: string | null;
 
   @OneToMany(() => VariantAttribute, (variant) => variant.productAttribute)
   attributes: VariantAttribute[];

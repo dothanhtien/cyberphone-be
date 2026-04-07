@@ -38,25 +38,17 @@ export class Role {
   @OneToMany(() => User, (user) => user.role)
   users: User[];
 
-  @CreateDateColumn({
-    name: 'created_at',
-    type: 'timestamp',
-    default: () => 'now()',
-  })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   @Expose()
   createdAt: Date;
 
-  @Column({
-    name: 'created_by',
-    type: 'varchar',
-    length: 100,
-  })
+  @Column({ name: 'created_by', type: 'varchar', length: 100 })
   @Expose()
   createdBy: string;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: true })
   @Expose()
-  updatedAt: Date;
+  updatedAt: Date | null;
 
   @Column({
     name: 'updated_by',

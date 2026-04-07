@@ -31,10 +31,7 @@ export class VariantAttribute {
   @Column({ name: 'variant_id', type: 'uuid' })
   variantId: string;
 
-  @ManyToOne(() => ProductVariant, {
-    nullable: false,
-    onDelete: 'RESTRICT',
-  })
+  @ManyToOne(() => ProductVariant, { nullable: false, onDelete: 'RESTRICT' })
   @JoinColumn({
     name: 'variant_id',
     foreignKeyConstraintName: 'fk_variant_attributes_variant_id',
@@ -44,10 +41,7 @@ export class VariantAttribute {
   @Column({ name: 'product_attribute_id', type: 'uuid' })
   productAttributeId: string;
 
-  @ManyToOne(() => ProductAttribute, {
-    nullable: false,
-    onDelete: 'RESTRICT',
-  })
+  @ManyToOne(() => ProductAttribute, { nullable: false, onDelete: 'RESTRICT' })
   @JoinColumn({
     name: 'product_attribute_id',
     foreignKeyConstraintName: 'fk_variant_attributes_product_attribute_id',
@@ -65,24 +59,16 @@ export class VariantAttribute {
   })
   attributeValueDisplay: string | null;
 
-  @Column({
-    name: 'is_active',
-    type: 'boolean',
-    default: true,
-  })
-  isActive: boolean;
+  @Column({ name: 'is_active', type: 'boolean', default: true })
+  isActive: boolean = true;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @Column({
-    name: 'created_by',
-    type: 'varchar',
-    length: 100,
-  })
+  @Column({ name: 'created_by', type: 'varchar', length: 100 })
   createdBy: string;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', nullable: true })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: true })
   updatedAt: Date | null;
 
   @Column({

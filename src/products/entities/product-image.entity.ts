@@ -25,10 +25,7 @@ export class ProductImage {
   @Column({ name: 'product_id', type: 'uuid' })
   productId: string;
 
-  @ManyToOne(() => Product, {
-    nullable: false,
-    onDelete: 'RESTRICT',
-  })
+  @ManyToOne(() => Product, { nullable: false, onDelete: 'RESTRICT' })
   @JoinColumn({
     name: 'product_id',
     foreignKeyConstraintName: 'fk_product_images_product_id',
@@ -38,15 +35,12 @@ export class ProductImage {
   @Column({ name: 'variant_id', type: 'uuid', nullable: true })
   variantId: string | null;
 
-  @ManyToOne(() => ProductVariant, {
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
+  @ManyToOne(() => ProductVariant, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({
     name: 'variant_id',
     foreignKeyConstraintName: 'fk_product_images_variant_id',
   })
-  variant?: ProductVariant | null;
+  variant: ProductVariant | null;
 
   @Column({
     name: 'image_type',
@@ -54,7 +48,7 @@ export class ProductImage {
     length: 50,
     default: ProductImageType.GALLERY,
   })
-  imageType: string;
+  imageType: string = ProductImageType.GALLERY;
 
   @Column({
     name: 'alt_text',
@@ -62,33 +56,25 @@ export class ProductImage {
     length: 255,
     nullable: true,
   })
-  altText?: string | null;
+  altText: string | null;
 
-  @Column({
-    type: 'varchar',
-    length: 255,
-    nullable: true,
-  })
-  title?: string | null;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  title: string | null;
 
   @Column({ name: 'display_order', type: 'integer', default: 0 })
-  displayOrder: number;
+  displayOrder: number = 0;
 
   @Column({ name: 'is_active', type: 'boolean', default: true })
-  isActive: boolean;
+  isActive: boolean = true;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @Column({
-    name: 'created_by',
-    type: 'varchar',
-    length: 100,
-  })
+  @Column({ name: 'created_by', type: 'varchar', length: 100 })
   createdBy: string;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
-  updatedAt: Date;
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: true })
+  updatedAt: Date | null;
 
   @Column({
     name: 'updated_by',
@@ -96,5 +82,5 @@ export class ProductImage {
     length: 100,
     nullable: true,
   })
-  updatedBy?: string | null;
+  updatedBy: string | null;
 }

@@ -17,9 +17,9 @@ export class CreateProductsTable1770129475009 implements MigrationInterface {
           "is_bestseller" boolean NOT NULL DEFAULT false, 
           "brand_id" uuid NOT NULL, 
           "is_active" boolean NOT NULL DEFAULT true, 
-          "created_at" TIMESTAMP NOT NULL DEFAULT now(), 
+          "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
           "created_by" character varying(100) NOT NULL, 
-          "updated_at" TIMESTAMP NOT NULL DEFAULT now(), 
+          "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(), 
           "updated_by" character varying(100), 
           CONSTRAINT "pk_products_id" PRIMARY KEY ("id")
         )

@@ -1,6 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
 import {
-  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
@@ -35,11 +34,11 @@ export class Category {
 
   @Column({ type: 'text', nullable: true })
   @Expose()
-  description?: string;
+  description: string | null;
 
   @Column({ type: 'uuid', name: 'parent_id', nullable: true })
   @Expose()
-  parentId?: string;
+  parentId: string | null;
 
   @ManyToOne(() => Category, (category) => category.children, {
     nullable: true,
@@ -49,7 +48,7 @@ export class Category {
     foreignKeyConstraintName: 'fk_categories_parent_id',
   })
   @Exclude()
-  parent?: Category;
+  parent: Category | null;
 
   @OneToMany(() => Category, (category) => category.parent)
   @Expose()
@@ -57,13 +56,9 @@ export class Category {
 
   @Column({ type: 'boolean', name: 'is_active', default: true })
   @Expose()
-  isActive: boolean;
+  isActive: boolean = true;
 
-  @CreateDateColumn({
-    type: 'timestamp',
-    name: 'created_at',
-    default: () => 'now()',
-  })
+  @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   @Expose()
   createdAt: Date;
 
@@ -71,22 +66,13 @@ export class Category {
   @Expose()
   createdBy: string;
 
-  @UpdateDateColumn({
-    type: 'timestamp',
-    name: 'updated_at',
-    nullable: true,
-  })
+  @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at', nullable: true })
   @Expose()
-  updatedAt?: Date | null;
+  updatedAt: Date | null;
 
   @Column({ type: 'varchar', name: 'updated_by', length: 100, nullable: true })
   @Expose()
-  updatedBy?: string;
-
-  @BeforeInsert()
-  resetUpdatedAt() {
-    this.updatedAt = null;
-  }
+  updatedBy: string | null;
 
   @OneToMany(
     () => ProductCategory,

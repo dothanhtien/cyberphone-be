@@ -19,9 +19,9 @@ export class CreateProductVariantsTable1770337425769 implements MigrationInterfa
           "low_stock_threshold" integer NOT NULL DEFAULT '5', 
           "is_default" boolean NOT NULL DEFAULT false, 
           "is_active" boolean NOT NULL DEFAULT true, 
-          "created_at" TIMESTAMP NOT NULL DEFAULT now(), 
+          "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
           "created_by" character varying(100) NOT NULL, 
-          "updated_at" TIMESTAMP NOT NULL DEFAULT now(), 
+          "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(), 
           "updated_by" character varying(100), 
           CONSTRAINT "pk_product_variants_id" PRIMARY KEY ("id")
         )

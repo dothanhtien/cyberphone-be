@@ -46,10 +46,10 @@ export class Customer {
     nullable: true,
     default: Gender.OTHER,
   })
-  gender: Gender | null;
+  gender: Gender | null = Gender.OTHER;
 
   @Column({ name: 'last_login', type: 'timestamptz', nullable: true })
-  lastLogin?: Date | null;
+  lastLogin: Date | null;
 
   @Column({ name: 'phone_verified', type: 'boolean', default: false })
   phoneVerified: boolean = false;
