@@ -13,9 +13,9 @@ export class CreateVariantAttributesTable1772147838817 implements MigrationInter
           "attribute_value" character varying(255) NOT NULL, 
           "attribute_value_display" character varying(255), 
           "is_active" boolean NOT NULL DEFAULT true, 
-          "created_at" TIMESTAMP NOT NULL DEFAULT now(), 
+          "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
           "created_by" character varying(100) NOT NULL, 
-          "updated_at" TIMESTAMP DEFAULT now(), 
+          "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(), 
           "updated_by" character varying(100), 
           CONSTRAINT "pk_variant_attributes_id" PRIMARY KEY ("id")
         )

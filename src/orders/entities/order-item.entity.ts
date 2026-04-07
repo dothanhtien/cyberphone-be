@@ -41,7 +41,12 @@ export class OrderItem {
   @Column({ name: 'attributes', type: 'json', nullable: true })
   attributes: Record<string, any> | null;
 
-  @Column({ name: 'unit_price', type: 'decimal', precision: 12, scale: 2 })
+  @Column({
+    name: 'unit_price',
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+  })
   unitPrice: string;
 
   @Column({

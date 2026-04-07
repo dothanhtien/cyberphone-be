@@ -42,16 +42,12 @@ export class Cart {
     length: 50,
     default: CartStatus.ACTIVE,
   })
-  status: CartStatus;
+  status: CartStatus = CartStatus.ACTIVE;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @Column({
-    name: 'created_by',
-    type: 'varchar',
-    length: 100,
-  })
+  @Column({ name: 'created_by', type: 'varchar', length: 100 })
   createdBy: string;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: true })

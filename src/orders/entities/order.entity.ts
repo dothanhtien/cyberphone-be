@@ -36,13 +36,9 @@ export class Order {
   cartId: string;
 
   @Column({ type: 'int', default: 1 })
-  revision: number;
+  revision: number = 1;
 
-  @Column({
-    name: 'customer_id',
-    type: 'uuid',
-    nullable: true,
-  })
+  @Column({ name: 'customer_id', type: 'uuid', nullable: true })
   customerId: string | null;
 
   @Column({ name: 'shipping_name', type: 'varchar', length: 255 })
@@ -101,7 +97,7 @@ export class Order {
     length: 100,
     default: 'Vietnam',
   })
-  shippingCountry: string;
+  shippingCountry: string = 'Vietnam';
 
   @Column({ name: 'shipping_note', type: 'text', nullable: true })
   shippingNote: string | null;
@@ -115,7 +111,7 @@ export class Order {
     length: 50,
     default: PaymentStatus.PENDING,
   })
-  paymentStatus: PaymentStatus;
+  paymentStatus: PaymentStatus = PaymentStatus.PENDING;
 
   @Column({ name: 'shipping_method', type: 'varchar', length: 100 })
   shippingMethod: string;
@@ -196,7 +192,7 @@ export class Order {
     length: 50,
     default: OrderStatus.PENDING,
   })
-  orderStatus: OrderStatus;
+  orderStatus: OrderStatus = OrderStatus.PENDING;
 
   @Column({ name: 'cancelled_at', type: 'timestamptz', nullable: true })
   cancelledAt: Date | null;
@@ -239,7 +235,7 @@ export class Order {
     length: 50,
     default: DeviceType.UNKNOWN,
   })
-  deviceType: DeviceType;
+  deviceType: DeviceType = DeviceType.UNKNOWN;
 
   @Column({
     name: 'is_active',

@@ -15,9 +15,9 @@ export class CreateProductImagesTable1770769025308 implements MigrationInterface
           "title" character varying(255), 
           "display_order" integer NOT NULL DEFAULT '0', 
           "is_active" boolean NOT NULL DEFAULT true, 
-          "created_at" TIMESTAMP NOT NULL DEFAULT now(), 
+          "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
           "created_by" character varying(100) NOT NULL, 
-          "updated_at" TIMESTAMP NOT NULL DEFAULT now(), 
+          "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(), 
           "updated_by" character varying(100), 
           CONSTRAINT "pk_product_images_id" PRIMARY KEY ("id")
         )

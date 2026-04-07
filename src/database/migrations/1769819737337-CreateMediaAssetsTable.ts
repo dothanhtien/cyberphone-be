@@ -19,9 +19,9 @@ export class CreateMediaAssetsTable1769819737337 implements MigrationInterface {
           "usage_type" character varying(100) NOT NULL, 
           "metadata" jsonb, 
           "is_active" boolean NOT NULL DEFAULT true, 
-          "created_at" TIMESTAMP NOT NULL DEFAULT now(), 
+          "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
           "created_by" character varying(100) NOT NULL, 
-          "updated_at" TIMESTAMP DEFAULT now(), 
+          "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(), 
           "updated_by" character varying(100), 
           CONSTRAINT "pk_media_assets_id" PRIMARY KEY ("id")
         )

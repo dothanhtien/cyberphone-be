@@ -13,9 +13,9 @@ export class CreateProductAttributesTable1772117079538 implements MigrationInter
           "attribute_key_display" character varying(255) NOT NULL, 
           "display_order" integer NOT NULL DEFAULT '0', 
           "is_active" boolean NOT NULL DEFAULT true, 
-          "created_at" TIMESTAMP NOT NULL DEFAULT now(), 
+          "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
           "created_by" character varying(100) NOT NULL, 
-          "updated_at" TIMESTAMP DEFAULT now(), 
+          "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(), 
           "updated_by" character varying(100), 
           CONSTRAINT "pk_product_attributes_id" PRIMARY KEY ("id")
         )

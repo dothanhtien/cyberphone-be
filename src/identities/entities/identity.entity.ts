@@ -51,7 +51,7 @@ export class Identity {
     name: 'user_id',
     foreignKeyConstraintName: 'fk_identities_user_id',
   })
-  user?: User;
+  user: User | null;
 
   @ManyToOne(() => Customer, (customer) => customer.identities, {
     nullable: true,
@@ -60,5 +60,5 @@ export class Identity {
     name: 'customer_id',
     foreignKeyConstraintName: 'fk_identities_customer_id',
   })
-  customer?: Customer;
+  customer: Customer | null;
 }

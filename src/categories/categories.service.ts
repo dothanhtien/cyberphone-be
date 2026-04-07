@@ -120,7 +120,7 @@ export class CategoriesService {
       result.parent =
         (await this.categoryRepository.findOne({
           where: { id: result.parentId, isActive: true },
-        })) ?? undefined;
+        })) ?? null;
     }
 
     return this.attachLogosToTree(result);
@@ -315,7 +315,7 @@ export class CategoriesService {
 
   private async validateParentChange(
     id: string,
-    currentParentId?: string,
+    currentParentId: string | null,
     newParentId?: string,
   ) {
     if (!newParentId || newParentId === currentParentId) return;

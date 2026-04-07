@@ -40,7 +40,7 @@ export class MediaAsset {
     default: MediaAssetResourceType.OTHER,
   })
   @Expose()
-  resourceType: MediaAssetResourceType;
+  resourceType: MediaAssetResourceType = MediaAssetResourceType.OTHER;
 
   @Column({ name: 'ref_type', type: 'varchar', length: 100 })
   @Expose()
@@ -61,17 +61,13 @@ export class MediaAsset {
     default: null,
   })
   @Expose()
-  metadata?: Record<string, any>;
+  metadata: Record<string, any> | null = null;
 
   @Column({ name: 'is_active', type: 'boolean', default: true })
   @Expose()
   isActive: boolean = true;
 
-  @CreateDateColumn({
-    name: 'created_at',
-    type: 'timestamp',
-    default: () => 'now()',
-  })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   @Expose()
   createdAt: Date;
 
@@ -79,13 +75,9 @@ export class MediaAsset {
   @Expose()
   createdBy: string;
 
-  @UpdateDateColumn({
-    name: 'updated_at',
-    type: 'timestamp',
-    nullable: true,
-  })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: true })
   @Expose()
-  updatedAt?: Date | null;
+  updatedAt: Date | null;
 
   @Column({
     name: 'updated_by',
@@ -94,5 +86,5 @@ export class MediaAsset {
     nullable: true,
   })
   @Expose()
-  updatedBy?: string | null;
+  updatedBy: string | null;
 }

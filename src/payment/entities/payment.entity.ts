@@ -44,10 +44,7 @@ export class Payment {
   @Column({ name: 'order_info', type: 'varchar', nullable: true })
   orderInfo: string | null;
 
-  @Column({
-    type: 'varchar',
-    length: 50,
-  })
+  @Column({ type: 'varchar', length: 50 })
   provider: PaymentProvider;
 
   @Column({
@@ -58,11 +55,7 @@ export class Payment {
   })
   paymentMethod: string | null;
 
-  @Column({
-    type: 'varchar',
-    length: 50,
-    default: PaymentStatus.PENDING,
-  })
+  @Column({ type: 'varchar', length: 50, default: PaymentStatus.PENDING })
   status: PaymentStatus = PaymentStatus.PENDING;
 
   @Column({ name: 'failure_reason', type: 'text', nullable: true })
