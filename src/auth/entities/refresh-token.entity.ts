@@ -12,7 +12,7 @@ import { Identity } from '../../identities/entities';
 
 @Entity('refresh_tokens')
 @Index('idx_refresh_tokens_identity_id', ['identityId'])
-@Index('idx_refresh_tokens_token_hash', ['tokenHash'])
+@Index('uq_refresh_tokens_token_hash', ['tokenHash'], { unique: true })
 @Index('idx_refresh_tokens_expires_at', ['expiresAt'])
 export class RefreshToken {
   @PrimaryGeneratedColumn('uuid', {

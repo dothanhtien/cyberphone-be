@@ -93,6 +93,12 @@ export class IdentityRepository implements IIdentityRepository {
   }): Promise<Identity | null> {
     if (!userId && !customerId) return Promise.resolve(null);
 
+    if (userId && customerId) {
+      throw new Error(
+        'findOneByAccountId requires exactly one of userId or customerId',
+      );
+    }
+
     return this.identityRepository.findOne({
       where: userId ? { userId } : { customerId },
     });

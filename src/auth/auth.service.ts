@@ -283,7 +283,7 @@ export class AuthService {
       }
 
       this.logger.debug(
-        `[updateLastLogin] Update last loggin success id=${user.id}`,
+        `[updateLastLogin] Update last login success id=${user.id}`,
       );
     } catch (error) {
       this.logger.warn(

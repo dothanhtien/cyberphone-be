@@ -88,13 +88,26 @@ export class RefreshTokenService {
     const newToken = uuidv4();
     const newTokenHash = this.hash(newToken);
 
-    const newRecord = await this.refreshTokenRepository.create({
-      identityId: existing.identityId,
-      tokenHash: newTokenHash,
-      expiresAt: dayjs().add(this.expiresInSeconds, 'seconds').toDate(),
-    });
-
-    await this.refreshTokenRepository.revoke(existing.id, newRecord.id);
+    let newRecord: RefreshToken;
+    try {
+      newRecord = await this.refreshTokenRepository.rotate(existing.id, {
+        identityId: existing.identityId,
+        tokenHash: newTokenHash,
+        expiresAt: dayjs().add(this.expiresInSeconds, 'seconds').toDate(),
+      });
+    } catch (err) {
+      if (err instanceof Error && err.message === 'CONCURRENT_ROTATION') {
+        this.logger.warn(
+          `[rotate] Concurrent rotation detected id=${existing.id}`,
+        );
+        throw new UnauthorizedException('Refresh token has been revoked');
+      }
+      this.logger.error(
+        `[rotate] DB error during rotation`,
+        getErrorStack(err),
+      );
+      throw err;
+    }
 
     this.logger.debug(
       `[rotate] Token rotated oldId=${existing.id} newId=${newRecord.id}`,

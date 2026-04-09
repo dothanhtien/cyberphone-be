@@ -86,25 +86,33 @@ export class AuthController {
       throw new UnauthorizedException('Missing refresh token');
     }
 
-    res.clearCookie(REFRESH_TOKEN_COOKIE, { path: '/' });
+    res.clearCookie(REFRESH_TOKEN_COOKIE, this.getRefreshTokenCookieOptions());
 
     return this.authService.revoke(user.id, token);
   }
 
-  private setRefreshTokenCookie(res: Response, token: string) {
+  private getRefreshTokenCookieOptions() {
     const domain = this.configService.get<string>('COOKIE_DOMAIN');
     const isProduction = this.configService.get('NODE_ENV') === 'production';
     const expiresInSeconds = Number(
       this.configService.get<number>('REFRESH_TOKEN_TTL', 2592000),
     );
 
-    res.cookie(REFRESH_TOKEN_COOKIE, token, {
+    return {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
       path: '/',
       maxAge: expiresInSeconds * 1000,
       ...(domain && { domain }),
-    });
+    } as const;
+  }
+
+  private setRefreshTokenCookie(res: Response, token: string) {
+    res.cookie(
+      REFRESH_TOKEN_COOKIE,
+      token,
+      this.getRefreshTokenCookieOptions(),
+    );
   }
 }

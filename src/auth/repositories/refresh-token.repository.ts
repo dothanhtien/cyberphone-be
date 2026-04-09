@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { RefreshToken } from '../entities';
 import { CreateRefreshTokenParams } from '../types';
 
@@ -9,6 +9,10 @@ export interface IRefreshTokenRepository {
   findById(id: string): Promise<RefreshToken | null>;
   findByTokenHash(tokenHash: string): Promise<RefreshToken | null>;
   revoke(id: string, replacedByTokenId?: string): Promise<void>;
+  rotate(
+    existingId: string,
+    newTokenData: CreateRefreshTokenParams,
+  ): Promise<RefreshToken>;
 }
 
 export const REFRESH_TOKEN_REPOSITORY = Symbol('IRefreshTokenRepository');
@@ -18,6 +22,8 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
   constructor(
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
   create(data: CreateRefreshTokenParams): Promise<RefreshToken> {
@@ -42,6 +48,36 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
     await this.refreshTokenRepository.update(id, {
       revokedAt: new Date(),
       replacedByToken: replacedByTokenId ?? null,
+    });
+  }
+
+  async rotate(
+    existingId: string,
+    newTokenData: CreateRefreshTokenParams,
+  ): Promise<RefreshToken> {
+    return this.dataSource.transaction(async (tx) => {
+      const existing = await tx.findOne(RefreshToken, {
+        where: { id: existingId },
+        lock: { mode: 'pessimistic_write' },
+      });
+
+      if (!existing) {
+        throw new Error('TOKEN_NOT_FOUND');
+      }
+
+      if (existing.revokedAt) {
+        throw new Error('CONCURRENT_ROTATION');
+      }
+
+      const newRecord = tx.create(RefreshToken, newTokenData);
+      await tx.save(RefreshToken, newRecord);
+
+      await tx.update(RefreshToken, existingId, {
+        revokedAt: new Date(),
+        replacedByToken: newRecord.id,
+      });
+
+      return newRecord;
     });
   }
 }

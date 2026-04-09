@@ -23,7 +23,7 @@ export class CreateRefreshTokensTable1775650699683 implements MigrationInterface
       `CREATE INDEX "idx_refresh_tokens_expires_at" ON "refresh_tokens" ("expires_at") `,
     );
     await queryRunner.query(
-      `CREATE UNIQUE INDEX "idx_refresh_tokens_token_hash" ON "refresh_tokens" ("token_hash") `,
+      `CREATE UNIQUE INDEX "uq_refresh_tokens_token_hash" ON "refresh_tokens" ("token_hash") `,
     );
     await queryRunner.query(
       `CREATE INDEX "idx_refresh_tokens_identity_id" ON "refresh_tokens" ("identity_id") `,
@@ -41,7 +41,7 @@ export class CreateRefreshTokensTable1775650699683 implements MigrationInterface
       `DROP INDEX "public"."idx_refresh_tokens_identity_id"`,
     );
     await queryRunner.query(
-      `DROP INDEX "public"."idx_refresh_tokens_token_hash"`,
+      `DROP INDEX "public"."uq_refresh_tokens_token_hash"`,
     );
     await queryRunner.query(
       `DROP INDEX "public"."idx_refresh_tokens_expires_at"`,
