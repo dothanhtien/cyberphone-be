@@ -23,12 +23,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.getOrThrow<string>('JWT_SECRET'),
+      secretOrKey: configService.getOrThrow<string>('JWT_ACCESS_SECRET'),
     });
   }
 
   async validate(payload: JwtPayload): Promise<AuthUser> {
-    const { sub: userId, type } = payload;
+    const { sub: userId, type, identityId } = payload;
 
     if (!userId || !type) {
       this.logger.debug(
@@ -63,7 +63,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         throw new UnauthorizedException('Account not found');
       }
 
-      return AuthMapper.mapToAuthUser(account);
+      return AuthMapper.mapToAuthUser({ ...account, identityId });
     } catch (err) {
       if (err instanceof UnauthorizedException) {
         throw err;

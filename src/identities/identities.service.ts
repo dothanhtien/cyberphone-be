@@ -122,6 +122,16 @@ export class IdentitiesService {
     }
   }
 
+  async findOneByAccountId({
+    userId,
+    customerId,
+  }: {
+    userId?: string;
+    customerId?: string;
+  }): Promise<Identity | null> {
+    return this.identityRepository.findOneByAccountId({ userId, customerId });
+  }
+
   async findOne(identifier: string, provider: AuthProvider) {
     const maskedIdentifier = maskIdentifier(identifier);
 
