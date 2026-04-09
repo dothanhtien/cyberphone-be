@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 import { RegisterDto } from './dto';
 import { AuthUserType } from './enums';
 import { AuthMapper } from './mappers';
+import { RefreshTokenService } from './refresh-token.service';
 import { AuthUser, JwtPayload } from './types';
 import { getErrorStack, maskIdentifier } from '@/common/utils';
 import { CustomersService } from '@/customers/customers.service';
@@ -18,11 +19,12 @@ export class AuthService {
 
   constructor(
     private readonly dataSource: DataSource,
-    private readonly identitiesService: IdentitiesService,
     private readonly customersService: CustomersService,
+    private readonly identitiesService: IdentitiesService,
     private readonly passwordService: PasswordService,
-    private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly usersService: UsersService,
+    private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
   async validateUser(
@@ -84,7 +86,7 @@ export class AuthService {
         `[validateUser] Validate successful identifier=${maskedIdentifier}`,
       );
 
-      return AuthMapper.mapToAuthUser(account);
+      return AuthMapper.mapToAuthUser({ ...account, identityId: identity.id });
     } catch (error) {
       this.logger.error(
         `[validateUser] Error validating user identifier=${maskedIdentifier}`,
@@ -104,10 +106,14 @@ export class AuthService {
       sub: user.id,
       type: user.type,
       roleId: user.roleId,
+      identityId: user.identityId,
     };
 
     try {
       const accessToken = this.jwtService.sign(payload);
+      const refreshToken = await this.refreshTokenService.create(
+        user.identityId,
+      );
 
       await this.updateLastLogin(user);
 
@@ -116,6 +122,7 @@ export class AuthService {
       return {
         data: AuthMapper.mapToAuthResponse(user),
         accessToken,
+        refreshToken,
       };
     } catch (error) {
       this.logger.error(
@@ -127,26 +134,50 @@ export class AuthService {
     }
   }
 
-  private async updateLastLogin(user: AuthUser) {
+  async refresh(refreshToken: string) {
+    this.logger.debug(`[refresh] Rotating refresh token`);
+
     try {
-      this.logger.debug(
-        `[updateLastLogin] Updating last login id=${user.id}, type=${user.type}`,
-      );
+      const { authUser, newToken } =
+        await this.refreshTokenService.rotate(refreshToken);
 
-      if (user.type === AuthUserType.USER) {
-        await this.usersService.updateLastLogin(user.id);
-      } else {
-        await this.customersService.updateLastLogin(user.id);
-      }
+      const payload: JwtPayload = {
+        sub: authUser.id,
+        type: authUser.type,
+        roleId: authUser.roleId,
+        identityId: authUser.identityId,
+      };
 
-      this.logger.debug(
-        `[updateLastLogin] Update last loggin success id=${user.id}`,
-      );
+      const accessToken = this.jwtService.sign(payload);
+
+      this.logger.debug(`[refresh] Token refreshed id=${authUser.id}`);
+
+      return {
+        data: AuthMapper.mapToAuthResponse(authUser),
+        accessToken,
+        refreshToken: newToken,
+      };
     } catch (error) {
-      this.logger.warn(
-        `[updateLastLogin] Failed to update last login id=${user.id}`,
+      this.logger.error(
+        `[refresh] Failed to refresh token`,
         getErrorStack(error),
       );
+      throw error;
+    }
+  }
+
+  async revoke(userId: string, tokenId: string): Promise<void> {
+    this.logger.debug(`[revoke] Revoking token id=${tokenId} userId=${userId}`);
+
+    try {
+      await this.refreshTokenService.revoke(userId, tokenId);
+      this.logger.debug(`[revoke] Token revoked id=${tokenId}`);
+    } catch (error) {
+      this.logger.error(
+        `[revoke] Failed to revoke token id=${tokenId}`,
+        getErrorStack(error),
+      );
+      throw error;
     }
   }
 
@@ -236,6 +267,29 @@ export class AuthService {
       );
 
       throw error;
+    }
+  }
+
+  private async updateLastLogin(user: AuthUser) {
+    try {
+      this.logger.debug(
+        `[updateLastLogin] Updating last login id=${user.id}, type=${user.type}`,
+      );
+
+      if (user.type === AuthUserType.USER) {
+        await this.usersService.updateLastLogin(user.id);
+      } else {
+        await this.customersService.updateLastLogin(user.id);
+      }
+
+      this.logger.debug(
+        `[updateLastLogin] Update last loggin success id=${user.id}`,
+      );
+    } catch (error) {
+      this.logger.warn(
+        `[updateLastLogin] Failed to update last login id=${user.id}`,
+        getErrorStack(error),
+      );
     }
   }
 }

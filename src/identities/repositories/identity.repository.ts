@@ -27,6 +27,13 @@ export interface IIdentityRepository {
     },
     tx?: EntityManager,
   ): Promise<Identity | null>;
+  findOneByAccountId({
+    userId,
+    customerId,
+  }: {
+    userId?: string;
+    customerId?: string;
+  }): Promise<Identity | null>;
   save(data: IdentityCreateEntity, tx: EntityManager): Promise<Identity>;
 }
 
@@ -74,6 +81,20 @@ export class IdentityRepository implements IIdentityRepository {
     return repository.findOne({
       where: { type, value, provider },
       relations: ['user', 'customer'],
+    });
+  }
+
+  findOneByAccountId({
+    userId,
+    customerId,
+  }: {
+    userId?: string;
+    customerId?: string;
+  }): Promise<Identity | null> {
+    if (!userId && !customerId) return Promise.resolve(null);
+
+    return this.identityRepository.findOne({
+      where: userId ? { userId } : { customerId },
     });
   }
 

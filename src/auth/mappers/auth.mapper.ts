@@ -6,7 +6,9 @@ import { Customer } from '@/customers/entities';
 import { User } from '@/users/entities';
 
 export class AuthMapper {
-  static mapToAuthUser(entity: User | Customer): AuthUser {
+  static mapToAuthUser(
+    entity: (User | Customer) & { identityId: string },
+  ): AuthUser {
     if (this.isUser(entity)) {
       return this.mapUser(entity);
     }
@@ -22,7 +24,7 @@ export class AuthMapper {
     return toDto(AuthResponseDto, user);
   }
 
-  private static mapUser(user: User): AuthUser {
+  private static mapUser(user: User & { identityId: string }): AuthUser {
     return {
       id: user.id,
       type: AuthUserType.USER,
@@ -32,10 +34,13 @@ export class AuthMapper {
       lastName: user.lastName,
       isActive: user.isActive,
       roleId: user.roleId,
+      identityId: user.identityId,
     };
   }
 
-  private static mapCustomer(customer: Customer): AuthUser {
+  private static mapCustomer(
+    customer: Customer & { identityId: string },
+  ): AuthUser {
     return {
       id: customer.id,
       type: AuthUserType.CUSTOMER,
@@ -44,6 +49,7 @@ export class AuthMapper {
       firstName: customer.firstName,
       lastName: customer.lastName,
       isActive: customer.isActive,
+      identityId: customer.identityId,
     };
   }
 }
