@@ -10,9 +10,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Identity } from '../../identities/entities';
 import { Role } from './role.entity';
-import { Cart } from '../../carts/entities/cart.entity';
+import { Cart } from '../../carts/entities';
+import { Identity } from '../../identities/entities';
 import { Order } from '../../orders/entities/order.entity';
 
 @Entity('users')

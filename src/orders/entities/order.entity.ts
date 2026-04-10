@@ -10,12 +10,12 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import { DeviceType, OrderStatus } from '../enums';
-import { User } from '../../users/entities/user.entity';
 import { OrderItem } from './order-item.entity';
-import { Cart } from '../../carts/entities/cart.entity';
+import { DeviceType, OrderStatus } from '../enums';
+import { Cart } from '../../carts/entities';
 import { Payment } from '../../payment/entities/payment.entity';
 import { PaymentMethod, PaymentStatus } from '../../payment/enums';
+import { User } from '../../users/entities';
 
 @Entity('orders')
 @Unique('idx_orders_code', ['code'])

@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
-import { AddToCartDto } from './dto/requests/add-to-cart.dto';
-import { ResolveCartDto } from './dto/requests/resolve-cart.dto';
+import { AddToCartDto, ResolveCartDto } from './dto';
 import { StorefrontCartsService } from './storefront-carts.service';
 import { Public } from '@/auth/decorators';
 

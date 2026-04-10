@@ -9,11 +9,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from '../../products/entities';
 import { VariantAttribute } from './variant-attribute.entity';
-import { CartItem } from '../../carts/entities/cart-item.entity';
-import { OrderItem } from '../../orders/entities/order-item.entity';
+import { CartItem } from '../../carts/entities';
 import { ProductVariantStockStatus } from '../../common/enums';
+import { OrderItem } from '../../orders/entities/order-item.entity';
+import { Product } from '../../products/entities';
 
 @Entity('product_variants')
 @Index('uq_product_variants_sku_active', ['sku'], {
