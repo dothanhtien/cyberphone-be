@@ -6,12 +6,10 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Role } from './role.entity';
-import { Cart } from '../../carts/entities';
 import { Identity } from '../../identities/entities';
 import { Order } from '../../orders/entities/order.entity';
 
@@ -86,9 +84,6 @@ export class User {
 
   @OneToMany(() => Identity, (i) => i.user)
   identities: Identity[];
-
-  @OneToOne(() => Cart, (cart) => cart.user)
-  cart: Cart;
 
   @OneToMany(() => Order, (order) => order.customer)
   orders: Order[];

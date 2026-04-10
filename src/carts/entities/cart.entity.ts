@@ -9,26 +9,23 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
 import { CartItem } from './cart-item.entity';
-import { Order } from '../../orders/entities/order.entity';
 import { CartStatus } from '../enums';
+import { Customer } from '../../customers/entities';
+import { Order } from '../../orders/entities/order.entity';
 
 @Entity('carts')
-@Index('uq_carts_session_id_active', ['sessionId'], {
+@Index('idx_carts_customer_id', ['customerId'])
+@Index('uq_active_cart_per_customer', ['customerId'], {
   unique: true,
-  where: `"status" = '${CartStatus.ACTIVE}'`,
-})
-@Index('uq_carts_user_id_active', ['userId'], {
-  unique: true,
-  where: `"user_id" IS NOT NULL AND "status" = '${CartStatus.ACTIVE}'`,
+  where: `"status" = '${CartStatus.ACTIVE}' AND "customer_id" IS NOT NULL`,
 })
 export class Cart {
   @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'pk_carts_id' })
   id: string;
 
-  @Column({ name: 'user_id', type: 'uuid', nullable: true })
-  userId: string | null;
+  @Column({ name: 'customer_id', type: 'uuid', nullable: true })
+  customerId: string | null;
 
   @Column({ name: 'session_id', length: 100 })
   sessionId: string;
@@ -61,12 +58,15 @@ export class Cart {
   })
   updatedBy: string | null;
 
-  @ManyToOne(() => User, (user) => user.cart, {
+  @ManyToOne(() => Customer, (customer) => customer.carts, {
     nullable: true,
     onDelete: 'NO ACTION',
   })
-  @JoinColumn({ name: 'user_id', foreignKeyConstraintName: 'fk_carts_user_id' })
-  user: User | null;
+  @JoinColumn({
+    name: 'customer_id',
+    foreignKeyConstraintName: 'fk_carts_customer_id',
+  })
+  customer: Customer | null;
 
   @OneToMany(() => CartItem, (item) => item.cart, { cascade: true })
   items: CartItem[];
