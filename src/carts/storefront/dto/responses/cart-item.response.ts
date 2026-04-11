@@ -1,20 +1,28 @@
+import { Expose } from 'class-transformer';
 import { ProductVariantStockStatus } from '@/common/enums';
 
-export interface CartItemRaw {
+export class CartItemResponseDto {
+  @Expose()
   id: string;
-  quantity: number;
-  variantId: string;
-  variantName: string;
-  price: string;
-  salePrice: string | null;
-  stockStatus: ProductVariantStockStatus;
-  imageUrl: string | null;
-}
 
-export interface FindOneCartRaw {
-  id: string;
-  customerId: string | null;
-  sessionId: string;
-  expiresAt: string;
-  items: CartItemRaw[];
+  @Expose()
+  quantity: number;
+
+  @Expose()
+  variantId: string;
+
+  @Expose()
+  variantName: string;
+
+  @Expose()
+  price: string;
+
+  @Expose()
+  salePrice: string | null;
+
+  @Expose()
+  stockStatus: ProductVariantStockStatus;
+
+  @Expose()
+  imageUrl: string | null;
 }

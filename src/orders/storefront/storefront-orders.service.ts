@@ -92,7 +92,7 @@ export class StorefrontOrdersService {
         code: orderCode,
         cartId: cart.id,
         revision: nextRevision,
-        customerId: cart.userId ?? null,
+        customerId: cart.customerId ?? null,
         shippingCountry: createOrderDto.shippingCountry ?? 'Vietnam',
         shippingFee: shippingFee.toFixed(2),
         itemsTotal: itemsTotal.toFixed(2),
@@ -100,7 +100,7 @@ export class StorefrontOrdersService {
         taxTotal: taxTotal.toFixed(2),
         shippingTotal: shippingTotal.toFixed(2),
         orderTotal: orderTotal.toFixed(2),
-        createdBy: cart.userId ?? cart.sessionId ?? 'guest',
+        createdBy: cart.customerId ?? cart.sessionId ?? 'guest',
       });
 
       const savedOrder = await tx.save(Order, order);

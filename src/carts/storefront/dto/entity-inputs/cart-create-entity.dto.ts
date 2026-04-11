@@ -2,7 +2,7 @@ import { Expose } from 'class-transformer';
 
 export class CartCreateEntityInput {
   @Expose()
-  userId?: string;
+  customerId?: string;
 
   @Expose()
   sessionId: string;

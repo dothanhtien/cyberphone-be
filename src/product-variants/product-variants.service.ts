@@ -116,6 +116,14 @@ export class ProductVariantsService {
     });
   }
 
+  async findOneActiveById(id: string, tx?: EntityManager) {
+    const repository = tx
+      ? tx.getRepository(ProductVariant)
+      : this.productVariantRepository;
+
+    return repository.findOne({ where: { id, isActive: true } });
+  }
+
   async update(id: string, updateProductVariantDto: UpdateProductVariantDto) {
     return this.dataSource.transaction(async (tx) => {
       const variantRepository = tx.getRepository(ProductVariant);

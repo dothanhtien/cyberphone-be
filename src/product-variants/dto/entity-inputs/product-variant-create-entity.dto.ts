@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { ProductVariantStockStatus } from '@/common/enums';
 
 export class ProductVariantCreateEntityDto {
   @Expose()
@@ -23,7 +24,7 @@ export class ProductVariantCreateEntityDto {
   stockQuantity?: number;
 
   @Expose()
-  stockStatus?: string;
+  stockStatus?: ProductVariantStockStatus;
 
   @Expose()
   lowStockThreshold?: number;
