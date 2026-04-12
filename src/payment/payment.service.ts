@@ -6,20 +6,20 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { Order } from '@/orders/entities/order.entity';
+import { CreatePaymentDto } from './dto/requests/create-payment.dto';
 import { Payment } from './entities/payment.entity';
+import { PaymentProvider, PaymentStatus } from './enums';
+import { MomoStrategy } from './strategies/momo.strategy';
 import {
   MomoCallback,
   MomoReturnQuery,
   PaymentResult,
   PaymentStrategy,
 } from './types';
-import { PaymentProvider, PaymentStatus } from './enums';
-import { CreatePaymentDto } from './dto/requests/create-payment.dto';
-import { MomoStrategy } from './strategies/momo.strategy';
-import { OrderStatus } from '@/orders/enums';
-import { Cart } from '@/carts/entities/cart.entity';
+import { Cart } from '@/carts/entities';
 import { CartStatus } from '@/carts/enums';
+import { Order } from '@/orders/entities/order.entity';
+import { OrderStatus } from '@/orders/enums';
 
 @Injectable()
 export class PaymentService {
@@ -166,7 +166,6 @@ export class PaymentService {
 
       if (payment.status === PaymentStatus.SUCCESS) {
         cart.status = CartStatus.CONVERTED;
-        cart.updatedBy = 'system';
         await cartRepository.save(cart);
       }
 

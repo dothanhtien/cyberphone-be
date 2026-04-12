@@ -1,14 +1,29 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { StorefrontCartsService } from './storefront/storefront-carts.service';
+import { Cart, CartItem } from './entities';
+import {
+  CART_ITEM_REPOSITORY,
+  CART_REPOSITORY,
+  CartItemRepository,
+  CartRepository,
+} from './repositories';
 import { StorefrontCartsController } from './storefront/storefront-carts.controller';
-import { Cart } from './entities/cart.entity';
-import { CartItem } from './entities/cart-item.entity';
-import { ProductVariant } from '@/product-variants/entities/product-variant.entity';
+import { StorefrontCartsService } from './storefront/storefront-carts.service';
+import { ProductVariantsModule } from '@/product-variants/product-variants.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Cart, CartItem, ProductVariant])],
-  providers: [StorefrontCartsService],
+  imports: [TypeOrmModule.forFeature([Cart, CartItem]), ProductVariantsModule],
+  providers: [
+    StorefrontCartsService,
+    {
+      provide: CART_REPOSITORY,
+      useClass: CartRepository,
+    },
+    {
+      provide: CART_ITEM_REPOSITORY,
+      useClass: CartItemRepository,
+    },
+  ],
   controllers: [StorefrontCartsController],
 })
 export class CartsModule {}

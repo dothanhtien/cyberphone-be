@@ -9,7 +9,4 @@ export class CartItemCreateEntityInput {
 
   @Expose()
   quantity: number;
-
-  @Expose()
-  createdBy: string;
 }

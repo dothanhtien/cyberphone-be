@@ -7,8 +7,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Identity } from '../../identities/entities';
 import { Gender } from '../enums';
+import { Cart } from '../../carts/entities';
+import { Identity } from '../../identities/entities';
 
 @Entity('customers')
 @Index('uq_customers_phone_active', ['phone'], {
@@ -84,4 +85,7 @@ export class Customer {
 
   @OneToMany(() => Identity, (i) => i.customer)
   identities: Identity[];
+
+  @OneToMany(() => Cart, (cart) => cart.customer)
+  carts: Cart[];
 }

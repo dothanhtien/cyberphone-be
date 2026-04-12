@@ -1,12 +1,9 @@
 import { Expose } from 'class-transformer';
 
-export class CartCreateEntityInput {
+export class CartUpdateEntityDto {
   @Expose()
   customerId?: string;
 
   @Expose()
-  sessionId: string;
-
-  @Expose()
-  expiresAt: Date;
+  expiresAt?: Date;
 }
