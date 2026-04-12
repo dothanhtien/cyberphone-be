@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import {
@@ -15,17 +16,25 @@ interface FindOneActiveByCartIdAndVariantIdParams {
 }
 
 export interface ICartItemRepository {
-  create(data: CartItemCreateEntityInput): Promise<CartItem>;
+  create(
+    data: CartItemCreateEntityInput,
+    tx?: EntityManager,
+  ): Promise<CartItem>;
   findOneActiveByCartIdAndVariantId(
     params: FindOneActiveByCartIdAndVariantIdParams,
   ): Promise<CartItem | null>;
   findOneActiveById(id: string): Promise<CartItem | null>;
   findStorefrontCartItemById(id: string): Promise<CartItemRaw | null>;
-  update(id: string, data: CartItemUpdateEntityInput): Promise<boolean>;
+  update(
+    id: string,
+    data: CartItemUpdateEntityInput,
+    tx?: EntityManager,
+  ): Promise<boolean>;
 }
 
 export const CART_ITEM_REPOSITORY = Symbol('ICartItemRepository');
 
+@Injectable()
 export class CartItemRepository implements ICartItemRepository {
   constructor(
     private readonly dataSource: DataSource,
@@ -33,8 +42,15 @@ export class CartItemRepository implements ICartItemRepository {
     private readonly cartItemRepository: Repository<CartItem>,
   ) {}
 
-  create(data: CartItemCreateEntityInput): Promise<CartItem> {
-    return this.cartItemRepository.save(data);
+  create(
+    data: CartItemCreateEntityInput,
+    tx?: EntityManager,
+  ): Promise<CartItem> {
+    const repository = tx
+      ? tx.getRepository(CartItem)
+      : this.cartItemRepository;
+
+    return repository.save(data);
   }
 
   findOneActiveByCartIdAndVariantId({
@@ -91,8 +107,16 @@ export class CartItemRepository implements ICartItemRepository {
     return result ?? null;
   }
 
-  async update(id: string, data: CartItemUpdateEntityInput): Promise<boolean> {
-    const result = await this.cartItemRepository.update(id, data);
+  async update(
+    id: string,
+    data: CartItemUpdateEntityInput,
+    tx?: EntityManager,
+  ): Promise<boolean> {
+    const repository = tx
+      ? tx.getRepository(CartItem)
+      : this.cartItemRepository;
+
+    const result = await repository.update(id, data);
     return (result.affected ?? 0) > 0;
   }
 }

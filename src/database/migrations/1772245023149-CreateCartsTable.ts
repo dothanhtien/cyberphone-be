@@ -13,9 +13,7 @@ export class CreateCartsTable1772245023149 implements MigrationInterface {
           "expires_at" TIMESTAMP WITH TIME ZONE NOT NULL, 
           "status" character varying(50) NOT NULL DEFAULT 'active',  
           "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
-          "created_by" character varying(100) NOT NULL, 
           "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(), 
-          "updated_by" character varying(100), 
           CONSTRAINT "pk_carts_id" PRIMARY KEY ("id")
         )
       `,

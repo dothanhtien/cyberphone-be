@@ -24,7 +24,11 @@ export interface ICartRepository {
   ): Promise<Cart | null>;
   findOneActiveById(id: string, tx?: EntityManager): Promise<Cart | null>;
   findStorefrontCartById(id: string): Promise<FindOneCartRaw | null>;
-  update(id: string, data: CartUpdateEntityDto): Promise<void>;
+  update(
+    id: string,
+    data: CartUpdateEntityDto,
+    tx?: EntityManager,
+  ): Promise<void>;
 }
 
 export const CART_REPOSITORY = Symbol('ICartRepository');
@@ -52,7 +56,7 @@ export class CartRepository implements ICartRepository {
     return this.cartRepository.findOne({ where: conditions });
   }
 
-  findOneActiveById(id: string, tx: EntityManager): Promise<Cart | null> {
+  findOneActiveById(id: string, tx?: EntityManager): Promise<Cart | null> {
     const repository = tx ? tx.getRepository(Cart) : this.cartRepository;
 
     return repository.findOne({
@@ -114,7 +118,13 @@ export class CartRepository implements ICartRepository {
     return result ?? null;
   }
 
-  async update(id: string, data: CartUpdateEntityDto): Promise<void> {
-    await this.cartRepository.update(id, data);
+  async update(
+    id: string,
+    data: CartUpdateEntityDto,
+    tx?: EntityManager,
+  ): Promise<void> {
+    const repository = tx ? tx.getRepository(Cart) : this.cartRepository;
+
+    await repository.update(id, data);
   }
 }

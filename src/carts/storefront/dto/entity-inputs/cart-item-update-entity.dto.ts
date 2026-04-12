@@ -6,7 +6,4 @@ export class CartItemUpdateEntityInput {
 
   @Expose()
   isActive?: boolean;
-
-  @Expose()
-  updatedBy: string;
 }

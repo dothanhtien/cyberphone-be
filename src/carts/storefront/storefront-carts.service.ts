@@ -25,7 +25,6 @@ import {
   CART_ITEM_REPOSITORY,
   type ICartItemRepository,
 } from '../repositories';
-import { GUEST } from '@/common/constants';
 import { ProductVariantStockStatus } from '@/common/enums';
 import {
   getErrorStack,
@@ -52,7 +51,6 @@ export class StorefrontCartsService {
 
   async resolve(resolveCartDto: ResolveCartDto) {
     const { customerId, sessionId } = resolveCartDto;
-    const actor = this.getActor(customerId);
 
     this.logger.debug(
       `[resolve] Resolving cart sessionId=${sessionId}, customerId=${customerId}`,
@@ -77,13 +75,11 @@ export class StorefrontCartsService {
           sanitizeEntityInput(CartCreateEntityInput, {
             ...resolveCartDto,
             sessionId: newSessionId,
-            createdBy: actor,
             expiresAt: this.getNewExpiryDate(),
           }),
         );
       } else {
         cart.expiresAt = this.getNewExpiryDate();
-        cart.updatedBy = actor;
 
         this.logger.log(
           `[resolve] Updating existing cart: id=${cart.id}, sessionId=${sessionId}, customerId=${customerId}`,
@@ -115,8 +111,7 @@ export class StorefrontCartsService {
   }
 
   async addToCart(cartId: string, addToCartDto: AddToCartDto) {
-    const { customerId, quantity, variantId } = addToCartDto;
-    const actor = this.getActor(customerId);
+    const { quantity, variantId } = addToCartDto;
 
     this.logger.debug(
       `[addToCart] Adding item to cart cartId=${cartId}, variantId=${variantId}, quantity=${quantity}`,
@@ -149,11 +144,11 @@ export class StorefrontCartsService {
         );
 
         existingCartItem.quantity = newQuantity;
-        existingCartItem.updatedBy = actor;
 
         await this.cartItemRepository.update(
           existingCartItem.id,
           sanitizeEntityInput(CartItemUpdateEntityInput, existingCartItem),
+          tx,
         );
 
         cartItemId = existingCartItem.id;
@@ -166,19 +161,17 @@ export class StorefrontCartsService {
           cartId,
           variantId,
           quantity: newQuantity,
-          createdBy: actor,
         });
 
-        const cartItem = await this.cartItemRepository.create(inputEntity);
+        const cartItem = await this.cartItemRepository.create(inputEntity, tx);
 
         cartItemId = cartItem.id;
       }
 
-      cart.updatedBy = actor;
-
       await this.cartRepository.update(
         cartId,
         sanitizeEntityInput(CartUpdateEntityDto, cart),
+        tx,
       );
 
       this.logger.debug(
@@ -202,7 +195,9 @@ export class StorefrontCartsService {
 
     const cartItem = await this.cartItemRepository.findOneActiveById(itemId);
 
-    if (!cartItem) throw new NotFoundException('Cart item not found');
+    if (!cartItem || cartItem.cartId !== cartId) {
+      throw new NotFoundException('Cart item not found');
+    }
 
     const [cart, variant] = await Promise.all([
       this.cartRepository.findOneActiveById(cartId),
@@ -236,10 +231,17 @@ export class StorefrontCartsService {
     return true;
   }
 
-  async removeCartItem(id: string) {
-    this.logger.debug(`[removeCartItem] Removing cart item id=${id}`);
+  async removeCartItem(cartId: string, itemId: string) {
+    this.logger.debug(
+      `[removeCartItem] Removing cart item id=${cartId} itemId=${itemId}`,
+    );
 
-    const updated = await this.cartItemRepository.update(id, {
+    const cartItem = await this.cartItemRepository.findOneActiveById(itemId);
+    if (!cartItem || cartItem.cartId !== cartId) {
+      throw new NotFoundException('Cart item not found');
+    }
+
+    const updated = await this.cartItemRepository.update(itemId, {
       isActive: false,
     } as CartItemUpdateEntityInput);
 
@@ -247,7 +249,9 @@ export class StorefrontCartsService {
       throw new NotFoundException('Cart item not found');
     }
 
-    this.logger.debug(`[removeCartItem] Removed cart item id=${id}`);
+    this.logger.debug(
+      `[removeCartItem] Removed cart item id=${cartId} itemId=${itemId}`,
+    );
 
     return true;
   }
@@ -268,10 +272,6 @@ export class StorefrontCartsService {
     if (!result) throw new NotFoundException('Cart item not found');
 
     return CartItemMapper.mapToCartItemResponse(result);
-  }
-
-  private getActor(customerId: string | undefined) {
-    return customerId ?? GUEST;
   }
 
   private getNewExpiryDate(): Date {

@@ -9,7 +9,4 @@ export class CartCreateEntityInput {
 
   @Expose()
   expiresAt: Date;
-
-  @Expose()
-  createdBy: string;
 }

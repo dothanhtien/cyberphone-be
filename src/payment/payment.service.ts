@@ -166,7 +166,6 @@ export class PaymentService {
 
       if (payment.status === PaymentStatus.SUCCESS) {
         cart.status = CartStatus.CONVERTED;
-        cart.updatedBy = 'system';
         await cartRepository.save(cart);
       }
 

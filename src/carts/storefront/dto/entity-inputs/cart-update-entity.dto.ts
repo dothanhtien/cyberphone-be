@@ -6,7 +6,4 @@ export class CartUpdateEntityDto {
 
   @Expose()
   expiresAt?: Date;
-
-  @Expose()
-  updatedBy?: string;
 }

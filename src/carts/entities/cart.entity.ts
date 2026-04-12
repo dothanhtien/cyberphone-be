@@ -44,19 +44,8 @@ export class Cart {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @Column({ name: 'created_by', type: 'varchar', length: 100 })
-  createdBy: string;
-
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: true })
   updatedAt: Date | null;
-
-  @Column({
-    name: 'updated_by',
-    type: 'varchar',
-    length: 100,
-    nullable: true,
-  })
-  updatedBy: string | null;
 
   @ManyToOne(() => Customer, (customer) => customer.carts, {
     nullable: true,

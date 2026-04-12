@@ -29,7 +29,7 @@ export class StorefrontCartsController {
   }
 
   @Delete(':id/items/:itemId')
-  removeCartItem(@Param('itemId') itemId: string) {
-    return this.cartsService.removeCartItem(itemId);
+  removeCartItem(@Param('id') id: string, @Param('itemId') itemId: string) {
+    return this.cartsService.removeCartItem(id, itemId);
   }
 }
