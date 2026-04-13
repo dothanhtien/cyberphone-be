@@ -9,6 +9,7 @@ T.B.D
 ## Module documentation
 
 - [Auth module](./src/auth/README.md)
+- [Cart module](./src/carts/README.md)
 
 ## Project setup
 
