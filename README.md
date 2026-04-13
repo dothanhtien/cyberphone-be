@@ -6,6 +6,10 @@
 
 T.B.D
 
+## Module documentation
+
+- [Auth module](./src/auth/README.md)
+
 ## Project setup
 
 ```bash
