@@ -15,7 +15,7 @@ import { DeviceType, OrderStatus } from '../enums';
 import { Cart } from '../../carts/entities';
 import { Payment } from '../../payment/entities/payment.entity';
 import { PaymentMethod, PaymentStatus } from '../../payment/enums';
-import { User } from '../../users/entities';
+import { Customer } from '../../customers/entities';
 
 @Entity('orders')
 @Unique('idx_orders_code', ['code'])
@@ -269,7 +269,7 @@ export class Order {
   })
   cart: Cart;
 
-  @ManyToOne(() => User, (user) => user.orders, {
+  @ManyToOne(() => Customer, (customer) => customer.orders, {
     nullable: true,
     onDelete: 'NO ACTION',
   })
@@ -277,7 +277,7 @@ export class Order {
     name: 'customer_id',
     foreignKeyConstraintName: 'fk_orders_customer_id',
   })
-  customer: User | null;
+  customer: Customer | null;
 
   @OneToMany(() => OrderItem, (item) => item.order, { cascade: true })
   items: OrderItem[];

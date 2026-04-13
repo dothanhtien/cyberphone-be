@@ -18,7 +18,7 @@ import {
 } from './types';
 import { Cart } from '@/carts/entities';
 import { CartStatus } from '@/carts/enums';
-import { Order } from '@/orders/entities/order.entity';
+import { Order } from '@/orders/entities';
 import { OrderStatus } from '@/orders/enums';
 
 @Injectable()

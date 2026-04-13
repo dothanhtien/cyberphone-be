@@ -1,6 +1,6 @@
 import { CreatePaymentDto } from '../dto/requests/create-payment.dto';
 import { Payment } from '../entities/payment.entity';
-import { Order } from '@/orders/entities/order.entity';
+import { Order } from '@/orders/entities';
 
 export * from './momo';
 

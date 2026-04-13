@@ -4,8 +4,7 @@ import dayjs from 'dayjs';
 import { OrderCreateEntityInput } from './dto/entity-inputs/order-create-entity.dto';
 import { CreateOrderDto } from './dto/requests/create-order.dto';
 import { OrderCalculationInput, OrderCalculationResult } from './types';
-import { Order } from '../entities/order.entity';
-import { OrderItem } from '../entities/order-item.entity';
+import { Order, OrderItem } from '../entities';
 import { Cart } from '@/carts/entities';
 import { CartStatus } from '@/carts/enums';
 import { sanitizeEntityInput } from '@/common/utils';
@@ -30,7 +29,7 @@ export class StorefrontOrdersService {
         .andWhere('cart.status = :status', { status: CartStatus.ACTIVE })
         .select([
           'cart.id',
-          'cart.userId',
+          'cart.customerId',
           'cart.sessionId',
 
           'item.id',

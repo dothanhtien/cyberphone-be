@@ -8,8 +8,8 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Order } from '../../orders/entities/order.entity';
 import { PaymentProvider, PaymentStatus } from '../enums';
+import { Order } from '../../orders/entities';
 
 @Entity('payments')
 @Index('idx_payments_order_id', ['orderId'])
