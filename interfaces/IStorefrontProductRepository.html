@@ -1,0 +1,628 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>cyberphone-be</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/default.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">cyberphone-be</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content interface">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Interfaces</li>
+  <li class="breadcrumb-item"
+  >
+  IStorefrontProductRepository</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/products/storefront/repositories/storefront-product.repository.ts</code>
+        </p>
+
+
+
+
+        <section data-compodoc="block-index">
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Methods</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#findAll" 
+>
+                                        findAll
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#findOne" 
+>
+                                        findOne
+                                    </a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAll"></a>
+                    <span class="name">
+                        <span ><b>findAll</b></span>
+                        <a href="#findAll"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findAll(params: <a href="../classes/FilterProductsDto.html" target="_self">FilterProductsDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="11"
+                                    class="link-to-prism">src/products/storefront/repositories/storefront-product.repository.ts:11</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>params</td>
+                                            <td>
+                                                            <code><a href="../classes/FilterProductsDto.html" target="_self" >FilterProductsDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findOne"></a>
+                    <span class="name">
+                        <span ><b>findOne</b></span>
+                        <a href="#findOne"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findOne(slug: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">src/products/storefront/repositories/storefront-product.repository.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>slug</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/ProductDetailsRaw.html" target="_self" >Promise&lt;ProductDetailsRaw | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { DataSource } from &#x27;typeorm&#x27;;
+
+import { FilterProductsDto } from &#x27;../dto&#x27;;
+import { ProductSortEnum } from &#x27;../enums&#x27;;
+import { ProductDetailsRaw, RawProductRow } from &#x27;../types&#x27;;
+import { MediaAssetRefType, ProductImageType } from &#x27;@/common/enums&#x27;;
+import { extractPaginationParams } from &#x27;@/common/utils&#x27;;
+
+export interface IStorefrontProductRepository {
+  findAll(
+    params: FilterProductsDto,
+  ): Promise&lt;{ items: RawProductRow[]; total: number }&gt;;
+
+  findOne(slug: string): Promise&lt;ProductDetailsRaw | null&gt;;
+}
+
+export const STOREFRONT_PRODUCT_REPOSITORY &#x3D; Symbol(
+  &#x27;IStorefrontProductRepository&#x27;,
+);
+
+@Injectable()
+export class StorefrontProductRepository implements IStorefrontProductRepository {
+  constructor(private readonly dataSource: DataSource) {}
+
+  async findAll(
+    params: FilterProductsDto,
+  ): Promise&lt;{ items: RawProductRow[]; total: number }&gt; {
+    const { page, limit } &#x3D; extractPaginationParams(params);
+    const offset &#x3D; (page - 1) * limit;
+
+    const values: unknown[] &#x3D; [];
+
+    let whereClause &#x3D; &#x60;
+      WHERE p.is_active &#x3D; true
+        AND p.status &#x3D; &#x27;active&#x27;
+    &#x60;;
+
+    if (params.search) {
+      values.push(&#x60;%${params.search}%&#x60;);
+      whereClause +&#x3D; &#x60; AND p.name ILIKE $${values.length}&#x60;;
+    }
+
+    let orderClause &#x3D; &#x60;ORDER BY p.created_at DESC, p.id DESC&#x60;;
+
+    if (params.sort &#x3D;&#x3D;&#x3D; ProductSortEnum.PRICE_ASC) {
+      orderClause &#x3D; &#x60;ORDER BY COALESCE(v.sale_price, v.price) ASC, p.created_at DESC, p.id DESC&#x60;;
+    }
+
+    if (params.sort &#x3D;&#x3D;&#x3D; ProductSortEnum.PRICE_DESC) {
+      orderClause &#x3D; &#x60;ORDER BY COALESCE(v.sale_price, v.price) DESC, p.created_at DESC, p.id DESC&#x60;;
+    }
+
+    values.push(MediaAssetRefType.PRODUCT);
+    const mediaAssetRefTypeParamIndex &#x3D; values.length;
+
+    values.push(ProductImageType.MAIN);
+    const mainImageTypeParamIndex &#x3D; values.length;
+
+    values.push(limit);
+    const limitParamIndex &#x3D; values.length;
+
+    values.push(offset);
+    const offsetParamIndex &#x3D; values.length;
+
+    const query &#x3D; &#x60;
+      SELECT 
+        p.id,
+        p.name,
+        p.slug,
+        p.short_description,
+        p.is_featured,
+        p.is_bestseller,
+        v.id as variant_id,
+        v.price,
+        v.sale_price,
+        CASE WHEN v.stock_quantity &gt; 0 THEN 1 ELSE 0 END AS in_stock,
+        (
+          SELECT ma.url 
+          FROM product_images pi
+          JOIN media_assets ma ON ma.ref_type &#x3D; $${mediaAssetRefTypeParamIndex} 
+            AND ma.ref_id &#x3D; pi.id::text
+            AND ma.is_active &#x3D; true
+          WHERE pi.product_id &#x3D; p.id 
+            AND pi.is_active &#x3D; true 
+          ORDER BY pi.image_type &#x3D; $${mainImageTypeParamIndex} DESC, pi.display_order ASC
+          LIMIT 1
+        ) AS main_image
+      FROM products p
+      JOIN LATERAL (
+        SELECT pv.*
+        FROM product_variants pv
+        WHERE 
+          pv.product_id &#x3D; p.id 
+          AND pv.is_active &#x3D; true
+          AND pv.is_default &#x3D; true
+        ORDER BY COALESCE(pv.sale_price, pv.price) ASC
+        LIMIT 1
+      ) v ON true
+
+      ${whereClause}
+      ${orderClause}
+
+      LIMIT $${limitParamIndex}
+      OFFSET $${offsetParamIndex}
+    &#x60;;
+
+    const items &#x3D; await this.dataSource.query&lt;RawProductRow[]&gt;(query, values);
+
+    const countQuery &#x3D; &#x60;
+      SELECT COUNT(*) 
+      FROM products p 
+      JOIN LATERAL (
+        SELECT 1
+        FROM product_variants pv
+        WHERE pv.product_id &#x3D; p.id 
+          AND pv.is_active &#x3D; true
+          AND pv.is_default &#x3D; true
+        LIMIT 1
+      ) v ON true
+      ${whereClause}
+    &#x60;;
+
+    const totalResult &#x3D; await this.dataSource.query&lt;{ count: string }[]&gt;(
+      countQuery,
+      values.slice(0, values.length - 4),
+    );
+
+    const total &#x3D; Number(totalResult[0].count);
+
+    return { items, total };
+  }
+
+  async findOne(slug: string): Promise&lt;ProductDetailsRaw | null&gt; {
+    const result &#x3D; await this.dataSource.query&lt;ProductDetailsRaw[]&gt;(
+      &#x60;
+        SELECT 
+          p.id,
+          p.name,
+          p.slug,
+          p.short_description AS &quot;shortDescription&quot;,
+          p.long_description AS &quot;longDescription&quot;,
+
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(
+                &#x27;id&#x27;, pv.id, 
+                &#x27;name&#x27;, pv.name,
+                &#x27;price&#x27;, pv.price,
+                &#x27;salePrice&#x27;, pv.sale_price,
+                &#x27;stockQuantity&#x27;, pv.stock_quantity,
+                &#x27;isDefault&#x27;, pv.is_default,
+
+                &#x27;attributes&#x27;, (
+                  SELECT COALESCE(
+                    json_agg(
+                      jsonb_build_object(
+                        &#x27;id&#x27;, va.id,
+                        &#x27;productAttributeId&#x27;, va.product_attribute_id,
+                        &#x27;attributeValue&#x27;, va.attribute_value,
+                        &#x27;attributeValueDisplay&#x27;, va.attribute_value_display
+                      )
+                    ), &#x27;[]&#x27;
+                  )
+                  FROM variant_attributes va
+                  WHERE va.variant_id &#x3D; pv.id AND va.is_active &#x3D; true
+                )
+              )
+            ) FILTER (WHERE pv.id IS NOT NULL), &#x27;[]&#x27;
+          ) AS variants,
+
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(
+                &#x27;id&#x27;, pa.id, 
+                &#x27;attributeKey&#x27;, pa.attribute_key,
+                &#x27;attributeKeyDisplay&#x27;, pa.attribute_key_display,
+                &#x27;displayOrder&#x27;, pa.display_order
+              )
+            ) FILTER (WHERE pa.id IS NOT NULL), &#x27;[]&#x27;
+          ) AS attributes,
+
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(
+                &#x27;id&#x27;, ma.id, 
+                &#x27;url&#x27;, ma.url,
+                &#x27;imageType&#x27;, pi.image_type,
+                &#x27;displayOrder&#x27;, pi.display_order
+              )
+            ) FILTER (WHERE ma.id IS NOT NULL), &#x27;[]&#x27;
+          ) AS images
+
+        FROM products p
+        LEFT JOIN product_variants pv 
+          ON p.id &#x3D; pv.product_id AND pv.is_active &#x3D; true
+
+        LEFT JOIN product_images pi 
+          ON p.id &#x3D; pi.product_id AND pi.is_active &#x3D; true
+
+        LEFT JOIN media_assets ma 
+          ON ma.ref_type &#x3D; $1 
+          AND ma.ref_id &#x3D; pi.id::text 
+          AND ma.is_active &#x3D; true
+
+        LEFT JOIN product_attributes pa 
+          ON p.id &#x3D; pa.product_id AND pa.is_active &#x3D; true
+
+        WHERE 
+          p.slug &#x3D; $2
+          AND p.is_active &#x3D; true
+
+        GROUP BY p.id
+        LIMIT 1
+      &#x60;,
+      [MediaAssetRefType.PRODUCT, slug],
+    );
+
+    return result[0] ?? null;
+  }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'IStorefrontProductRepository.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

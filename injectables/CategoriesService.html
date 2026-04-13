@@ -1,0 +1,1833 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>cyberphone-be</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/default.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">cyberphone-be</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >CategoriesService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/categories/categories.service.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#attachCategoryLogos" >attachCategoryLogos</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#attachLogosToTree" >attachLogosToTree</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#buildCategoryTree" >buildCategoryTree</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#create" >create</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#doesSlugExist" >doesSlugExist</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#fetchCategoryTree" >fetchCategoryTree</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findActiveByIds" >findActiveByIds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findAll" >findAll</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findOne" >findOne</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getDescendants" >getDescendants</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#normalizeSlug" >normalizeSlug</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#update" >update</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#validateParentChange" >validateParentChange</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(categoryRepository: <a href="../classes/Category.html" target="_self">Repository&lt;Category&gt;</a>, dataSource: DataSource, mediaAssetService: <a href="../injectables/MediaAssetsService.html" target="_self">MediaAssetsService</a>, storageProvider: <a href="../interfaces/StorageProvider.html" target="_self">StorageProvider</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/categories/categories.service.ts:30</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>categoryRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/Category.html" target="_self" >Repository&lt;Category&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>dataSource</td>
+                                                  
+                                                        <td>
+                                                                    <code>DataSource</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mediaAssetService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MediaAssetsService.html" target="_self" >MediaAssetsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>storageProvider</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/StorageProvider.html" target="_self" >StorageProvider</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="attachCategoryLogos"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>attachCategoryLogos</b></span>
+                        <a href="#attachCategoryLogos"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>attachCategoryLogos(categories: T[])</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="362"
+                                    class="link-to-prism">src/categories/categories.service.ts:362</a></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>categories</td>
+                                            <td>
+                                                        <code>T[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;unknown[]&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="attachLogosToTree"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>attachLogosToTree</b></span>
+                        <a href="#attachLogosToTree"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>attachLogosToTree(category: <a href="../classes/Category.html" target="_self">Category</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="383"
+                                    class="link-to-prism">src/categories/categories.service.ts:383</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>category</td>
+                                            <td>
+                                                            <code><a href="../classes/Category.html" target="_self" >Category</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Category.html" target="_self" >Promise&lt;CategoryWithLogo&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildCategoryTree"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>buildCategoryTree</b></span>
+                        <a href="#buildCategoryTree"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildCategoryTree(rows: <a href="../classes/Category.html" target="_self">Category[]</a>, rootId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="294"
+                                    class="link-to-prism">src/categories/categories.service.ts:294</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>rows</td>
+                                            <td>
+                                                            <code><a href="../classes/Category.html" target="_self" >Category[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>rootId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Category.html" target="_self" >Category</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="create"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>create</b></span>
+                        <a href="#create"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>create(createCategoryDto: <a href="../classes/CreateCategoryDto.html" target="_self">CreateCategoryDto</a>, logo?: Express.Multer.File)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">src/categories/categories.service.ts:39</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>createCategoryDto</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateCategoryDto.html" target="_self" >CreateCategoryDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>logo</td>
+                                            <td>
+                                                        <code>Express.Multer.File</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="doesSlugExist"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>doesSlugExist</b></span>
+                        <a href="#doesSlugExist"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>doesSlugExist(slug: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, excludeId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="254"
+                                    class="link-to-prism">src/categories/categories.service.ts:254</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>slug</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>excludeId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetchCategoryTree"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>fetchCategoryTree</b></span>
+                        <a href="#fetchCategoryTree"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetchCategoryTree(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="264"
+                                    class="link-to-prism">src/categories/categories.service.ts:264</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Category.html" target="_self" >Promise&lt;Category[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findActiveByIds"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findActiveByIds</b></span>
+                        <a href="#findActiveByIds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findActiveByIds(ids: string[], entityManager?: EntityManager)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="229"
+                                    class="link-to-prism">src/categories/categories.service.ts:229</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ids</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>entityManager</td>
+                                            <td>
+                                                        <code>EntityManager</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Pick[]&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAll"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findAll</b></span>
+                        <a href="#findAll"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAll(paginationQueryDto: <a href="../classes/PaginationQueryDto.html" target="_self">PaginationQueryDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">src/categories/categories.service.ts:91</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>paginationQueryDto</td>
+                                            <td>
+                                                            <code><a href="../classes/PaginationQueryDto.html" target="_self" >PaginationQueryDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findOne"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findOne</b></span>
+                        <a href="#findOne"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findOne(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="110"
+                                    class="link-to-prism">src/categories/categories.service.ts:110</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Category.html" target="_self" >Promise&lt;Category | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getDescendants"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getDescendants</b></span>
+                        <a href="#getDescendants"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getDescendants(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="343"
+                                    class="link-to-prism">src/categories/categories.service.ts:343</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="normalizeSlug"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>normalizeSlug</b></span>
+                        <a href="#normalizeSlug"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>normalizeSlug(slug: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="250"
+                                    class="link-to-prism">src/categories/categories.service.ts:250</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>slug</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="update"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>update</b></span>
+                        <a href="#update"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>update(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, updateCategoryDto: <a href="../classes/UpdateCategoryDto.html" target="_self">UpdateCategoryDto</a>, logo?: Express.Multer.File)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="129"
+                                    class="link-to-prism">src/categories/categories.service.ts:129</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>updateCategoryDto</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdateCategoryDto.html" target="_self" >UpdateCategoryDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>logo</td>
+                                            <td>
+                                                        <code>Express.Multer.File</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="validateParentChange"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>validateParentChange</b></span>
+                        <a href="#validateParentChange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>validateParentChange(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, currentParentId: string | null, newParentId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="316"
+                                    class="link-to-prism">src/categories/categories.service.ts:316</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentParentId</td>
+                                            <td>
+                                                        <code>string | null</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>newParentId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from &#x27;@nestjs/common&#x27;;
+import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
+import { DataSource, EntityManager, In, Not, Repository } from &#x27;typeorm&#x27;;
+import { PaginationQueryDto } from &#x27;@/common/dto/paginations.dto&#x27;;
+import {
+  buildPaginationParams,
+  extractPaginationParams,
+  toEntity,
+} from &#x27;@/common/utils&#x27;;
+import { Category } from &#x27;./entities/category.entity&#x27;;
+import { CreateCategoryDto } from &#x27;./dto/requests/create-category.dto&#x27;;
+import { UpdateCategoryDto } from &#x27;./dto/requests/update-category.dto&#x27;;
+import { MediaAssetsService } from &#x27;@/media/media-assets.service&#x27;;
+import { MediaAsset } from &#x27;@/media/entities&#x27;;
+import { MediaAssetRefType, MediaAssetUsageType } from &#x27;@/common/enums&#x27;;
+import { CATEGORY_FOLDER } from &#x27;@/common/constants/paths&#x27;;
+import { STORAGE_PROVIDER } from &#x27;@/storage/storage.module&#x27;;
+import type {
+  StorageProvider,
+  StorageUploadResult,
+} from &#x27;@/storage/storage.provider&#x27;;
+import { CategoryWithLogo } from &#x27;@/common/types/categories.type&#x27;;
+
+@Injectable()
+export class CategoriesService {
+  constructor(
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository&lt;Category&gt;,
+    private readonly dataSource: DataSource,
+    private readonly mediaAssetService: MediaAssetsService,
+    @Inject(STORAGE_PROVIDER) private readonly storageProvider: StorageProvider,
+  ) {}
+
+  async create(
+    createCategoryDto: CreateCategoryDto,
+    logo?: Express.Multer.File,
+  ) {
+    createCategoryDto.slug &#x3D; this.normalizeSlug(createCategoryDto.slug);
+
+    if (await this.doesSlugExist(createCategoryDto.slug)) {
+      throw new BadRequestException(&#x27;Category with this slug already exists&#x27;);
+    }
+
+    return this.dataSource.transaction(async (tx) &#x3D;&gt; {
+      const category &#x3D; toEntity(Category, createCategoryDto);
+      const savedCategory &#x3D; await tx.save(category);
+
+      let uploadResult: StorageUploadResult | null &#x3D; null;
+      let media: MediaAsset | null &#x3D; null;
+
+      try {
+        if (logo) {
+          uploadResult &#x3D; await this.storageProvider.upload(logo, {
+            folder: CATEGORY_FOLDER,
+          });
+
+          [media] &#x3D; await this.mediaAssetService.create(
+            [
+              {
+                publicId: uploadResult.key,
+                url: uploadResult.url,
+                resourceType: uploadResult.resourceType,
+                refType: MediaAssetRefType.CATEGORY,
+                refId: savedCategory.id,
+                usageType: MediaAssetUsageType.LOGO,
+                createdBy: savedCategory.createdBy,
+              },
+            ],
+            tx,
+          );
+        }
+
+        return {
+          ...savedCategory,
+          logo: media?.url ?? null,
+        };
+      } catch (error) {
+        if (uploadResult?.key) {
+          await this.storageProvider.delete(uploadResult.key);
+        }
+        throw error;
+      }
+    });
+  }
+
+  async findAll(paginationQueryDto: PaginationQueryDto) {
+    const { page, limit } &#x3D; extractPaginationParams(paginationQueryDto);
+
+    const [items, totalCount] &#x3D; await this.categoryRepository.findAndCount({
+      where: { isActive: true },
+      ...buildPaginationParams(page, limit),
+      order: { createdAt: &#x27;DESC&#x27; },
+    });
+
+    const itemsWithLogo &#x3D; await this.attachCategoryLogos(items);
+
+    return {
+      items: itemsWithLogo,
+      totalCount,
+      currentPage: page,
+      itemsPerPage: limit,
+    };
+  }
+
+  async findOne(id: string): Promise&lt;Category | null&gt; {
+    const rows &#x3D; await this.fetchCategoryTree(id);
+
+    if (!rows.length) {
+      throw new NotFoundException(&#x27;Category not found&#x27;);
+    }
+
+    const result &#x3D; this.buildCategoryTree(rows, id);
+
+    if (result.parentId) {
+      result.parent &#x3D;
+        (await this.categoryRepository.findOne({
+          where: { id: result.parentId, isActive: true },
+        })) ?? null;
+    }
+
+    return this.attachLogosToTree(result);
+  }
+
+  async update(
+    id: string,
+    updateCategoryDto: UpdateCategoryDto,
+    logo?: Express.Multer.File,
+  ) {
+    const category &#x3D; await this.categoryRepository.findOne({
+      where: {
+        id,
+        isActive: true,
+      },
+    });
+
+    if (!category) {
+      throw new NotFoundException(&#x27;Category not found&#x27;);
+    }
+
+    if (updateCategoryDto.slug) {
+      updateCategoryDto.slug &#x3D; this.normalizeSlug(updateCategoryDto.slug);
+    }
+
+    if (updateCategoryDto.slug &amp;&amp; updateCategoryDto.slug !&#x3D;&#x3D; category.slug) {
+      if (await this.doesSlugExist(updateCategoryDto.slug, id)) {
+        throw new BadRequestException(&#x27;Slug already exists&#x27;);
+      }
+    }
+
+    await this.validateParentChange(
+      id,
+      category.parentId,
+      updateCategoryDto.parentId,
+    );
+
+    if (updateCategoryDto.isActive &#x3D;&#x3D;&#x3D; false &amp;&amp; category.isActive) {
+      const descendants &#x3D; await this.getDescendants(id);
+      if (descendants.length) {
+        throw new BadRequestException(
+          &#x27;Cannot deactivate category with descendants&#x27;,
+        );
+      }
+    }
+
+    return this.dataSource.transaction(async (tx) &#x3D;&gt; {
+      const updatedCategory &#x3D; await tx.save(
+        toEntity(Category, { ...category, ...updateCategoryDto }),
+      );
+
+      let uploadResult: StorageUploadResult | null &#x3D; null;
+
+      try {
+        if (logo) {
+          const oldMedia &#x3D; await this.mediaAssetService.findByRefId({
+            refType: MediaAssetRefType.CATEGORY,
+            refId: id,
+            usageType: MediaAssetUsageType.LOGO,
+            tx,
+          });
+
+          uploadResult &#x3D; await this.storageProvider.upload(logo, {
+            folder: CATEGORY_FOLDER,
+          });
+
+          const [newMedia] &#x3D; await this.mediaAssetService.create(
+            [
+              {
+                publicId: uploadResult.key,
+                url: uploadResult.url,
+                resourceType: uploadResult.resourceType,
+                refType: MediaAssetRefType.CATEGORY,
+                refId: id,
+                usageType: MediaAssetUsageType.LOGO,
+                createdBy: updateCategoryDto.updatedBy,
+              },
+            ],
+            tx,
+          );
+
+          if (oldMedia) {
+            await this.mediaAssetService.deleteById(oldMedia.id, tx);
+          }
+
+          if (oldMedia?.publicId) {
+            await this.storageProvider.delete(oldMedia.publicId);
+          }
+
+          return {
+            ...updatedCategory,
+            logo: newMedia.url,
+          };
+        }
+
+        return (await this.attachCategoryLogos([updatedCategory]))[0];
+      } catch (error) {
+        if (uploadResult?.key) {
+          await this.storageProvider.delete(uploadResult.key);
+        }
+        throw error;
+      }
+    });
+  }
+
+  async findActiveByIds(
+    ids: string[],
+    entityManager?: EntityManager,
+  ): Promise&lt;Pick&lt;Category, &#x27;id&#x27;&gt;[]&gt; {
+    if (!ids.length) {
+      return [];
+    }
+
+    const repository &#x3D; entityManager
+      ? entityManager.getRepository(Category)
+      : this.categoryRepository;
+
+    return repository.find({
+      where: {
+        id: In(ids),
+        isActive: true,
+      },
+      select: [&#x27;id&#x27;],
+    });
+  }
+
+  private normalizeSlug(slug: string) {
+    return slug.trim().toLowerCase();
+  }
+
+  private doesSlugExist(slug: string, excludeId?: string) {
+    return this.categoryRepository.exists({
+      where: {
+        slug,
+        isActive: true,
+        ...(excludeId &amp;&amp; { id: Not(excludeId) }),
+      },
+    });
+  }
+
+  private async fetchCategoryTree(id: string): Promise&lt;Category[]&gt; {
+    return this.categoryRepository.query&lt;Category[]&gt;(
+      &#x60;
+        WITH RECURSIVE category_tree AS (
+          SELECT
+            id, name, slug, description,
+            parent_id AS &quot;parentId&quot;,
+            is_active AS &quot;isActive&quot;,
+            created_at AS &quot;createdAt&quot;,
+            created_by AS &quot;createdBy&quot;,
+            updated_at AS &quot;updatedAt&quot;,
+            updated_by AS &quot;updatedBy&quot;
+          FROM categories
+          WHERE id &#x3D; $1 AND is_active &#x3D; TRUE
+          UNION ALL
+          SELECT
+            c.id, c.name, c.slug, c.description,
+            c.parent_id, c.is_active,
+            c.created_at, c.created_by,
+            c.updated_at, c.updated_by
+          FROM categories c
+          INNER JOIN category_tree ct ON ct.id &#x3D; c.parent_id
+          WHERE c.is_active &#x3D; TRUE
+        )
+        SELECT * FROM category_tree;
+      &#x60;,
+      [id],
+    );
+  }
+
+  private buildCategoryTree(rows: Category[], rootId: string): Category {
+    const map &#x3D; new Map&lt;string, Category&gt;();
+
+    for (const row of rows) {
+      const category &#x3D; toEntity(Category, { ...row, children: [] });
+      map.set(category.id, category);
+    }
+
+    for (const row of rows) {
+      if (!row.parentId) continue;
+
+      const child &#x3D; map.get(row.id);
+      const parent &#x3D; map.get(row.parentId);
+
+      if (child &amp;&amp; parent) {
+        parent.children.push(child);
+      }
+    }
+
+    return map.get(rootId)!;
+  }
+
+  private async validateParentChange(
+    id: string,
+    currentParentId: string | null,
+    newParentId?: string,
+  ) {
+    if (!newParentId || newParentId &#x3D;&#x3D;&#x3D; currentParentId) return;
+
+    if (newParentId &#x3D;&#x3D;&#x3D; id) {
+      throw new BadRequestException(&#x27;Category cannot be its own parent&#x27;);
+    }
+
+    const parentExists &#x3D; await this.categoryRepository.exists({
+      where: { id: newParentId, isActive: true },
+    });
+
+    if (!parentExists) {
+      throw new BadRequestException(&#x27;Parent category not found&#x27;);
+    }
+
+    const descendants &#x3D; await this.getDescendants(id);
+    if (descendants.some((d) &#x3D;&gt; d.id &#x3D;&#x3D;&#x3D; newParentId)) {
+      throw new BadRequestException(
+        &#x27;Cannot set a descendant as parent category&#x27;,
+      );
+    }
+  }
+
+  private async getDescendants(id: string) {
+    return this.categoryRepository.query&lt;Pick&lt;Category, &#x27;id&#x27; | &#x27;parentId&#x27;&gt;[]&gt;(
+      &#x60;
+        WITH RECURSIVE category_tree AS (
+          SELECT id, parent_id FROM categories WHERE id &#x3D; $1 AND is_active &#x3D; TRUE
+          UNION ALL
+          SELECT c.id, c.parent_id
+          FROM categories c
+          INNER JOIN category_tree ct ON ct.id &#x3D; c.parent_id
+          WHERE c.is_active &#x3D; TRUE
+        )
+        SELECT id, parent_id AS &quot;parentId&quot; 
+        FROM category_tree 
+        WHERE id !&#x3D; $1;
+      &#x60;,
+      [id],
+    );
+  }
+
+  private async attachCategoryLogos&lt;T extends { id: string }&gt;(
+    categories: T[],
+  ): Promise&lt;(T &amp; { logo: string | null })[]&gt; {
+    if (!categories.length) return [];
+
+    const ids &#x3D; categories.map((c) &#x3D;&gt; c.id);
+
+    const medias &#x3D; await this.mediaAssetService.findByRefIds(
+      MediaAssetRefType.CATEGORY,
+      ids,
+      MediaAssetUsageType.LOGO,
+    );
+
+    const mediaMap &#x3D; new Map(medias.map((m) &#x3D;&gt; [m.refId, m.url]));
+
+    return categories.map((c) &#x3D;&gt; ({
+      ...c,
+      logo: mediaMap.get(c.id) ?? null,
+    }));
+  }
+
+  private async attachLogosToTree(
+    category: Category,
+  ): Promise&lt;CategoryWithLogo&gt; {
+    const flat: Category[] &#x3D; [];
+
+    const collect &#x3D; (node: Category) &#x3D;&gt; {
+      flat.push(node);
+      node.children?.forEach(collect);
+    };
+
+    collect(category);
+
+    const withLogos &#x3D; await this.attachCategoryLogos(flat);
+    const map &#x3D; new Map&lt;string, CategoryWithLogo&gt;(
+      withLogos.map((c) &#x3D;&gt; [
+        c.id,
+        { ...c, children: [] as CategoryWithLogo[] } as CategoryWithLogo,
+      ]),
+    );
+
+    const rebuild &#x3D; (node: Category): CategoryWithLogo &#x3D;&gt; {
+      const current &#x3D; map.get(node.id);
+
+      if (!current) {
+        throw new Error(&#x60;Category ${node.id} not found in logo map&#x60;);
+      }
+
+      return {
+        ...current,
+        children: node.children?.map(rebuild) ?? [],
+      } as CategoryWithLogo;
+    };
+
+    return rebuild(category);
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'CategoriesService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

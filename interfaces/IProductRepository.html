@@ -1,0 +1,1062 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>cyberphone-be</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/default.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">cyberphone-be</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content interface">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Interfaces</li>
+  <li class="breadcrumb-item"
+  >
+  IProductRepository</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/products/admin/repositories/product.repository.ts</code>
+        </p>
+
+
+
+
+        <section data-compodoc="block-index">
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Methods</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#countActive" 
+>
+                                        countActive
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#create" 
+>
+                                        create
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#existsActiveById" 
+>
+                                        existsActiveById
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#existsActiveBySlugExcludingId" 
+>
+                                        existsActiveBySlugExcludingId
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#findActiveById" 
+>
+                                        findActiveById
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#findAllRaw" 
+>
+                                        findAllRaw
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#findOneRaw" 
+>
+                                        findOneRaw
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#update" 
+>
+                                        update
+                                    </a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="countActive"></a>
+                    <span class="name">
+                        <span ><b>countActive</b></span>
+                        <a href="#countActive"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>countActive()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:19</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="create"></a>
+                    <span class="name">
+                        <span ><b>create</b></span>
+                        <a href="#create"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>create(data: <a href="../classes/ProductCreateEntityDto.html" target="_self">ProductCreateEntityDto</a>, tx: EntityManager)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="11"
+                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:11</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/ProductCreateEntityDto.html" target="_self" >ProductCreateEntityDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>tx</td>
+                                            <td>
+                                                        <code>EntityManager</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Product.html" target="_self" >Promise&lt;Product&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="existsActiveById"></a>
+                    <span class="name">
+                        <span ><b>existsActiveById</b></span>
+                        <a href="#existsActiveById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>existsActiveById(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:13</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="existsActiveBySlugExcludingId"></a>
+                    <span class="name">
+                        <span ><b>existsActiveBySlugExcludingId</b></span>
+                        <a href="#existsActiveBySlugExcludingId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>existsActiveBySlugExcludingId(slug: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, excludeId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>slug</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>excludeId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findActiveById"></a>
+                    <span class="name">
+                        <span ><b>findActiveById</b></span>
+                        <a href="#findActiveById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findActiveById(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="12"
+                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:12</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Product.html" target="_self" >Promise&lt;Product | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAllRaw"></a>
+                    <span class="name">
+                        <span ><b>findAllRaw</b></span>
+                        <a href="#findAllRaw"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findAllRaw(limit: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, offset: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>limit</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>offset</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/ProductRaw.html" target="_self" >Promise&lt;ProductRaw[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findOneRaw"></a>
+                    <span class="name">
+                        <span ><b>findOneRaw</b></span>
+                        <a href="#findOneRaw"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findOneRaw(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/ProductRaw.html" target="_self" >Promise&lt;ProductRaw | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="update"></a>
+                    <span class="name">
+                        <span ><b>update</b></span>
+                        <a href="#update"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>update(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data: <a href="../classes/ProductUpdateEntityDto.html" target="_self">ProductUpdateEntityDto</a>, tx: EntityManager)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:21</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/ProductUpdateEntityDto.html" target="_self" >ProductUpdateEntityDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>tx</td>
+                                            <td>
+                                                        <code>EntityManager</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ConflictException, Injectable, Logger } from &#x27;@nestjs/common&#x27;;
+import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
+import { EntityManager, Not, Repository } from &#x27;typeorm&#x27;;
+import { ProductCreateEntityDto, ProductUpdateEntityDto } from &#x27;../dto&#x27;;
+import { ProductRaw } from &#x27;../types&#x27;;
+import { MediaAssetRefType, ProductImageType } from &#x27;@/common/enums&#x27;;
+import { getErrorStack, isUniqueConstraintError } from &#x27;@/common/utils&#x27;;
+import { Product } from &#x27;@/products/entities&#x27;;
+
+export interface IProductRepository {
+  create(data: ProductCreateEntityDto, tx: EntityManager): Promise&lt;Product&gt;;
+  findActiveById(id: string): Promise&lt;Product | null&gt;;
+  existsActiveById(id: string): Promise&lt;boolean&gt;;
+  existsActiveBySlugExcludingId(
+    slug: string,
+    excludeId?: string,
+  ): Promise&lt;boolean&gt;;
+  findAllRaw(limit: number, offset: number): Promise&lt;ProductRaw[]&gt;;
+  countActive(): Promise&lt;number&gt;;
+  findOneRaw(id: string): Promise&lt;ProductRaw | null&gt;;
+  update(
+    id: string,
+    data: ProductUpdateEntityDto,
+    tx: EntityManager,
+  ): Promise&lt;void&gt;;
+}
+
+export const PRODUCT_REPOSITORY &#x3D; Symbol(&#x27;IProductRepository&#x27;);
+
+@Injectable()
+export class ProductRepository implements IProductRepository {
+  private readonly logger &#x3D; new Logger(ProductRepository.name);
+
+  constructor(
+    @InjectRepository(Product)
+    private readonly productRepository: Repository&lt;Product&gt;,
+  ) {}
+
+  async create(
+    data: ProductCreateEntityDto,
+    tx: EntityManager,
+  ): Promise&lt;Product&gt; {
+    try {
+      const product &#x3D; await tx.save(Product, data);
+
+      this.logger.debug(&#x60;Product created id&#x3D;${product.id}&#x60;);
+
+      return product;
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        this.logger.warn(&#x60;Unique constraint violation on slug&#x60;);
+        throw new ConflictException(&#x27;Slug already exists&#x27;);
+      }
+      this.logger.error(
+        &#x60;Failed to create product entity&#x60;,
+        getErrorStack(error),
+      );
+      throw error;
+    }
+  }
+
+  findActiveById(id: string): Promise&lt;Product | null&gt; {
+    return this.productRepository.findOne({ where: { id, isActive: true } });
+  }
+
+  existsActiveById(id: string): Promise&lt;boolean&gt; {
+    return this.productRepository.exists({ where: { id, isActive: true } });
+  }
+
+  async existsActiveBySlugExcludingId(
+    slug: string,
+    excludeId?: string,
+  ): Promise&lt;boolean&gt; {
+    const existing &#x3D; await this.productRepository.count({
+      where: {
+        slug,
+        isActive: true,
+        ...(excludeId ? { id: Not(excludeId) } : {}),
+      },
+    });
+
+    return existing &gt; 0;
+  }
+
+  countActive(): Promise&lt;number&gt; {
+    return this.productRepository.count({ where: { isActive: true } });
+  }
+
+  async findAllRaw(limit: number, offset: number): Promise&lt;ProductRaw[]&gt; {
+    return this.productRepository.query&lt;ProductRaw[]&gt;(
+      &#x60;
+        SELECT 
+          p.id, p.name, p.slug, p.status,
+          p.is_featured AS &quot;isFeatured&quot;,
+          p.is_bestseller AS &quot;isBestseller&quot;,
+          p.is_active AS &quot;isActive&quot;,
+          p.created_at AS &quot;createdAt&quot;,
+          p.created_by AS &quot;createdBy&quot;,
+          p.updated_at AS &quot;updatedAt&quot;,
+          p.updated_by AS &quot;updatedBy&quot;,
+          json_build_object(&#x27;id&#x27;, b.id, &#x27;name&#x27;, b.name) AS brand,
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(&#x27;id&#x27;, c.id, &#x27;name&#x27;, c.name)
+            ) FILTER (WHERE c.id IS NOT NULL), &#x27;[]&#x27;
+          ) AS categories,
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(&#x27;id&#x27;, pi.id, &#x27;imageType&#x27;, pi.image_type, &#x27;altText&#x27;, pi.alt_text, &#x27;url&#x27;, m.url)
+            ) FILTER (WHERE pi.id IS NOT NULL), &#x27;[]&#x27;
+          ) AS images,
+          COUNT(DISTINCT pv.id) AS &quot;variantCount&quot;
+        FROM products p
+        LEFT JOIN brands b ON b.id &#x3D; p.brand_id AND b.is_active &#x3D; true
+        LEFT JOIN product_categories pc ON pc.product_id &#x3D; p.id
+        LEFT JOIN categories c ON c.id &#x3D; pc.category_id AND c.is_active &#x3D; true
+        LEFT JOIN product_images pi ON pi.product_id &#x3D; p.id AND pi.image_type &#x3D; $1 AND pi.is_active &#x3D; true
+        LEFT JOIN media_assets m ON m.ref_type &#x3D; $2 AND m.ref_id::uuid &#x3D; pi.id AND m.is_active &#x3D; true
+        LEFT JOIN product_variants pv ON pv.product_id &#x3D; p.id AND pv.is_active &#x3D; true
+        WHERE p.is_active &#x3D; true
+        GROUP BY p.id, b.id
+        ORDER BY COALESCE(p.updated_at, p.created_at) DESC
+        LIMIT $3 OFFSET $4
+      &#x60;,
+      [ProductImageType.MAIN, MediaAssetRefType.PRODUCT, limit, offset],
+    );
+  }
+
+  async findOneRaw(id: string): Promise&lt;ProductRaw | null&gt; {
+    const rows &#x3D; await this.productRepository.query&lt;ProductRaw[]&gt;(
+      &#x60;
+        SELECT 
+          p.id, p.name, p.slug, p.status,
+          p.short_description AS &quot;shortDescription&quot;,
+          p.long_description AS &quot;longDescription&quot;,
+          p.is_featured AS &quot;isFeatured&quot;,
+          p.is_bestseller AS &quot;isBestseller&quot;,
+          p.is_active AS &quot;isActive&quot;,
+          p.created_at AS &quot;createdAt&quot;,
+          p.created_by AS &quot;createdBy&quot;,
+          p.updated_at AS &quot;updatedAt&quot;,
+          p.updated_by AS &quot;updatedBy&quot;,
+          json_build_object(&#x27;id&#x27;, b.id, &#x27;name&#x27;, b.name) AS brand,
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(&#x27;id&#x27;, c.id, &#x27;name&#x27;, c.name)
+            ) FILTER (WHERE c.id IS NOT NULL), &#x27;[]&#x27;
+          ) AS categories,
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(&#x27;id&#x27;, pi.id, &#x27;imageType&#x27;, pi.image_type, &#x27;altText&#x27;, pi.alt_text, &#x27;url&#x27;, m.url)
+            ) FILTER (WHERE pi.id IS NOT NULL), &#x27;[]&#x27;
+          ) AS images,
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(
+                &#x27;id&#x27;, pa.id, 
+                &#x27;attributeKey&#x27;, pa.attribute_key, 
+                &#x27;attributeKeyDisplay&#x27;, pa.attribute_key_display, 
+                &#x27;displayOrder&#x27;, pa.display_order
+              )
+            ) FILTER (WHERE pa.id IS NOT NULL), &#x27;[]&#x27;
+          ) AS attributes
+        FROM products p
+        LEFT JOIN brands b ON b.id &#x3D; p.brand_id AND b.is_active &#x3D; true
+        LEFT JOIN product_categories pc ON pc.product_id &#x3D; p.id
+        LEFT JOIN categories c ON c.id &#x3D; pc.category_id AND c.is_active &#x3D; true
+        LEFT JOIN product_images pi ON pi.product_id &#x3D; p.id AND pi.is_active &#x3D; true
+        LEFT JOIN media_assets m ON m.ref_type &#x3D; $1 AND m.ref_id::uuid &#x3D; pi.id AND m.is_active &#x3D; true
+        LEFT JOIN product_attributes pa ON pa.product_id &#x3D; p.id AND pa.is_active &#x3D; true
+        WHERE p.id &#x3D; $2 AND p.is_active &#x3D; true
+        GROUP BY p.id, b.id
+      &#x60;,
+      [MediaAssetRefType.PRODUCT, id],
+    );
+
+    return rows[0] ?? null;
+  }
+
+  async update(
+    id: string,
+    data: ProductUpdateEntityDto,
+    tx: EntityManager,
+  ): Promise&lt;void&gt; {
+    await tx.update(Product, id, data);
+  }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'IProductRepository.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

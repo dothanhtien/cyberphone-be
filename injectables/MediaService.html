@@ -1,0 +1,1352 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>cyberphone-be</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/default.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">cyberphone-be</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >MediaService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/media/media.service.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#folderMap" >folderMap</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#logger" >logger</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#repositoryMap" >repositoryMap</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#cleanupOrphanTemporaryMedia" >cleanupOrphanTemporaryMedia</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#delete" >delete</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findAll" >findAll</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getFolder" >getFolder</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getRepository" >getRepository</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#upload" >upload</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#validateEntityByRefId" >validateEntityByRefId</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(brandRepository: <a href="../classes/Brand.html" target="_self">Repository&lt;Brand&gt;</a>, categoryRepository: <a href="../classes/Category.html" target="_self">Repository&lt;Category&gt;</a>, productRepository: <a href="../classes/Product.html" target="_self">Repository&lt;Product&gt;</a>, mediaAssetRepository: <a href="../classes/MediaAsset.html" target="_self">Repository&lt;MediaAsset&gt;</a>, dataSource: DataSource, mediaAssetsService: <a href="../injectables/MediaAssetsService.html" target="_self">MediaAssetsService</a>, storageProvider: <a href="../interfaces/StorageProvider.html" target="_self">StorageProvider</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/media/media.service.ts:44</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>brandRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/Brand.html" target="_self" >Repository&lt;Brand&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>categoryRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/Category.html" target="_self" >Repository&lt;Category&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>productRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/Product.html" target="_self" >Repository&lt;Product&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mediaAssetRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/MediaAsset.html" target="_self" >Repository&lt;MediaAsset&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>dataSource</td>
+                                                  
+                                                        <td>
+                                                                    <code>DataSource</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mediaAssetsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MediaAssetsService.html" target="_self" >MediaAssetsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>storageProvider</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/StorageProvider.html" target="_self" >StorageProvider</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="cleanupOrphanTemporaryMedia"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>cleanupOrphanTemporaryMedia</b></span>
+                        <a href="#cleanupOrphanTemporaryMedia"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>cleanupOrphanTemporaryMedia()</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Cron(CronExpression.EVERY_DAY_AT_2AM)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="202"
+                                    class="link-to-prism">src/media/media.service.ts:202</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="delete"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>delete</b></span>
+                        <a href="#delete"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>delete(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, actor: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="172"
+                                    class="link-to-prism">src/media/media.service.ts:172</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>actor</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAll"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findAll</b></span>
+                        <a href="#findAll"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAll(getMediasDto: <a href="../classes/GetMediasDto.html" target="_self">GetMediasDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="141"
+                                    class="link-to-prism">src/media/media.service.ts:141</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>getMediasDto</td>
+                                            <td>
+                                                            <code><a href="../classes/GetMediasDto.html" target="_self" >GetMediasDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFolder"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getFolder</b></span>
+                        <a href="#getFolder"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getFolder(type: <a href="../miscellaneous/enumerations.html#MediaAssetRefType" target="_self">MediaAssetRefType</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="297"
+                                    class="link-to-prism">src/media/media.service.ts:297</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>type</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#MediaAssetRefType" target="_self" >MediaAssetRefType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/MediaAsset.html" target="_self" >Record&lt;MediaAssetRefType, string&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getRepository"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getRepository</b></span>
+                        <a href="#getRepository"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getRepository(type: <a href="../miscellaneous/enumerations.html#MediaAssetRefType" target="_self">MediaAssetRefType</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="266"
+                                    class="link-to-prism">src/media/media.service.ts:266</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>type</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#MediaAssetRefType" target="_self" >MediaAssetRefType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Repository&lt;Brand | Category | Product&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="upload"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>upload</b></span>
+                        <a href="#upload"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>upload(uploadMediasDto: <a href="../classes/UploadMediasDto.html" target="_self">UploadMediasDto</a>, files: Express.Multer.File[])</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">src/media/media.service.ts:66</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>uploadMediasDto</td>
+                                            <td>
+                                                            <code><a href="../classes/UploadMediasDto.html" target="_self" >UploadMediasDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>files</td>
+                                            <td>
+                                                        <code>Express.Multer.File[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="validateEntityByRefId"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>validateEntityByRefId</b></span>
+                        <a href="#validateEntityByRefId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>validateEntityByRefId(refType: <a href="../miscellaneous/enumerations.html#MediaAssetRefType" target="_self">MediaAssetRefType</a>, refId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="278"
+                                    class="link-to-prism">src/media/media.service.ts:278</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>refType</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#MediaAssetRefType" target="_self" >MediaAssetRefType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>refId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="folderMap"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>folderMap</b></span>
+                        <a href="#folderMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/MediaAsset.html" target="_self" >Record&lt;MediaAssetRefType | string&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    [MediaAssetRefType.BRAND]: BRAND_FOLDER,
+    [MediaAssetRefType.CATEGORY]: CATEGORY_FOLDER,
+    [MediaAssetRefType.PRODUCT]: PRODUCT_FOLDER,
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/media/media.service.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logger"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>logger</b></span>
+                        <a href="#logger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Logger(MediaService.name)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/media/media.service.ts:33</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="repositoryMap"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>repositoryMap</b></span>
+                        <a href="#repositoryMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#MediaAssetRefType" target="_self" >Record&lt;MediaAssetRefType | Repository&lt;Brand | Category | Product&gt;&gt;</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/media/media.service.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from &#x27;@nestjs/common&#x27;;
+import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
+import { DataSource, Repository } from &#x27;typeorm&#x27;;
+import { Cron, CronExpression } from &#x27;@nestjs/schedule&#x27;;
+import { Brand } from &#x27;@/brands/entities&#x27;;
+import { MediaAssetRefType, MediaAssetUsageType } from &#x27;@/common/enums&#x27;;
+import { Category } from &#x27;@/categories/entities/category.entity&#x27;;
+import { Product } from &#x27;@/products/entities&#x27;;
+import { GetMediasDto, UploadMediasDto } from &#x27;./dto&#x27;;
+import { STORAGE_PROVIDER } from &#x27;@/storage/storage.module&#x27;;
+import type {
+  StorageProvider,
+  StorageUploadResult,
+} from &#x27;@/storage/storage.provider&#x27;;
+import {
+  BRAND_FOLDER,
+  CATEGORY_FOLDER,
+  PRODUCT_FOLDER,
+} from &#x27;@/common/constants&#x27;;
+import { getErrorStack } from &#x27;@/common/utils&#x27;;
+import { MediaAssetsService } from &#x27;./media-assets.service&#x27;;
+import { MediaAsset } from &#x27;./entities&#x27;;
+import { mapToMediaAssetResponse } from &#x27;./mappers&#x27;;
+
+@Injectable()
+export class MediaService {
+  private readonly logger &#x3D; new Logger(MediaService.name);
+
+  private readonly repositoryMap: Record&lt;
+    MediaAssetRefType,
+    Repository&lt;Brand | Category | Product&gt;
+  &gt;;
+
+  private readonly folderMap: Record&lt;MediaAssetRefType, string&gt; &#x3D; {
+    [MediaAssetRefType.BRAND]: BRAND_FOLDER,
+    [MediaAssetRefType.CATEGORY]: CATEGORY_FOLDER,
+    [MediaAssetRefType.PRODUCT]: PRODUCT_FOLDER,
+  };
+
+  constructor(
+    @InjectRepository(Brand)
+    private readonly brandRepository: Repository&lt;Brand&gt;,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository&lt;Category&gt;,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository&lt;Product&gt;,
+    @InjectRepository(MediaAsset)
+    private readonly mediaAssetRepository: Repository&lt;MediaAsset&gt;,
+    private readonly dataSource: DataSource,
+    private readonly mediaAssetsService: MediaAssetsService,
+    @Inject(STORAGE_PROVIDER) private readonly storageProvider: StorageProvider,
+  ) {
+    this.repositoryMap &#x3D; {
+      [MediaAssetRefType.BRAND]: this.brandRepository,
+      [MediaAssetRefType.CATEGORY]: this.categoryRepository,
+      [MediaAssetRefType.PRODUCT]: this.productRepository,
+    };
+  }
+
+  async upload(uploadMediasDto: UploadMediasDto, files: Express.Multer.File[]) {
+    this.logger.log(
+      &#x60;Upload medias start: refType&#x3D;${uploadMediasDto.refType}, refId&#x3D;${uploadMediasDto.refId}, isTemporary&#x3D;${uploadMediasDto.isTemporary}, files&#x3D;${files?.length}&#x60;,
+    );
+
+    if (!files?.length) {
+      this.logger.warn(&#x27;Upload media called without files&#x27;);
+      throw new BadRequestException(&#x27;Files are required&#x27;);
+    }
+
+    if (!uploadMediasDto.isTemporary) {
+      await this.validateEntityByRefId(
+        uploadMediasDto.refType,
+        uploadMediasDto.refId,
+      );
+    }
+
+    const uploadedResults: StorageUploadResult[] &#x3D; [];
+    try {
+      this.logger.debug(&#x60;Uploading ${files.length} files to storage&#x60;);
+
+      const uploads &#x3D; await Promise.all(
+        files.map((file) &#x3D;&gt;
+          this.storageProvider.upload(file, {
+            folder: &#x60;${this.getFolder(uploadMediasDto.refType)}/${uploadMediasDto.refId}&#x60;,
+          }),
+        ),
+      );
+
+      uploadedResults.push(...uploads);
+
+      this.logger.debug(&#x27;Files uploaded to storage successfully&#x27;);
+
+      const result &#x3D; await this.dataSource.transaction(async (tx) &#x3D;&gt; {
+        this.logger.debug(&#x27;Creating media records in DB&#x27;);
+
+        return await this.mediaAssetsService.create(
+          uploads.map((upload) &#x3D;&gt; ({
+            publicId: upload.key,
+            url: upload.url,
+            resourceType: upload.resourceType,
+            refType: uploadMediasDto.refType,
+            refId: uploadMediasDto.refId,
+            usageType: uploadMediasDto.usageType,
+            createdBy: uploadMediasDto.createdBy,
+          })),
+          tx,
+        );
+      });
+
+      this.logger.log(
+        &#x60;Upload medias success: refType&#x3D;${uploadMediasDto.refType}, refId&#x3D;${uploadMediasDto.refId}, count&#x3D;${result.length}&#x60;,
+      );
+
+      return result.map(mapToMediaAssetResponse);
+    } catch (error) {
+      this.logger.error(
+        &#x60;Upload media failed: refType&#x3D;${uploadMediasDto.refType}, refId&#x3D;${uploadMediasDto.refId}&#x60;,
+        getErrorStack(error),
+      );
+
+      if (uploadedResults.length) {
+        this.logger.warn(
+          &#x60;Rolling back ${uploadedResults.length} uploaded files&#x60;,
+        );
+
+        await Promise.all(
+          uploadedResults.map((file) &#x3D;&gt; this.storageProvider.delete(file.key)),
+        );
+      }
+
+      throw error;
+    }
+  }
+
+  async findAll(getMediasDto: GetMediasDto) {
+    this.logger.debug(
+      &#x60;Get medias: refType&#x3D;${getMediasDto.refType}, refId&#x3D;${getMediasDto.refId}, isTemporary&#x3D;${getMediasDto.isTemporary}&#x60;,
+    );
+
+    if (!getMediasDto.isTemporary) {
+      await this.validateEntityByRefId(
+        getMediasDto.refType,
+        getMediasDto.refId,
+      );
+    }
+
+    const result &#x3D; await this.mediaAssetRepository.find({
+      where: {
+        refType: getMediasDto.refType,
+        refId: getMediasDto.refId,
+        usageType: MediaAssetUsageType.DESCRIPTION,
+        isActive: true,
+      },
+      select: [&#x27;id&#x27;, &#x27;url&#x27;, &#x27;refType&#x27;, &#x27;refId&#x27;, &#x27;usageType&#x27;, &#x27;metadata&#x27;],
+      order: {
+        updatedAt: { direction: &#x27;DESC&#x27;, nulls: &#x27;LAST&#x27; },
+        createdAt: &#x27;DESC&#x27;,
+      },
+    });
+
+    this.logger.debug(&#x60;Found ${result.length} medias&#x60;);
+
+    return result.map(mapToMediaAssetResponse);
+  }
+
+  async delete(id: string, actor: string) {
+    this.logger.log(&#x60;Delete media start: id&#x3D;${id}&#x60;);
+
+    const media &#x3D; await this.mediaAssetRepository.findOne({
+      where: { id, isActive: true },
+    });
+
+    if (!media) {
+      this.logger.warn(&#x60;Delete media failed: media not found id&#x3D;${id}&#x60;);
+      throw new NotFoundException(&#x27;Media not found&#x27;);
+    }
+
+    try {
+      media.isActive &#x3D; false;
+      media.updatedBy &#x3D; actor;
+      await this.mediaAssetRepository.save(media);
+
+      this.logger.debug(&#x60;Deleting media file from storage: ${media.publicId}&#x60;);
+
+      await this.storageProvider.delete(media.publicId);
+
+      this.logger.log(&#x60;Delete media success: id&#x3D;${id}&#x60;);
+    } catch (error) {
+      this.logger.error(&#x60;Remove media failed: id&#x3D;${id}&#x60;, getErrorStack(error));
+
+      throw error;
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_2AM)
+  async cleanupOrphanTemporaryMedia() {
+    this.logger.log(&#x27;Starting cleanup of orphan temporary media...&#x27;);
+
+    while (true) {
+      const medias &#x3D; await this.mediaAssetRepository
+        .createQueryBuilder(&#x27;m&#x27;)
+        .where(&#x27;m.is_active &#x3D; true&#x27;)
+        .andWhere(
+          &#x60;
+            (
+              (m.ref_type &#x3D; :brandType AND NOT EXISTS (
+                SELECT 1 FROM brands b WHERE b.id &#x3D; m.ref_id::uuid AND b.is_active &#x3D; true
+              ))
+              OR
+              (m.ref_type &#x3D; :categoryType AND NOT EXISTS (
+                SELECT 1 FROM categories c WHERE c.id &#x3D; m.ref_id::uuid AND c.is_active &#x3D; true
+              ))
+              OR
+              (m.ref_type &#x3D; :productType AND NOT EXISTS (
+                SELECT 1 FROM product_images pi WHERE pi.id &#x3D; m.ref_id::uuid AND pi.is_active &#x3D; true
+              ))
+            )
+          &#x60;,
+          {
+            brandType: MediaAssetRefType.BRAND,
+            categoryType: MediaAssetRefType.CATEGORY,
+            productType: MediaAssetRefType.PRODUCT,
+          },
+        )
+        .take(100)
+        .getMany();
+
+      if (!medias.length) {
+        this.logger.log(&#x27;No orphan media found.&#x27;);
+        break;
+      }
+
+      let deletedCount &#x3D; 0;
+      for (const media of medias) {
+        try {
+          await this.storageProvider.delete(media.publicId);
+
+          this.logger.log(&#x60;Deleted orphan media file: ${media.publicId}&#x60;);
+
+          await this.mediaAssetRepository.remove(media);
+          deletedCount++;
+        } catch (err) {
+          this.logger.error(
+            &#x60;Failed to delete orphan media ${media.id}: ${err}&#x60;,
+          );
+        }
+      }
+
+      if (deletedCount &#x3D;&#x3D;&#x3D; 0) {
+        this.logger.error(
+          &#x27;Cleanup aborted: no progress in current batch, potential persistent failures&#x27;,
+        );
+        break;
+      }
+    }
+
+    this.logger.log(&#x27;Orphan media cleanup finished.&#x27;);
+  }
+
+  private getRepository(
+    type: MediaAssetRefType,
+  ): Repository&lt;Brand | Category | Product&gt; {
+    const repository &#x3D; this.repositoryMap[type];
+
+    if (!repository) {
+      throw new BadRequestException(&#x27;Invalid media reference type&#x27;);
+    }
+
+    return repository;
+  }
+
+  private async validateEntityByRefId(
+    refType: MediaAssetRefType,
+    refId: string,
+  ) {
+    const repository &#x3D; this.getRepository(refType);
+
+    const isExist &#x3D; await repository.exists({
+      where: {
+        id: refId,
+        isActive: true,
+      },
+    });
+
+    if (!isExist) {
+      this.logger.warn(&#x60;Upload failed: ${refType} not found (id&#x3D;${refId})&#x60;);
+      throw new BadRequestException(&#x60;${refType} not found&#x60;);
+    }
+  }
+
+  private getFolder(type: MediaAssetRefType) {
+    const folder &#x3D; this.folderMap[type];
+
+    if (!folder) {
+      throw new BadRequestException(&#x27;Invalid media reference type&#x27;);
+    }
+
+    return folder;
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'MediaService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

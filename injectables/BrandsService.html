@@ -1,0 +1,1390 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>cyberphone-be</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/default.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">cyberphone-be</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >BrandsService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/brands/brands.service.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#logger" >logger</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#baseBrandQuery" >baseBrandQuery</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#create" >create</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#doesSlugExist" >doesSlugExist</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#exists" >exists</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findAll" >findAll</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findOne" >findOne</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#mergeBrandExtras" >mergeBrandExtras</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#update" >update</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(brandRepository: <a href="../classes/Brand.html" target="_self">Repository&lt;Brand&gt;</a>, dataSource: DataSource, mediaAssetsService: <a href="../injectables/MediaAssetsService.html" target="_self">MediaAssetsService</a>, storageProvider: <a href="../interfaces/StorageProvider.html" target="_self">StorageProvider</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/brands/brands.service.ts:42</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>brandRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/Brand.html" target="_self" >Repository&lt;Brand&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>dataSource</td>
+                                                  
+                                                        <td>
+                                                                    <code>DataSource</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mediaAssetsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MediaAssetsService.html" target="_self" >MediaAssetsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>storageProvider</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/StorageProvider.html" target="_self" >StorageProvider</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="baseBrandQuery"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>baseBrandQuery</b></span>
+                        <a href="#baseBrandQuery"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>baseBrandQuery()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="345"
+                                    class="link-to-prism">src/brands/brands.service.ts:345</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="create"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>create</b></span>
+                        <a href="#create"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>create(createBrandDto: <a href="../classes/CreateBrandDto.html" target="_self">CreateBrandDto</a>, logo?: Express.Multer.File)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">src/brands/brands.service.ts:52</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>createBrandDto</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateBrandDto.html" target="_self" >CreateBrandDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>logo</td>
+                                            <td>
+                                                        <code>Express.Multer.File</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/Brand.html" target="_self" >Promise&lt;BrandResponseDto&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="doesSlugExist"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>doesSlugExist</b></span>
+                        <a href="#doesSlugExist"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>doesSlugExist(slug: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, excludeId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="335"
+                                    class="link-to-prism">src/brands/brands.service.ts:335</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>slug</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>excludeId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="exists"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>exists</b></span>
+                        <a href="#exists"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>exists(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="326"
+                                    class="link-to-prism">src/brands/brands.service.ts:326</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAll"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findAll</b></span>
+                        <a href="#findAll"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAll(paginationQueryDto: <a href="../classes/PaginationQueryDto.html" target="_self">PaginationQueryDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="130"
+                                    class="link-to-prism">src/brands/brands.service.ts:130</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>paginationQueryDto</td>
+                                            <td>
+                                                            <code><a href="../classes/PaginationQueryDto.html" target="_self" >PaginationQueryDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/PaginatedEntity.html" target="_self" >Promise&lt;PaginatedEntity&lt;BrandResponseDto&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findOne"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findOne</b></span>
+                        <a href="#findOne"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findOne(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="174"
+                                    class="link-to-prism">src/brands/brands.service.ts:174</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/Brand.html" target="_self" >Promise&lt;BrandResponseDto&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mergeBrandExtras"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>mergeBrandExtras</b></span>
+                        <a href="#mergeBrandExtras"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mergeBrandExtras(entities: <a href="../classes/Brand.html" target="_self">Brand[]</a>, raw: <a href="../interfaces/BrandQueryRaw.html" target="_self">BrandQueryRaw[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="359"
+                                    class="link-to-prism">src/brands/brands.service.ts:359</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>entities</td>
+                                            <td>
+                                                            <code><a href="../classes/Brand.html" target="_self" >Brand[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>raw</td>
+                                            <td>
+                                                            <code><a href="../interfaces/BrandQueryRaw.html" target="_self" >BrandQueryRaw[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Brand.html" target="_self" >BrandWithExtras[]</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="update"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>update</b></span>
+                        <a href="#update"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>update(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, updateBrandDto: <a href="../classes/UpdateBrandDto.html" target="_self">UpdateBrandDto</a>, logo?: Express.Multer.File)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="192"
+                                    class="link-to-prism">src/brands/brands.service.ts:192</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>updateBrandDto</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdateBrandDto.html" target="_self" >UpdateBrandDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>logo</td>
+                                            <td>
+                                                        <code>Express.Multer.File</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/Brand.html" target="_self" >Promise&lt;BrandResponseDto&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logger"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>logger</b></span>
+                        <a href="#logger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Logger(BrandsService.name)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/brands/brands.service.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from &#x27;@nestjs/common&#x27;;
+import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
+import { DataSource, Not, Repository } from &#x27;typeorm&#x27;;
+import {
+  BrandCreateEntityInput,
+  BrandResponseDto,
+  BrandUpdateEntityInput,
+  CreateBrandDto,
+  UpdateBrandDto,
+} from &#x27;./dto&#x27;;
+import { Brand } from &#x27;./entities&#x27;;
+import { mapToBrandResponse } from &#x27;./mappers&#x27;;
+import { BrandQueryRaw, BrandWithExtras } from &#x27;./types&#x27;;
+import { MediaAssetsService } from &#x27;@/media/media-assets.service&#x27;;
+import { MediaAsset } from &#x27;@/media/entities&#x27;;
+import { STORAGE_PROVIDER } from &#x27;@/storage/storage.module&#x27;;
+import type {
+  StorageProvider,
+  StorageUploadResult,
+} from &#x27;@/storage/storage.provider&#x27;;
+import { BRAND_FOLDER } from &#x27;@/common/constants&#x27;;
+import { PaginationQueryDto } from &#x27;@/common/dto&#x27;;
+import { MediaAssetRefType, MediaAssetUsageType } from &#x27;@/common/enums&#x27;;
+import { PaginatedEntity } from &#x27;@/common/types&#x27;;
+import {
+  extractPaginationParams,
+  getErrorStack,
+  isUniqueConstraintError,
+  normalizeSlug,
+  sanitizeEntityInput,
+} from &#x27;@/common/utils&#x27;;
+
+@Injectable()
+export class BrandsService {
+  private readonly logger &#x3D; new Logger(BrandsService.name);
+
+  constructor(
+    @InjectRepository(Brand)
+    private readonly brandRepository: Repository&lt;Brand&gt;,
+    private readonly dataSource: DataSource,
+    private readonly mediaAssetsService: MediaAssetsService,
+    @Inject(STORAGE_PROVIDER) private readonly storageProvider: StorageProvider,
+  ) {}
+
+  async create(
+    createBrandDto: CreateBrandDto,
+    logo?: Express.Multer.File,
+  ): Promise&lt;BrandResponseDto&gt; {
+    this.logger.log(&#x60;Creating brand: ${createBrandDto.name}&#x60;);
+
+    createBrandDto.slug &#x3D; normalizeSlug(createBrandDto.slug);
+
+    if (await this.doesSlugExist(createBrandDto.slug)) {
+      this.logger.warn(&#x60;Brand slug already exists: ${createBrandDto.slug}&#x60;);
+      throw new BadRequestException(&#x27;Brand with this slug already exists&#x27;);
+    }
+
+    return this.dataSource.transaction(async (tx) &#x3D;&gt; {
+      const brandEntity &#x3D; sanitizeEntityInput(
+        BrandCreateEntityInput,
+        createBrandDto,
+      );
+
+      const savedBrand &#x3D; await tx.save(Brand, brandEntity);
+
+      this.logger.debug(&#x60;Brand saved with id&#x3D;${savedBrand.id}&#x60;);
+
+      let uploadResult: StorageUploadResult | null &#x3D; null;
+      let media: MediaAsset | null &#x3D; null;
+
+      try {
+        if (logo) {
+          this.logger.debug(&#x60;Uploading logo for brand ${savedBrand.id}&#x60;);
+
+          uploadResult &#x3D; await this.storageProvider.upload(logo, {
+            folder: BRAND_FOLDER,
+          });
+
+          [media] &#x3D; await this.mediaAssetsService.create(
+            [
+              {
+                publicId: uploadResult.key,
+                url: uploadResult.url,
+                resourceType: uploadResult.resourceType,
+                refType: MediaAssetRefType.BRAND,
+                refId: savedBrand.id,
+                usageType: MediaAssetUsageType.LOGO,
+                createdBy: savedBrand.createdBy,
+              },
+            ],
+            tx,
+          );
+
+          this.logger.debug(
+            &#x60;Logo uploaded for brand ${savedBrand.id} - key&#x3D;${uploadResult.key}&#x60;,
+          );
+        }
+
+        return mapToBrandResponse({
+          ...savedBrand,
+          logo: media?.url ?? null,
+        });
+      } catch (error) {
+        this.logger.error(
+          &#x60;Failed to create brand ${createBrandDto.name}&#x60;,
+          getErrorStack(error),
+        );
+
+        if (isUniqueConstraintError(error)) {
+          throw new ConflictException(&#x27;Brand with this slug already exists&#x27;);
+        }
+
+        if (uploadResult?.key) {
+          await this.storageProvider.delete(uploadResult.key);
+          this.logger.warn(&#x60;Rolled back uploaded file ${uploadResult.key}&#x60;);
+        }
+
+        throw error;
+      }
+    });
+  }
+
+  async findAll(
+    paginationQueryDto: PaginationQueryDto,
+  ): Promise&lt;PaginatedEntity&lt;BrandResponseDto&gt;&gt; {
+    const { page, limit } &#x3D; extractPaginationParams(paginationQueryDto);
+
+    this.logger.debug(&#x60;Fetching brands page&#x3D;${page} limit&#x3D;${limit}&#x60;);
+
+    const selectQueryBuilder &#x3D; this.baseBrandQuery()
+      .leftJoin(&#x27;products&#x27;, &#x27;p&#x27;, &#x27;p.brand_id &#x3D; b.id AND p.is_active &#x3D; true&#x27;)
+      .select([
+        &#x27;b.id AS id&#x27;,
+        &#x27;b.name AS name&#x27;,
+        &#x27;b.slug AS slug&#x27;,
+        &#x27;b.is_active AS &quot;isActive&quot;&#x27;,
+        &#x27;b.created_at AS &quot;createdAt&quot;&#x27;,
+        &#x27;b.created_by AS &quot;createdBy&quot;&#x27;,
+        &#x27;b.updated_at AS &quot;updatedAt&quot;&#x27;,
+        &#x27;b.updated_by AS &quot;updatedBy&quot;&#x27;,
+      ])
+      .addSelect(&#x27;m.url&#x27;, &#x27;logo&#x27;)
+      .addSelect(&#x27;COUNT(p.id)&#x27;, &#x27;productCount&#x27;)
+      .where(&#x27;b.is_active &#x3D; true&#x27;)
+      .groupBy(&#x27;b.id, m.url&#x27;)
+      .orderBy(&#x27;COALESCE(b.updated_at, b.created_at)&#x27;, &#x27;DESC&#x27;)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const countQueryBuilder &#x3D; selectQueryBuilder.clone();
+
+    const [rows, totalCount] &#x3D; await Promise.all([
+      selectQueryBuilder.getRawMany(),
+      countQueryBuilder.getCount(),
+    ]);
+
+    this.logger.debug(&#x60;Fetched ${rows.length} brands&#x60;);
+
+    return {
+      items: rows.map(mapToBrandResponse),
+      totalCount,
+      currentPage: page,
+      itemsPerPage: limit,
+    };
+  }
+
+  async findOne(id: string): Promise&lt;BrandResponseDto&gt; {
+    this.logger.debug(&#x60;Fetching brand id&#x3D;${id}&#x60;);
+
+    const { entities, raw } &#x3D; await this.baseBrandQuery()
+      .select([&#x27;b&#x27;, &#x27;m.url AS logo&#x27;])
+      .where(&#x27;b.id &#x3D; :id AND b.is_active &#x3D; true&#x27;, { id })
+      .getRawAndEntities();
+
+    if (!entities.length) {
+      this.logger.warn(&#x60;Brand not found id&#x3D;${id}&#x60;);
+      throw new NotFoundException(&#x27;Brand not found&#x27;);
+    }
+
+    const brand &#x3D; this.mergeBrandExtras(entities, raw as BrandQueryRaw[])[0];
+
+    return mapToBrandResponse(brand);
+  }
+
+  async update(
+    id: string,
+    updateBrandDto: UpdateBrandDto,
+    logo?: Express.Multer.File,
+  ): Promise&lt;BrandResponseDto&gt; {
+    this.logger.log(&#x60;Updating brand id&#x3D;${id}&#x60;);
+
+    const brand &#x3D; (await this.brandRepository
+      .createQueryBuilder(&#x27;brand&#x27;)
+      .select([&#x27;brand&#x27;])
+      .where(&#x27;brand.id &#x3D; :id AND brand.isActive &#x3D; true&#x27;, { id })
+      .loadRelationCountAndMap(&#x27;brand.productCount&#x27;, &#x27;brand.products&#x27;)
+      .getOne()) as Brand &amp; { productCount: number };
+
+    if (!brand) {
+      this.logger.warn(&#x60;Brand not found id&#x3D;${id}&#x60;);
+      throw new NotFoundException(&#x27;Brand not found&#x27;);
+    }
+
+    if (updateBrandDto.slug) {
+      updateBrandDto.slug &#x3D; normalizeSlug(updateBrandDto.slug);
+    }
+
+    if (updateBrandDto.slug &amp;&amp; updateBrandDto.slug !&#x3D;&#x3D; brand.slug) {
+      if (await this.doesSlugExist(updateBrandDto.slug, id)) {
+        this.logger.warn(&#x60;Slug already exists: ${updateBrandDto.slug}&#x60;);
+        throw new BadRequestException(&#x27;Slug already exists&#x27;);
+      }
+    }
+
+    return this.dataSource.transaction(async (tx) &#x3D;&gt; {
+      const entityInput &#x3D; sanitizeEntityInput(BrandUpdateEntityInput, {
+        ...brand,
+        ...updateBrandDto,
+      });
+
+      if (updateBrandDto.isActive &#x3D;&#x3D;&#x3D; false) {
+        if (brand.productCount &gt; 0) {
+          this.logger.warn(
+            &#x60;Cannot delete brand id&#x3D;${id} because it has products&#x60;,
+          );
+          throw new BadRequestException(
+            &#x27;Cannot delete brand with existing products&#x27;,
+          );
+        }
+
+        entityInput.isActive &#x3D; false;
+        this.logger.debug(&#x60;Setting brand id&#x3D;${id} as inactive&#x60;);
+      }
+
+      this.logger.debug(
+        &#x60;Update payload for brand ${id}: ${JSON.stringify(entityInput)}&#x60;,
+      );
+
+      const updatedBrand &#x3D; await tx.save(Brand, { id, ...entityInput });
+
+      this.logger.debug(&#x60;Brand updated id&#x3D;${updatedBrand.id}&#x60;);
+
+      let uploadResult: StorageUploadResult | null &#x3D; null;
+      let logoUrl: string | null &#x3D; null;
+
+      try {
+        // important: Before uploading a logo, we need to retrieve oldMedia to identify differences with newMedia
+        const oldLogo &#x3D; await this.mediaAssetsService.findByRefId({
+          refType: MediaAssetRefType.BRAND,
+          refId: id,
+          usageType: MediaAssetUsageType.LOGO,
+          tx,
+        });
+
+        const shouldRemoveOld &#x3D; updateBrandDto.removeLogo || !!logo;
+
+        if (logo) {
+          this.logger.debug(&#x60;Uploading new logo for brand ${id}&#x60;);
+
+          uploadResult &#x3D; await this.storageProvider.upload(logo, {
+            folder: BRAND_FOLDER,
+          });
+
+          const [newLogo] &#x3D; await this.mediaAssetsService.create(
+            [
+              {
+                publicId: uploadResult.key,
+                url: uploadResult.url,
+                resourceType: uploadResult.resourceType,
+                refType: MediaAssetRefType.BRAND,
+                refId: id,
+                usageType: MediaAssetUsageType.LOGO,
+                createdBy: updatedBrand.updatedBy,
+              },
+            ],
+            tx,
+          );
+
+          logoUrl &#x3D; newLogo.url;
+        }
+
+        if (shouldRemoveOld &amp;&amp; oldLogo) {
+          try {
+            await this.mediaAssetsService.deleteById(oldLogo.id, tx);
+            if (oldLogo.publicId) {
+              await this.storageProvider.delete(oldLogo.publicId);
+              this.logger.debug(&#x60;Deleted old logo ${oldLogo.publicId}&#x60;);
+            }
+          } catch (err) {
+            this.logger.error(
+              &#x60;Failed to delete old logo ${oldLogo.publicId}: ${getErrorStack(err)}&#x60;,
+            );
+          }
+        }
+
+        if (!logo &amp;&amp; updateBrandDto.removeLogo) {
+          logoUrl &#x3D; null;
+        } else if (!logo &amp;&amp; !updateBrandDto.removeLogo) {
+          logoUrl &#x3D; oldLogo?.url ?? null;
+        }
+
+        return mapToBrandResponse({
+          ...updatedBrand,
+          logo: logoUrl,
+        });
+      } catch (error) {
+        this.logger.error(&#x60;Failed updating brand ${id}&#x60;, getErrorStack(error));
+
+        if (uploadResult?.key) {
+          await this.storageProvider.delete(uploadResult.key);
+          this.logger.warn(&#x60;Rolled back uploaded file ${uploadResult.key}&#x60;);
+        }
+
+        throw error;
+      }
+    });
+  }
+
+  async exists(id: string): Promise&lt;boolean&gt; {
+    return this.brandRepository.exists({
+      where: {
+        id,
+        isActive: true,
+      },
+    });
+  }
+
+  private doesSlugExist(slug: string, excludeId?: string) {
+    return this.brandRepository.exists({
+      where: {
+        slug,
+        isActive: true,
+        ...(excludeId &amp;&amp; { id: Not(excludeId) }),
+      },
+    });
+  }
+
+  private baseBrandQuery() {
+    return this.brandRepository.createQueryBuilder(&#x27;b&#x27;).leftJoin(
+      &#x27;media_assets&#x27;,
+      &#x27;m&#x27;,
+      &#x60;
+        m.ref_type &#x3D; :refType 
+        AND m.ref_id::uuid &#x3D; b.id 
+        AND m.is_active &#x3D; true
+        AND m.usage_type &#x3D; :usageType
+      &#x60;,
+      { refType: MediaAssetRefType.BRAND, usageType: MediaAssetUsageType.LOGO },
+    );
+  }
+
+  private mergeBrandExtras(
+    entities: Brand[],
+    raw: BrandQueryRaw[],
+  ): BrandWithExtras[] {
+    return entities.map((brand, idx) &#x3D;&gt; ({
+      ...brand,
+      logo: raw[idx]?.logo ?? null,
+      productCount: Number(raw[idx]?.product_count ?? 0),
+    }));
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'BrandsService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

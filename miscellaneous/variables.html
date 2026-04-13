@@ -1,0 +1,2308 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>cyberphone-be</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/default.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+          <script>
+              // --- Iframe navigation tracking for Template Playground ---
+              function sendCurrentUrlToParent() {
+                  if (window.parent && window.parent !== window) {
+                      window.parent.postMessage({
+                          type: 'compodoc-iframe-navigate',
+                          url: window.location.pathname + window.location.hash
+                      }, '*');
+                  }
+              }
+              window.addEventListener('hashchange', sendCurrentUrlToParent, false);
+              window.addEventListener('popstate', sendCurrentUrlToParent, false);
+              window.addEventListener('DOMContentLoaded', sendCurrentUrlToParent, false);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">cyberphone-be</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content miscellaneous-variables">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Miscellaneous</li>
+  <li class="breadcrumb-item">Variables</li>
+</ol>
+
+<section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <ul class="index-list">
+                        <li>
+                            <a href="#BRAND_FOLDER" title="src/common/constants/paths.ts" ><b>BRAND_FOLDER</b>&nbsp;&nbsp;&nbsp;(src/.../paths.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#buildPaginationParams" title="src/common/utils/paginations.util.ts" ><b>buildPaginationParams</b>&nbsp;&nbsp;&nbsp;(src/.../paginations.util.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CART_ITEM_REPOSITORY" title="src/carts/repositories/cart-item.repository.ts" ><b>CART_ITEM_REPOSITORY</b>&nbsp;&nbsp;&nbsp;(src/.../cart-item.repository.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CART_REPOSITORY" title="src/carts/repositories/cart.repository.ts" ><b>CART_REPOSITORY</b>&nbsp;&nbsp;&nbsp;(src/.../cart.repository.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CATEGORY_FOLDER" title="src/common/constants/paths.ts" ><b>CATEGORY_FOLDER</b>&nbsp;&nbsp;&nbsp;(src/.../paths.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CLOUDINARY_CLIENT" title="src/cloudinary/cloudinary.client.provider.ts" ><b>CLOUDINARY_CLIENT</b>&nbsp;&nbsp;&nbsp;(src/.../cloudinary.client.provider.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CloudinaryClientProvider" title="src/cloudinary/cloudinary.client.provider.ts" ><b>CloudinaryClientProvider</b>&nbsp;&nbsp;&nbsp;(src/.../cloudinary.client.provider.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CUSTOMER_REPOSITORY" title="src/customers/repositories/customer.repository.ts" ><b>CUSTOMER_REPOSITORY</b>&nbsp;&nbsp;&nbsp;(src/.../customer.repository.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#databaseConfig" title="src/database/database.config.ts" ><b>databaseConfig</b>&nbsp;&nbsp;&nbsp;(src/.../database.config.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#extractPaginationParams" title="src/common/utils/paginations.util.ts" ><b>extractPaginationParams</b>&nbsp;&nbsp;&nbsp;(src/.../paginations.util.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#getFilename" title="src/common/utils/files.util.ts" ><b>getFilename</b>&nbsp;&nbsp;&nbsp;(src/.../files.util.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#Handlebars" title="documentation/template-playground/hbs-render.service.ts" ><b>Handlebars</b>&nbsp;&nbsp;&nbsp;(documentation/.../hbs-render.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IDENTITY_REPOSITORY" title="src/identities/repositories/identity.repository.ts" ><b>IDENTITY_REPOSITORY</b>&nbsp;&nbsp;&nbsp;(src/.../identity.repository.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IS_PUBLIC_KEY" title="src/auth/decorators/public.decorator.ts" ><b>IS_PUBLIC_KEY</b>&nbsp;&nbsp;&nbsp;(src/.../public.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#JSZip" title="documentation/template-playground/zip-export.service.ts" ><b>JSZip</b>&nbsp;&nbsp;&nbsp;(documentation/.../zip-export.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LoggedInUser" title="src/auth/decorators/logged-in-user.decorator.ts" ><b>LoggedInUser</b>&nbsp;&nbsp;&nbsp;(src/.../logged-in-user.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_ADDRESS_LENGTH" title="src/orders/storefront/dto/requests/create-order.dto.ts" ><b>MAX_ADDRESS_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-order.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_ALT_TEXT_LENGTH" title="src/products/admin/dto/requests/create-product-image.dto.ts" ><b>MAX_ALT_TEXT_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-product-image.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_CITY_LENGTH" title="src/orders/storefront/dto/requests/create-order.dto.ts" ><b>MAX_CITY_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-order.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_COUNTRY_LENGTH" title="src/orders/storefront/dto/requests/create-order.dto.ts" ><b>MAX_COUNTRY_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-order.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_DISTRICT_LENGTH" title="src/orders/storefront/dto/requests/create-order.dto.ts" ><b>MAX_DISTRICT_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-order.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_EMAIL_LENGTH" title="src/common/constants/length.ts" ><b>MAX_EMAIL_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../length.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_EMAIL_LENGTH" title="src/customers/dtos/requests/create-customer.dto.ts" ><b>MAX_EMAIL_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-customer.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_EMAIL_LENGTH" title="src/users/dto/requests/create-user.dto.ts" ><b>MAX_EMAIL_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-user.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_EMAIL_LENGTH" title="src/users/dto/requests/update-user.dto.ts" ><b>MAX_EMAIL_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../update-user.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_EMAIL_LENGTH" title="src/orders/storefront/dto/requests/create-order.dto.ts" ><b>MAX_EMAIL_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-order.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_FIRST_NAME_LENGTH" title="src/common/constants/length.ts" ><b>MAX_FIRST_NAME_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../length.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_LAST_NAME_LENGTH" title="src/common/constants/length.ts" ><b>MAX_LAST_NAME_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../length.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_LENGTH" title="src/product-variants/dto/requests/sync-variant-attribute.dto.ts" ><b>MAX_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../sync-variant-attribute.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_LENGTH" title="src/products/admin/dto/requests/create-product-attribute.dto.ts" ><b>MAX_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-product-attribute.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_NAME_LENGTH" title="src/brands/dto/requests/create-brand.dto.ts" ><b>MAX_NAME_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-brand.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_NAME_LENGTH" title="src/brands/dto/requests/update-brand.dto.ts" ><b>MAX_NAME_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../update-brand.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_NAME_LENGTH" title="src/categories/dto/requests/create-category.dto.ts" ><b>MAX_NAME_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-category.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_NAME_LENGTH" title="src/customers/dtos/requests/create-customer.dto.ts" ><b>MAX_NAME_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-customer.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_NAME_LENGTH" title="src/product-variants/dto/requests/create-product-variant.dto.ts" ><b>MAX_NAME_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-product-variant.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_NAME_LENGTH" title="src/product-variants/dto/requests/update-product-variant.dto.ts" ><b>MAX_NAME_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../update-product-variant.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_NAME_LENGTH" title="src/users/dto/requests/create-user.dto.ts" ><b>MAX_NAME_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-user.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_NAME_LENGTH" title="src/users/dto/requests/update-user.dto.ts" ><b>MAX_NAME_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../update-user.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_NAME_LENGTH" title="src/orders/storefront/dto/requests/create-order.dto.ts" ><b>MAX_NAME_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-order.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_NAME_LENGTH" title="src/products/admin/dto/requests/create-product.dto.ts" ><b>MAX_NAME_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-product.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_NAME_LENGTH" title="src/products/admin/dto/requests/update-product.dto.ts" ><b>MAX_NAME_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../update-product.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_PHONE_LENGTH" title="src/common/constants/length.ts" ><b>MAX_PHONE_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../length.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_PHONE_LENGTH" title="src/orders/storefront/dto/requests/create-order.dto.ts" ><b>MAX_PHONE_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-order.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_SKU_LENGTH" title="src/product-variants/dto/requests/create-product-variant.dto.ts" ><b>MAX_SKU_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-product-variant.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_SKU_LENGTH" title="src/product-variants/dto/requests/update-product-variant.dto.ts" ><b>MAX_SKU_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../update-product-variant.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_SLUG_LENGTH" title="src/brands/dto/requests/create-brand.dto.ts" ><b>MAX_SLUG_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-brand.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_SLUG_LENGTH" title="src/brands/dto/requests/update-brand.dto.ts" ><b>MAX_SLUG_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../update-brand.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_SLUG_LENGTH" title="src/categories/dto/requests/create-category.dto.ts" ><b>MAX_SLUG_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-category.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_SLUG_LENGTH" title="src/products/admin/dto/requests/create-product.dto.ts" ><b>MAX_SLUG_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-product.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_SLUG_LENGTH" title="src/products/admin/dto/requests/update-product.dto.ts" ><b>MAX_SLUG_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../update-product.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_STATE_LENGTH" title="src/orders/storefront/dto/requests/create-order.dto.ts" ><b>MAX_STATE_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-order.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_TITLE_LENGTH" title="src/products/admin/dto/requests/create-product-image.dto.ts" ><b>MAX_TITLE_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-product-image.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MAX_WARD_LENGTH" title="src/orders/storefront/dto/requests/create-order.dto.ts" ><b>MAX_WARD_LENGTH</b>&nbsp;&nbsp;&nbsp;(src/.../create-order.dto.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#monaco" title="documentation/template-playground/template-editor.service.ts" ><b>monaco</b>&nbsp;&nbsp;&nbsp;(documentation/.../template-editor.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#PRODUCT_ATTRIBUTE_REPOSITORY" title="src/products/admin/repositories/product-attribute.repository.ts" ><b>PRODUCT_ATTRIBUTE_REPOSITORY</b>&nbsp;&nbsp;&nbsp;(src/.../product-attribute.repository.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#PRODUCT_FOLDER" title="src/common/constants/paths.ts" ><b>PRODUCT_FOLDER</b>&nbsp;&nbsp;&nbsp;(src/.../paths.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#PRODUCT_IMAGE_REPOSITORY" title="src/products/admin/repositories/product-image.repository.ts" ><b>PRODUCT_IMAGE_REPOSITORY</b>&nbsp;&nbsp;&nbsp;(src/.../product-image.repository.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#PRODUCT_IMAGE_TYPE_TO_MEDIA_USAGE" title="src/products/admin/mappers/product-image-type.mapper.ts" ><b>PRODUCT_IMAGE_TYPE_TO_MEDIA_USAGE</b>&nbsp;&nbsp;&nbsp;(src/.../product-image-type.mapper.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#PRODUCT_REPOSITORY" title="src/products/admin/repositories/product.repository.ts" ><b>PRODUCT_REPOSITORY</b>&nbsp;&nbsp;&nbsp;(src/.../product.repository.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#Public" title="src/auth/decorators/public.decorator.ts" ><b>Public</b>&nbsp;&nbsp;&nbsp;(src/.../public.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#REFRESH_TOKEN_COOKIE" title="src/common/constants/cookies.ts" ><b>REFRESH_TOKEN_COOKIE</b>&nbsp;&nbsp;&nbsp;(src/.../cookies.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#REFRESH_TOKEN_REPOSITORY" title="src/auth/repositories/refresh-token.repository.ts" ><b>REFRESH_TOKEN_REPOSITORY</b>&nbsp;&nbsp;&nbsp;(src/.../refresh-token.repository.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ROLE_REPOSITORY" title="src/users/repositories/role.repository.ts" ><b>ROLE_REPOSITORY</b>&nbsp;&nbsp;&nbsp;(src/.../role.repository.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#STORAGE_PROVIDER" title="src/storage/storage.module.ts" ><b>STORAGE_PROVIDER</b>&nbsp;&nbsp;&nbsp;(src/.../storage.module.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#STOREFRONT_PRODUCT_REPOSITORY" title="src/products/storefront/repositories/storefront-product.repository.ts" ><b>STOREFRONT_PRODUCT_REPOSITORY</b>&nbsp;&nbsp;&nbsp;(src/.../storefront-product.repository.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#USER_REPOSITORY" title="src/users/repositories/user.repository.ts" ><b>USER_REPOSITORY</b>&nbsp;&nbsp;&nbsp;(src/.../user.repository.ts)</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    <h3>src/common/constants/paths.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="BRAND_FOLDER"></a>
+                    <span class="name">
+                        <span ><b>BRAND_FOLDER</b></span>
+                        <a href="#BRAND_FOLDER"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;brands&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="CATEGORY_FOLDER"></a>
+                    <span class="name">
+                        <span ><b>CATEGORY_FOLDER</b></span>
+                        <a href="#CATEGORY_FOLDER"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;categories&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="PRODUCT_FOLDER"></a>
+                    <span class="name">
+                        <span ><b>PRODUCT_FOLDER</b></span>
+                        <a href="#PRODUCT_FOLDER"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;products&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/common/utils/paginations.util.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildPaginationParams"></a>
+                    <span class="name">
+                        <span ><b>buildPaginationParams</b></span>
+                        <a href="#buildPaginationParams"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(page: number, limit: number) &#x3D;&gt; {
+  return {
+    skip: (page - 1) * limit,
+    take: limit,
+  };
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="extractPaginationParams"></a>
+                    <span class="name">
+                        <span ><b>extractPaginationParams</b></span>
+                        <a href="#extractPaginationParams"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(input: PaginationQueryDto) &#x3D;&gt; {
+  const page &#x3D; input.page || 1;
+  const limit &#x3D; input.limit || 20;
+
+  return { page, limit };
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/carts/repositories/cart-item.repository.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="CART_ITEM_REPOSITORY"></a>
+                    <span class="name">
+                        <span ><b>CART_ITEM_REPOSITORY</b></span>
+                        <a href="#CART_ITEM_REPOSITORY"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;ICartItemRepository&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/carts/repositories/cart.repository.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="CART_REPOSITORY"></a>
+                    <span class="name">
+                        <span ><b>CART_REPOSITORY</b></span>
+                        <a href="#CART_REPOSITORY"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;ICartRepository&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/cloudinary/cloudinary.client.provider.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="CLOUDINARY_CLIENT"></a>
+                    <span class="name">
+                        <span ><b>CLOUDINARY_CLIENT</b></span>
+                        <a href="#CLOUDINARY_CLIENT"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;CLOUDINARY_CLIENT&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="CloudinaryClientProvider"></a>
+                    <span class="name">
+                        <span ><b>CloudinaryClientProvider</b></span>
+                        <a href="#CloudinaryClientProvider"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+  provide: CLOUDINARY_CLIENT,
+  inject: [ConfigService],
+  useFactory: (configService: ConfigService) &#x3D;&gt; {
+    cloudinary.config({
+      cloud_name: configService.getOrThrow&lt;string&gt;(&#x27;CLOUDINARY_CLOUD_NAME&#x27;),
+      api_key: configService.getOrThrow&lt;string&gt;(&#x27;CLOUDINARY_API_KEY&#x27;),
+      api_secret: configService.getOrThrow&lt;string&gt;(&#x27;CLOUDINARY_API_SECRET&#x27;),
+    });
+
+    return cloudinary;
+  },
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/customers/repositories/customer.repository.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="CUSTOMER_REPOSITORY"></a>
+                    <span class="name">
+                        <span ><b>CUSTOMER_REPOSITORY</b></span>
+                        <a href="#CUSTOMER_REPOSITORY"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;ICustomerRepository&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/database/database.config.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="databaseConfig"></a>
+                    <span class="name">
+                        <span ><b>databaseConfig</b></span>
+                        <a href="#databaseConfig"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(
+  configService: ConfigService,
+): TypeOrmModuleOptions &#x3D;&gt; {
+  const isProd &#x3D; configService.get&lt;string&gt;(&#x27;NODE_ENV&#x27;) &#x3D;&#x3D;&#x3D; &#x27;production&#x27;;
+  const loggingEnv &#x3D; configService.get&lt;string&gt;(&#x27;DATABASE_LOGGING&#x27;);
+  const retryAttemptsEnv &#x3D; configService.get&lt;string&gt;(&#x27;DATABASE_RETRY_ATTEMPTS&#x27;);
+  const retryDelayEnv &#x3D; configService.get&lt;string&gt;(&#x27;DATABASE_RETRY_DELAY&#x27;);
+  return {
+    type: &#x27;postgres&#x27;,
+    host: configService.getOrThrow&lt;string&gt;(&#x27;DATABASE_HOST&#x27;),
+    port: Number(configService.getOrThrow&lt;string&gt;(&#x27;DATABASE_PORT&#x27;)),
+    username: configService.getOrThrow&lt;string&gt;(&#x27;DATABASE_USER&#x27;),
+    password: configService.getOrThrow&lt;string&gt;(&#x27;DATABASE_PASSWORD&#x27;),
+    database: configService.getOrThrow&lt;string&gt;(&#x27;DATABASE_NAME&#x27;),
+    autoLoadEntities: true,
+    synchronize: false,
+    logging: loggingEnv !&#x3D;&#x3D; undefined ? loggingEnv &#x3D;&#x3D;&#x3D; &#x27;true&#x27; : !isProd,
+    ssl: configService.get&lt;string&gt;(&#x27;DATABASE_SSL&#x27;) &#x3D;&#x3D;&#x3D; &#x27;true&#x27;,
+    retryAttempts: retryAttemptsEnv ? Number(retryAttemptsEnv) : 10,
+    retryDelay: retryDelayEnv ? Number(retryDelayEnv) : 3000,
+  };
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/common/utils/files.util.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFilename"></a>
+                    <span class="name">
+                        <span ><b>getFilename</b></span>
+                        <a href="#getFilename"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(originalname: string): string &#x3D;&gt;
+  (() &#x3D;&gt; {
+    const lastDotIndex &#x3D; originalname.lastIndexOf(&#x27;.&#x27;);
+    return lastDotIndex &gt; 0
+      ? originalname.substring(0, lastDotIndex)
+      : originalname;
+  })()</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>documentation/template-playground/hbs-render.service.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="Handlebars"></a>
+                    <span class="name">
+                        <span ><b>Handlebars</b></span>
+                        <a href="#Handlebars"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/identities/repositories/identity.repository.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IDENTITY_REPOSITORY"></a>
+                    <span class="name">
+                        <span ><b>IDENTITY_REPOSITORY</b></span>
+                        <a href="#IDENTITY_REPOSITORY"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;IIdentityRepository&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/auth/decorators/public.decorator.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IS_PUBLIC_KEY"></a>
+                    <span class="name">
+                        <span ><b>IS_PUBLIC_KEY</b></span>
+                        <a href="#IS_PUBLIC_KEY"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;isPublic&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="Public"></a>
+                    <span class="name">
+                        <span ><b>Public</b></span>
+                        <a href="#Public"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>() &#x3D;&gt; SetMetadata(IS_PUBLIC_KEY, true)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>documentation/template-playground/zip-export.service.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="JSZip"></a>
+                    <span class="name">
+                        <span ><b>JSZip</b></span>
+                        <a href="#JSZip"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/auth/decorators/logged-in-user.decorator.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LoggedInUser"></a>
+                    <span class="name">
+                        <span ><b>LoggedInUser</b></span>
+                        <a href="#LoggedInUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>createParamDecorator&lt;keyof AuthUser | undefined&gt;(
+  (data, ctx: ExecutionContext) &#x3D;&gt; {
+    const request &#x3D; ctx.switchToHttp().getRequest&lt;AuthenticatedRequest&gt;();
+    const { user } &#x3D; request;
+
+    if (!user) return undefined;
+
+    if (data) {
+      return user[data];
+    }
+
+    return user;
+  },
+)</code>
+                    </td>
+                </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p><code>@LoggedInUser()</code> parameter decorator.</p>
+<p>Retrieves the authenticated user from <code>request.user</code>, which is populated
+by Passport (e.g. JWT strategy) after successful authentication.</p>
+<p>This decorator can return either the full <code>AuthUser</code> or a specific property of the AuthUser.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/orders/storefront/dto/requests/create-order.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_ADDRESS_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_ADDRESS_LENGTH</b></span>
+                        <a href="#MAX_ADDRESS_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_CITY_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_CITY_LENGTH</b></span>
+                        <a href="#MAX_CITY_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>100</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_COUNTRY_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_COUNTRY_LENGTH</b></span>
+                        <a href="#MAX_COUNTRY_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>100</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_DISTRICT_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_DISTRICT_LENGTH</b></span>
+                        <a href="#MAX_DISTRICT_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>100</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_EMAIL_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_EMAIL_LENGTH</b></span>
+                        <a href="#MAX_EMAIL_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>320</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_NAME_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_NAME_LENGTH</b></span>
+                        <a href="#MAX_NAME_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_PHONE_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_PHONE_LENGTH</b></span>
+                        <a href="#MAX_PHONE_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>30</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_STATE_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_STATE_LENGTH</b></span>
+                        <a href="#MAX_STATE_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>100</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_WARD_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_WARD_LENGTH</b></span>
+                        <a href="#MAX_WARD_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>100</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/products/admin/dto/requests/create-product-image.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_ALT_TEXT_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_ALT_TEXT_LENGTH</b></span>
+                        <a href="#MAX_ALT_TEXT_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_TITLE_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_TITLE_LENGTH</b></span>
+                        <a href="#MAX_TITLE_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/common/constants/length.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_EMAIL_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_EMAIL_LENGTH</b></span>
+                        <a href="#MAX_EMAIL_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>320</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_FIRST_NAME_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_FIRST_NAME_LENGTH</b></span>
+                        <a href="#MAX_FIRST_NAME_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_LAST_NAME_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_LAST_NAME_LENGTH</b></span>
+                        <a href="#MAX_LAST_NAME_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_PHONE_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_PHONE_LENGTH</b></span>
+                        <a href="#MAX_PHONE_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>30</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/customers/dtos/requests/create-customer.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_EMAIL_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_EMAIL_LENGTH</b></span>
+                        <a href="#MAX_EMAIL_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>320</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_NAME_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_NAME_LENGTH</b></span>
+                        <a href="#MAX_NAME_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/users/dto/requests/create-user.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_EMAIL_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_EMAIL_LENGTH</b></span>
+                        <a href="#MAX_EMAIL_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>320</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_NAME_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_NAME_LENGTH</b></span>
+                        <a href="#MAX_NAME_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/users/dto/requests/update-user.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_EMAIL_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_EMAIL_LENGTH</b></span>
+                        <a href="#MAX_EMAIL_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>320</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_NAME_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_NAME_LENGTH</b></span>
+                        <a href="#MAX_NAME_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/product-variants/dto/requests/sync-variant-attribute.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_LENGTH</b></span>
+                        <a href="#MAX_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/products/admin/dto/requests/create-product-attribute.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_LENGTH</b></span>
+                        <a href="#MAX_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/brands/dto/requests/create-brand.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_NAME_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_NAME_LENGTH</b></span>
+                        <a href="#MAX_NAME_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_SLUG_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_SLUG_LENGTH</b></span>
+                        <a href="#MAX_SLUG_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/brands/dto/requests/update-brand.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_NAME_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_NAME_LENGTH</b></span>
+                        <a href="#MAX_NAME_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_SLUG_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_SLUG_LENGTH</b></span>
+                        <a href="#MAX_SLUG_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/categories/dto/requests/create-category.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_NAME_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_NAME_LENGTH</b></span>
+                        <a href="#MAX_NAME_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_SLUG_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_SLUG_LENGTH</b></span>
+                        <a href="#MAX_SLUG_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/product-variants/dto/requests/create-product-variant.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_NAME_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_NAME_LENGTH</b></span>
+                        <a href="#MAX_NAME_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_SKU_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_SKU_LENGTH</b></span>
+                        <a href="#MAX_SKU_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>100</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/product-variants/dto/requests/update-product-variant.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_NAME_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_NAME_LENGTH</b></span>
+                        <a href="#MAX_NAME_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_SKU_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_SKU_LENGTH</b></span>
+                        <a href="#MAX_SKU_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>100</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/products/admin/dto/requests/create-product.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_NAME_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_NAME_LENGTH</b></span>
+                        <a href="#MAX_NAME_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_SLUG_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_SLUG_LENGTH</b></span>
+                        <a href="#MAX_SLUG_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/products/admin/dto/requests/update-product.dto.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_NAME_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_NAME_LENGTH</b></span>
+                        <a href="#MAX_NAME_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_SLUG_LENGTH"></a>
+                    <span class="name">
+                        <span ><b>MAX_SLUG_LENGTH</b></span>
+                        <a href="#MAX_SLUG_LENGTH"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>255</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>documentation/template-playground/template-editor.service.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="monaco"></a>
+                    <span class="name">
+                        <span ><b>monaco</b></span>
+                        <a href="#monaco"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/products/admin/repositories/product-attribute.repository.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="PRODUCT_ATTRIBUTE_REPOSITORY"></a>
+                    <span class="name">
+                        <span ><b>PRODUCT_ATTRIBUTE_REPOSITORY</b></span>
+                        <a href="#PRODUCT_ATTRIBUTE_REPOSITORY"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(
+  &#x27;IProductAttributeRepository&#x27;,
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/products/admin/repositories/product-image.repository.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="PRODUCT_IMAGE_REPOSITORY"></a>
+                    <span class="name">
+                        <span ><b>PRODUCT_IMAGE_REPOSITORY</b></span>
+                        <a href="#PRODUCT_IMAGE_REPOSITORY"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;IProductImageRepository&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/products/admin/mappers/product-image-type.mapper.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="PRODUCT_IMAGE_TYPE_TO_MEDIA_USAGE"></a>
+                    <span class="name">
+                        <span ><b>PRODUCT_IMAGE_TYPE_TO_MEDIA_USAGE</b></span>
+                        <a href="#PRODUCT_IMAGE_TYPE_TO_MEDIA_USAGE"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Record&lt;ProductImageType, MediaAssetUsageType&gt;</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+  [ProductImageType.MAIN]: MediaAssetUsageType.MAIN,
+  [ProductImageType.THUMBNAIL]: MediaAssetUsageType.THUMBNAIL,
+  [ProductImageType.GALLERY]: MediaAssetUsageType.GALLERY,
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/products/admin/repositories/product.repository.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="PRODUCT_REPOSITORY"></a>
+                    <span class="name">
+                        <span ><b>PRODUCT_REPOSITORY</b></span>
+                        <a href="#PRODUCT_REPOSITORY"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;IProductRepository&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/common/constants/cookies.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="REFRESH_TOKEN_COOKIE"></a>
+                    <span class="name">
+                        <span ><b>REFRESH_TOKEN_COOKIE</b></span>
+                        <a href="#REFRESH_TOKEN_COOKIE"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;refresh_token&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/auth/repositories/refresh-token.repository.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="REFRESH_TOKEN_REPOSITORY"></a>
+                    <span class="name">
+                        <span ><b>REFRESH_TOKEN_REPOSITORY</b></span>
+                        <a href="#REFRESH_TOKEN_REPOSITORY"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;IRefreshTokenRepository&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/users/repositories/role.repository.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ROLE_REPOSITORY"></a>
+                    <span class="name">
+                        <span ><b>ROLE_REPOSITORY</b></span>
+                        <a href="#ROLE_REPOSITORY"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;IRoleRepository&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/storage/storage.module.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="STORAGE_PROVIDER"></a>
+                    <span class="name">
+                        <span ><b>STORAGE_PROVIDER</b></span>
+                        <a href="#STORAGE_PROVIDER"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;STORAGE_PROVIDER&#x27;</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/products/storefront/repositories/storefront-product.repository.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="STOREFRONT_PRODUCT_REPOSITORY"></a>
+                    <span class="name">
+                        <span ><b>STOREFRONT_PRODUCT_REPOSITORY</b></span>
+                        <a href="#STOREFRONT_PRODUCT_REPOSITORY"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(
+  &#x27;IStorefrontProductRepository&#x27;,
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>src/users/repositories/user.repository.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="USER_REPOSITORY"></a>
+                    <span class="name">
+                        <span ><b>USER_REPOSITORY</b></span>
+                        <a href="#USER_REPOSITORY"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;IUserRepository&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'miscellaneous-variables';
+            var COMPODOC_CURRENT_PAGE_URL = 'variables.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
