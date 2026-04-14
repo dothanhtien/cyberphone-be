@@ -40,6 +40,15 @@ services:
       retries: 10
       start_period: 30s
 
+  docs:
+    image: nginx:alpine
+    container_name: docs
+    ports:
+      - "8081:80"
+    volumes:
+      - ./documentation:/usr/share/nginx/html:ro
+    restart: unless-stopped
+
   pgadmin:
     image: dpage/pgadmin4:9.11.0
     container_name: pgadmin

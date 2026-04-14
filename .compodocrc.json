@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/@compodoc/compodoc/src/config/schema.json",
+  "name": "cyberphone-be",
+  "output": "documentation",
+  "tsconfig": "tsconfig.compodoc.json",
+  "excludeExternals": true,
+  "disableCoverage": false,
+  "theme": "default"
+}
