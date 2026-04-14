@@ -39,7 +39,7 @@ export class OrderItem {
   sku: string;
 
   @Column({ name: 'attributes', type: 'json', nullable: true })
-  attributes: Record<string, any> | null;
+  attributes: Record<string, unknown> | null;
 
   @Column({
     name: 'unit_price',

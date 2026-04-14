@@ -1,59 +1,36 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import dayjs from 'dayjs';
-import { OrderCreateEntityInput } from './dto/entity-inputs/order-create-entity.dto';
-import { CreateOrderDto } from './dto/requests/create-order.dto';
+import {
+  CreateOrderDto,
+  OrderCreateEntityInput,
+  OrderItemCreateEntityDto,
+} from './dto';
+import {
+  type IOrderItemRepository,
+  type IOrderRepository,
+  ORDER_ITEM_REPOSITORY,
+  ORDER_REPOSITORY,
+} from '../repositories';
 import { OrderCalculationInput, OrderCalculationResult } from './types';
-import { Order, OrderItem } from '../entities';
-import { Cart } from '@/carts/entities';
-import { CartStatus } from '@/carts/enums';
 import { sanitizeEntityInput } from '@/common/utils';
 
 @Injectable()
 export class StorefrontOrdersService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    @Inject(ORDER_REPOSITORY)
+    private readonly orderRepository: IOrderRepository,
+    @Inject(ORDER_ITEM_REPOSITORY)
+    private readonly orderItemRepository: IOrderItemRepository,
+  ) {}
 
   async create(createOrderDto: CreateOrderDto) {
     return await this.dataSource.transaction(async (tx) => {
-      const cart = await tx
-        .getRepository(Cart)
-        .createQueryBuilder('cart')
-        .leftJoin('cart.items', 'item', 'item.isActive = :isActive', {
-          isActive: true,
-        })
-        .leftJoin('item.variant', 'variant')
-        .leftJoin('variant.product', 'product')
-        .leftJoinAndSelect('variant.attributes', 'attributes')
-        .leftJoinAndSelect('attributes.productAttribute', 'productAttribute')
-        .where('cart.id = :cartId', { cartId: createOrderDto.cartId })
-        .andWhere('cart.status = :status', { status: CartStatus.ACTIVE })
-        .select([
-          'cart.id',
-          'cart.customerId',
-          'cart.sessionId',
-
-          'item.id',
-          'item.quantity',
-          'item.variantId',
-
-          'variant.id',
-          'variant.sku',
-          'variant.name',
-          'variant.price',
-          'variant.salePrice',
-
-          'product.id',
-          'product.name',
-
-          'attributes.id',
-          'attributes.attributeValue',
-          'attributes.attributeValueDisplay',
-
-          'productAttribute.id',
-          'productAttribute.attributeKey',
-          'productAttribute.attributeKeyDisplay',
-        ])
-        .getOne();
+      const cart = await this.orderRepository.findCartForOrderCreation(
+        createOrderDto.cartId,
+        tx,
+      );
 
       if (!cart) {
         throw new NotFoundException('Cart not found');
@@ -76,15 +53,11 @@ export class StorefrontOrdersService {
 
       const orderCode = await this.generateOrderCode(tx);
 
-      const lastOrder: Pick<Order, 'revision'> | null = await tx
-        .getRepository(Order)
-        .findOne({
-          where: { cartId: cart.id },
-          order: { revision: 'DESC' },
-          select: ['revision'],
-        });
-
-      const nextRevision = (lastOrder?.revision ?? 0) + 1;
+      const lastRevision = await this.orderRepository.findLastRevisionByCartId(
+        cart.id,
+        tx,
+      );
+      const nextRevision = (lastRevision ?? 0) + 1;
 
       const order = sanitizeEntityInput(OrderCreateEntityInput, {
         ...createOrderDto,
@@ -102,7 +75,7 @@ export class StorefrontOrdersService {
         createdBy: cart.customerId ?? cart.sessionId ?? 'guest',
       });
 
-      const savedOrder = await tx.save(Order, order);
+      const savedOrder = await this.orderRepository.save(order, tx);
 
       const orderItems = cart.items.map((item) => {
         const price = parseFloat(item.variant.price);
@@ -111,7 +84,7 @@ export class StorefrontOrdersService {
           : null;
         const itemTotal = item.quantity * (salePrice ?? price);
 
-        return tx.create(OrderItem, {
+        return sanitizeEntityInput(OrderItemCreateEntityDto, {
           orderId: savedOrder.id,
           productId: item.variant.product.id,
           productName: item.variant.product.name,
@@ -131,7 +104,7 @@ export class StorefrontOrdersService {
         });
       });
 
-      const savedItems = await tx.save(orderItems);
+      const savedItems = await this.orderItemRepository.save(orderItems, tx);
 
       savedOrder.items = savedItems;
 
@@ -140,12 +113,9 @@ export class StorefrontOrdersService {
   }
 
   private async generateOrderCode(tx: EntityManager): Promise<string> {
-    const [{ nextval }] = await tx.query<{ nextval: string }[]>(
-      `SELECT nextval('order_sequence')`,
-    );
+    const seq = await this.orderRepository.getNextSequence(tx);
 
-    const seq = Number(nextval);
-    return `CP-ODR${dayjs().format('YYYYMMDD')}${seq}`;
+    return `ODR${dayjs().format('YYYYMMDD')}${seq}`;
   }
 
   private calculateOrder({
