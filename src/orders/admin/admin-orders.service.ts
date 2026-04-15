@@ -29,7 +29,7 @@ export class AdminOrdersService {
     ]);
 
     this.logger.log(
-      `[findAll] Fetched orders page=${page}, count=${orders.length}, total=${totalCount}`,
+      `[findAll] Fetched orders successful page=${page}, count=${orders.length}, total=${totalCount}`,
     );
 
     return {
@@ -47,7 +47,7 @@ export class AdminOrdersService {
 
     if (!order) throw new NotFoundException('Order not found');
 
-    this.logger.log(`[findOne] Order fetched successful id=${id}`);
+    this.logger.log(`[findOne] Fetched order successful id=${id}`);
 
     return OrderMapper.mapToOrderDetailsResponse(order);
   }

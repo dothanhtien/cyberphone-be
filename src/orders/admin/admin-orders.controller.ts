@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { AdminOrdersService } from './admin-orders.service';
 import { PaginationQueryDto } from '@/common/dto';
 
@@ -12,7 +12,7 @@ export class AdminOrdersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     return this.ordersService.findOne(id);
   }
 }

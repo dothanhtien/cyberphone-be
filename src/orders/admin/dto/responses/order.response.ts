@@ -93,6 +93,6 @@ export class OrderDetailsResponseDto {
     id: string;
     variantName: string;
     sku: string;
-    attributes: Record<string, any> | null;
+    attributes: Record<string, unknown> | null;
   }[];
 }
