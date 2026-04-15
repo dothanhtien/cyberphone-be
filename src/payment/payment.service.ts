@@ -148,13 +148,14 @@ export class PaymentService {
         throw new NotFoundException('Order not found');
       }
 
-      if (payment.status === PaymentStatus.SUCCESS) {
-        order.paymentStatus = payment.status;
-        order.orderStatus = OrderStatus.COMPLETED;
-        order.updatedBy = 'system';
+      order.paymentStatus = payment.status;
+      order.updatedBy = 'system';
 
-        await orderRepository.save(order);
+      if (payment.status === PaymentStatus.SUCCESS) {
+        order.orderStatus = OrderStatus.COMPLETED;
       }
+
+      await orderRepository.save(order);
 
       const cart = await cartRepository.findOne({
         where: { id: order.cartId },

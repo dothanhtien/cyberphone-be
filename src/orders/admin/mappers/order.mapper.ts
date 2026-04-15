@@ -67,6 +67,10 @@ export class OrderMapper {
         variantName: i.variantName,
         sku: i.sku,
         attributes: i.attributes,
+        unitPrice: i.unitPrice,
+        salePrice: i.salePrice,
+        quantity: i.quantity,
+        itemTotal: i.itemTotal,
       })),
     });
   }
