@@ -12,7 +12,7 @@ import {
 import { CartItem } from './cart-item.entity';
 import { CartStatus } from '../enums';
 import { Customer } from '../../customers/entities';
-import { Order } from '../../orders/entities/order.entity';
+import { Order } from '../../orders/entities';
 
 @Entity('carts')
 @Index('idx_carts_customer_id', ['customerId'])

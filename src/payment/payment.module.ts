@@ -5,7 +5,7 @@ import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
 import { MomoStrategy } from './strategies/momo.strategy';
 import { Cart } from '@/carts/entities';
-import { Order } from '@/orders/entities/order.entity';
+import { Order } from '@/orders/entities';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Order, Payment, Cart])],

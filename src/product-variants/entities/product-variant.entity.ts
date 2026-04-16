@@ -12,7 +12,7 @@ import {
 import { VariantAttribute } from './variant-attribute.entity';
 import { CartItem } from '../../carts/entities';
 import { ProductVariantStockStatus } from '../../common/enums';
-import { OrderItem } from '../../orders/entities/order-item.entity';
+import { OrderItem } from '../../orders/entities';
 import { Product } from '../../products/entities';
 
 @Entity('product_variants')
