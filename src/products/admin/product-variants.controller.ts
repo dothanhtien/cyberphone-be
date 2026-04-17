@@ -7,8 +7,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
-import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
+import { CreateProductVariantDto, UpdateProductVariantDto } from './dto';
 import { ProductVariantsService } from './product-variants.service';
 import { LoggedInUser } from '@/auth/decorators';
 

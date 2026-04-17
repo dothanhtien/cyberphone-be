@@ -4,3 +4,7 @@ export * from './product-image-create-entity.dto';
 export * from './product-image-update-entity.dto';
 export * from './product-attribute-create-entity.dto';
 export * from './product-attribute-update-entity.dto';
+export * from './product-variant-create-entity.dto';
+export * from './product-variant-update-entity.dto';
+export * from './variant-attribute-create-entity.dto';
+export * from './variant-attribute-update-entity.dto';

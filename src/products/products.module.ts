@@ -1,22 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {
-  Product,
-  ProductAttribute,
-  ProductCategory,
-  ProductImage,
-} from './entities';
-import { ProductVariant } from '@/product-variants/entities/product-variant.entity';
-import { BrandsModule } from '@/brands/brands.module';
-import { CategoriesModule } from '@/categories/categories.module';
-import { StorageModule } from '@/storage/storage.module';
-import { AdminProductsService } from './admin/admin-products.service';
 import { AdminProductsController } from './admin/admin-products.controller';
-import { StorefrontProductsService } from './storefront/storefront-products.service';
-import { StorefrontProductsController } from './storefront/storefront-products.controller';
-import { AdminProductImagesService } from './admin/admin-product-images.service';
+import { AdminProductsService } from './admin/admin-products.service';
+import { AdminProductAttributesController } from './admin/admin-product-attributes.controller';
 import { AdminProductAttributesService } from './admin/admin-product-attributes.service';
 import { AdminProductCategoriesService } from './admin/admin-product-categories.service';
+import { AdminProductImagesService } from './admin/admin-product-images.service';
+import { AdminProductImageUploadService } from './admin/admin-product-image-upload.service';
+import { AdminProductValidatorsService } from './admin/admin-product-validators.service';
+import { ProductVariantsController } from './admin/product-variants.controller';
+import { ProductVariantsService } from './admin/product-variants.service';
+import { VariantAttributesService } from './admin/variant-attributes.service';
 import {
   PRODUCT_REPOSITORY,
   ProductRepository,
@@ -25,14 +19,24 @@ import {
   PRODUCT_IMAGE_REPOSITORY,
   ProductImageRepository,
 } from './admin/repositories';
-import { AdminProductValidatorsService } from './admin/admin-product-validators.service';
-import { AdminProductImageUploadService } from './admin/admin-product-image-upload.service';
+import {
+  Product,
+  ProductAttribute,
+  ProductCategory,
+  ProductImage,
+  ProductVariant,
+  VariantAttribute,
+} from './entities';
+import { StorefrontProductsController } from './storefront/storefront-products.controller';
+import { StorefrontProductsService } from './storefront/storefront-products.service';
 import { MediaModule } from '@/media/media.module';
-import { AdminProductAttributesController } from './admin/admin-product-attributes.controller';
 import {
   STOREFRONT_PRODUCT_REPOSITORY,
   StorefrontProductRepository,
 } from './storefront/repositories';
+import { BrandsModule } from '@/brands/brands.module';
+import { CategoriesModule } from '@/categories/categories.module';
+import { StorageModule } from '@/storage/storage.module';
 
 @Module({
   imports: [
@@ -40,6 +44,7 @@ import {
       Product,
       ProductCategory,
       ProductVariant,
+      VariantAttribute,
       ProductImage,
       ProductAttribute,
     ]),
@@ -56,6 +61,8 @@ import {
     AdminProductAttributesService,
     AdminProductValidatorsService,
     StorefrontProductsService,
+    ProductVariantsService,
+    VariantAttributesService,
     {
       provide: PRODUCT_REPOSITORY,
       useClass: ProductRepository,
@@ -76,7 +83,9 @@ import {
   controllers: [
     AdminProductsController,
     AdminProductAttributesController,
+    ProductVariantsController,
     StorefrontProductsController,
   ],
+  exports: [ProductVariantsService],
 })
 export class ProductsModule {}

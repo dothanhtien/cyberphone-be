@@ -9,10 +9,10 @@ import {
 } from './repositories';
 import { StorefrontCartsController } from './storefront/storefront-carts.controller';
 import { StorefrontCartsService } from './storefront/storefront-carts.service';
-import { ProductVariantsModule } from '@/product-variants/product-variants.module';
+import { ProductsModule } from '@/products/products.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Cart, CartItem]), ProductVariantsModule],
+  imports: [TypeOrmModule.forFeature([Cart, CartItem]), ProductsModule],
   providers: [
     StorefrontCartsService,
     {

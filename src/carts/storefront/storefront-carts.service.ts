@@ -31,8 +31,8 @@ import {
   isUniqueConstraintError,
   sanitizeEntityInput,
 } from '@/common/utils';
-import { ProductVariant } from '@/product-variants/entities/product-variant.entity';
-import { ProductVariantsService } from '@/product-variants/product-variants.service';
+import { ProductVariantsService } from '@/products/admin/product-variants.service';
+import { ProductVariant } from '@/products/entities';
 
 dayjs.extend(utc);
 

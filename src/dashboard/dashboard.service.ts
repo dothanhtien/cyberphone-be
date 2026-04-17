@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import dayjs from 'dayjs';
-import { Order } from '@/orders/entities';
-import { ProductVariant } from '@/product-variants/entities/product-variant.entity';
-import { OrderStatus } from '@/orders/enums';
-import { PaymentStatus } from '@/payment/enums';
+import { DateRangeFilterDto, LimitFilterDto } from './dto/requests/filter.dto';
 import {
   CategorySalesRaw,
   RecentOrderRaw,
@@ -14,7 +11,10 @@ import {
   TopProductRaw,
 } from './types';
 import { MediaAssetRefType, ProductImageType } from '@/common/enums';
-import { DateRangeFilterDto, LimitFilterDto } from './dto/requests/filter.dto';
+import { Order } from '@/orders/entities';
+import { OrderStatus } from '@/orders/enums';
+import { PaymentStatus } from '@/payment/enums';
+import { ProductVariant } from '@/products/entities';
 
 @Injectable()
 export class DashboardService {

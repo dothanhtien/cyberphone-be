@@ -1,8 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { EntityManager, In, InsertResult, UpdateResult } from 'typeorm';
-import { SyncVariantAttributeDto } from './dto/requests/sync-variant-attribute.dto';
-import { VariantAttribute } from './entities/variant-attribute.entity';
-import { ProductAttribute } from '@/products/entities';
+import { SyncVariantAttributeDto } from './dto';
+import { ProductAttribute, VariantAttribute } from '@/products/entities';
 
 @Injectable()
 export class VariantAttributesService {

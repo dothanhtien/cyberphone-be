@@ -6,14 +6,16 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
-import { ProductVariant } from './entities/product-variant.entity';
-import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
-import { ProductVariantCreateEntityDto } from './dto/entity-inputs/product-variant-create-entity.dto';
+import { ProductVariant } from '../entities';
+import {
+  CreateProductVariantDto,
+  ProductVariantCreateEntityDto,
+  ProductVariantUpdateEntityDto,
+  UpdateProductVariantDto,
+} from './dto';
 import { Product } from '@/products/entities';
 import { ProductVariantStockStatus } from '@/common/enums';
 import { isUniqueConstraintError, sanitizeEntityInput } from '@/common/utils';
-import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
-import { ProductVariantUpdateEntityDto } from './dto/entity-inputs/product-variant-update-entity.dto';
 import { VariantAttributesService } from './variant-attributes.service';
 
 @Injectable()

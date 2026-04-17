@@ -13,7 +13,6 @@ import { UsersModule } from './users/users.module';
 import { PasswordModule } from './password/password.module';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
-import { ProductVariantsModule } from './product-variants/product-variants.module';
 import { SeedsModule } from './seeds/seeds.module';
 import { CartsModule } from './carts/carts.module';
 import { OrdersModule } from './orders/orders.module';
@@ -36,7 +35,6 @@ import { IdentitiesModule } from './identities/identities.module';
     PasswordModule,
     AuthModule,
     ProductsModule,
-    ProductVariantsModule,
     SeedsModule,
     CartsModule,
     OrdersModule,
