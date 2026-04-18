@@ -31,8 +31,8 @@ import {
   isUniqueConstraintError,
   sanitizeEntityInput,
 } from '@/common/utils';
-import { ProductVariantsService } from '@/products/admin/product-variants.service';
 import { ProductVariant } from '@/products/entities';
+import { AdminProductVariantsService } from '@/products/admin/admin-product-variants.service';
 
 dayjs.extend(utc);
 
@@ -46,7 +46,7 @@ export class StorefrontCartsService {
     private readonly cartRepository: ICartRepository,
     @Inject(CART_ITEM_REPOSITORY)
     private readonly cartItemRepository: ICartItemRepository,
-    private readonly productVariantsService: ProductVariantsService,
+    private readonly productVariantsService: AdminProductVariantsService,
   ) {}
 
   async resolve(resolveCartDto: ResolveCartDto) {

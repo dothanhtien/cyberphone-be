@@ -1,63 +1,78 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
-import { ProductVariant } from '../entities';
+import { DataSource, EntityManager } from 'typeorm';
+import { AdminProductValidatorsService } from './admin-product-validators.service';
+import { AdminVariantAttributesService } from './admin-variant-attributes.service';
 import {
   CreateProductVariantDto,
   ProductVariantCreateEntityDto,
   ProductVariantUpdateEntityDto,
   UpdateProductVariantDto,
 } from './dto';
-import { Product } from '@/products/entities';
+import { ProductVariant } from '../entities';
+import {
+  type IProductVariantRepository,
+  PRODUCT_VARIANT_REPOSITORY,
+} from '../repositories';
 import { ProductVariantStockStatus } from '@/common/enums';
-import { isUniqueConstraintError, sanitizeEntityInput } from '@/common/utils';
-import { VariantAttributesService } from './variant-attributes.service';
+import { sanitizeEntityInput } from '@/common/utils';
 
 @Injectable()
-export class ProductVariantsService {
+export class AdminProductVariantsService {
+  private readonly logger = new Logger(AdminProductVariantsService.name);
+
   constructor(
     private readonly dataSource: DataSource,
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
-    @InjectRepository(ProductVariant)
-    private readonly productVariantRepository: Repository<ProductVariant>,
-    private readonly variantAttributesService: VariantAttributesService,
+    @Inject(PRODUCT_VARIANT_REPOSITORY)
+    private readonly productVariantRepository: IProductVariantRepository,
+    private readonly variantAttributesService: AdminVariantAttributesService,
+    private readonly productValidatorsService: AdminProductValidatorsService,
   ) {}
 
   async create(
     productId: string,
     createProductVariantDto: CreateProductVariantDto,
   ) {
+    const { sku } = createProductVariantDto;
+
+    this.logger.debug(
+      `[create] Creating variant productId=${productId}, sku=${sku}`,
+    );
+
     this.validatePrices(
       createProductVariantDto.price,
       createProductVariantDto.salePrice,
     );
 
-    await this.ensureProductExists(productId);
+    await this.productValidatorsService.ensureProductExists(productId);
 
     return this.dataSource.transaction(async (tx) => {
-      const variantRepository = tx.getRepository(ProductVariant);
-
-      const hasActiveVariants = await variantRepository.exists({
-        where: {
+      const hasActiveVariants =
+        await this.productVariantRepository.existsActiveByProductId(
           productId,
-          isActive: true,
-        },
-      });
+          tx,
+        );
 
-      let isDefault = createProductVariantDto.isDefault ?? false;
+      let isDefault = createProductVariantDto.isDefault;
 
       if (!hasActiveVariants) {
+        this.logger.debug(
+          `[create] No active variants - force default productId=${productId}, sku=${sku}`,
+        );
         isDefault = true;
       }
 
       if (isDefault) {
-        await this.unsetDefaultVariant(tx, productId);
+        this.logger.debug(
+          `[create] Unsetting previous default variants productId=${productId}, sku=${sku}`,
+        );
+        await this.productVariantRepository.unsetDefaultVariant(productId, tx);
       }
 
       const stockStatus = this.calculateStockStatus(
@@ -69,23 +84,13 @@ export class ProductVariantsService {
         ...createProductVariantDto,
         productId,
         stockStatus,
-      });
-
-      const variant = variantRepository.create({
-        ...entityInput,
         isDefault,
       });
 
-      let savedVariant: ProductVariant;
-
-      try {
-        savedVariant = await variantRepository.save(variant);
-      } catch (error) {
-        if (isUniqueConstraintError(error)) {
-          throw new ConflictException('SKU already exists');
-        }
-        throw error;
-      }
+      const savedVariant = await this.productVariantRepository.save(
+        entityInput,
+        tx,
+      );
 
       await this.variantAttributesService.sync({
         productId,
@@ -95,46 +100,59 @@ export class ProductVariantsService {
         tx,
       });
 
+      this.logger.debug(
+        `[create] Created variant successful id=${savedVariant.id}, productId=${productId}, sku=${sku}`,
+      );
+
       return savedVariant;
     });
   }
 
   async findAllByProductId(productId: string): Promise<ProductVariant[]> {
-    await this.ensureProductExists(productId);
+    this.logger.debug(
+      `[findAllByProductId] Fetching variants productId=${productId}`,
+    );
 
-    return this.productVariantRepository.find({
-      where: {
-        productId,
-        isActive: true,
-      },
-      order: {
-        isDefault: 'DESC',
-        updatedAt: { direction: 'DESC', nulls: 'LAST' },
-        createdAt: 'DESC',
-      },
-      relations: {
-        attributes: true,
-      },
-    });
+    await this.productValidatorsService.ensureProductExists(productId);
+
+    const result =
+      await this.productVariantRepository.findAllByProductId(productId);
+
+    this.logger.log(
+      `[findAllByProductId] Found ${result.length} variants for productId=${productId}`,
+    );
+
+    return result;
   }
 
   async findOneActiveById(id: string, tx?: EntityManager) {
-    const repository = tx
-      ? tx.getRepository(ProductVariant)
-      : this.productVariantRepository;
+    this.logger.debug(`[findOneActiveById] Fetching variant id=${id}`);
 
-    return repository.findOne({ where: { id, isActive: true } });
+    const variant = await this.productVariantRepository.findOneActiveById(
+      id,
+      tx,
+    );
+
+    if (!variant) {
+      this.logger.warn(`[findOneActiveById] Variant not found id=${id}`);
+    }
+
+    this.logger.debug(`[findOneActiveById] Fetched variant id=${id}`);
+
+    return variant;
   }
 
   async update(id: string, updateProductVariantDto: UpdateProductVariantDto) {
-    return this.dataSource.transaction(async (tx) => {
-      const variantRepository = tx.getRepository(ProductVariant);
+    this.logger.debug(`[update] Updating variant id=${id}`);
 
-      const existing = await variantRepository.findOne({
-        where: { id, isActive: true },
-      });
+    return this.dataSource.transaction(async (tx) => {
+      const existing = await this.productVariantRepository.findOneActiveById(
+        id,
+        tx,
+      );
 
       if (!existing) {
+        this.logger.warn(`[update] Variant not found id=${id}`);
         throw new NotFoundException('Variant not found');
       }
 
@@ -144,6 +162,7 @@ export class ProductVariantsService {
       ) {
         const nextPrice =
           updateProductVariantDto.price ?? Number(existing.price);
+
         const nextSalePrice =
           updateProductVariantDto.salePrice === undefined
             ? existing.salePrice === null
@@ -151,19 +170,35 @@ export class ProductVariantsService {
               : Number(existing.salePrice)
             : updateProductVariantDto.salePrice;
 
+        this.logger.debug(
+          `[update] Validate prices id=${id}, price=${nextPrice}, salePrice=${nextSalePrice}`,
+        );
+
         this.validatePrices(nextPrice, nextSalePrice);
       }
 
       let isDefault = existing.isDefault;
 
       if (updateProductVariantDto.isDefault === true && !existing.isDefault) {
-        await this.unsetDefaultVariant(tx, existing.productId);
+        this.logger.debug(
+          `[update] Set as default - unset others id=${id}, productId=${existing.productId}`,
+        );
+
+        await this.productVariantRepository.unsetDefaultVariant(
+          existing.productId,
+          tx,
+        );
+
         isDefault = true;
       }
 
       if (updateProductVariantDto.isDefault === false && existing.isDefault) {
+        this.logger.warn(
+          `[update] Attempt to unset default without replacement id=${id}`,
+        );
+
         throw new ConflictException(
-          'Cannot unset default variant without assigning another one. Please set another variant as default first',
+          'Cannot unset default variant without assigning another one.',
         );
       }
 
@@ -178,6 +213,10 @@ export class ProductVariantsService {
           updateProductVariantDto.lowStockThreshold ??
             existing.lowStockThreshold,
         );
+
+        this.logger.debug(
+          `[update] Recalculated id=${id}, stockStatus=${stockStatus}`,
+        );
       }
 
       const updatePayload = sanitizeEntityInput(ProductVariantUpdateEntityDto, {
@@ -186,18 +225,11 @@ export class ProductVariantsService {
         isDefault,
       });
 
-      const merged = variantRepository.merge(existing, updatePayload);
-
-      let savedVariant: ProductVariant;
-
-      try {
-        savedVariant = await variantRepository.save(merged);
-      } catch (error) {
-        if (isUniqueConstraintError(error)) {
-          throw new ConflictException('SKU already exists');
-        }
-        throw error;
-      }
+      const savedVariant = await this.productVariantRepository.update(
+        existing,
+        updatePayload,
+        tx,
+      );
 
       await this.variantAttributesService.sync({
         productId: existing.productId,
@@ -207,34 +239,18 @@ export class ProductVariantsService {
         tx,
       });
 
+      this.logger.log(`[update] Updated variant id=${id}`);
+
       return savedVariant;
     });
   }
 
-  private async ensureProductExists(productId: string) {
-    const exists = await this.productRepository.exists({
-      where: { id: productId, isActive: true },
-    });
-
-    if (!exists) {
-      throw new NotFoundException('Product not found');
-    }
-  }
-
-  private async unsetDefaultVariant(tx: EntityManager, productId: string) {
-    await tx.update(
-      ProductVariant,
-      {
-        productId,
-        isDefault: true,
-        isActive: true,
-      },
-      { isDefault: false },
-    );
-  }
-
   private validatePrices(price: number, salePrice?: number | null) {
     if (salePrice && salePrice !== null && salePrice > price) {
+      this.logger.warn(
+        `[validatePrices] Invalid price price=${price}, salePrice=${salePrice}`,
+      );
+
       throw new BadRequestException('Sale price cannot be greater than price');
     }
   }

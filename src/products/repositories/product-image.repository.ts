@@ -4,7 +4,7 @@ import { EntityManager, Repository } from 'typeorm';
 import {
   ProductImageCreateEntityDto,
   ProductImageUpdateEntityDto,
-} from '../dto';
+} from '../admin/dto';
 import { ProductImage } from '@/products/entities';
 
 export interface IProductImageRepository {

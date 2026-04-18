@@ -6,8 +6,7 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
-import { Expose } from 'class-transformer';
-import { Product } from '.';
+import { Product } from './product.entity';
 import { Category } from '../../categories/entities/category.entity';
 
 @Entity('product_categories')
@@ -20,15 +19,12 @@ export class ProductCategory {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'pk_product_categories_id',
   })
-  @Expose()
   id: string;
 
   @Column({ name: 'product_id', type: 'uuid' })
-  @Expose()
   productId: string;
 
   @Column({ name: 'category_id', type: 'uuid' })
-  @Expose()
   categoryId: string;
 
   @ManyToOne(() => Product, (product) => product.categories, {

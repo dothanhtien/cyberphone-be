@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from '.';
+import { Product } from './product.entity';
 import { VariantAttribute } from './variant-attribute.entity';
 
 @Entity('product_attributes')
