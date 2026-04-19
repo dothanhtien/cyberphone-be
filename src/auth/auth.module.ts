@@ -15,14 +15,12 @@ import { RefreshTokenService } from './refresh-token.service';
 import { LocalStrategy, JwtStrategy } from './strategies';
 import { CustomersModule } from '@/customers/customers.module';
 import { IdentitiesModule } from '@/identities/identities.module';
-import { PasswordModule } from '@/password/password.module';
 import { UsersModule } from '@/users/users.module';
 
 @Module({
   imports: [
     UsersModule,
     CustomersModule,
-    PasswordModule,
     IdentitiesModule,
     TypeOrmModule.forFeature([RefreshToken]),
     JwtModule.registerAsync({

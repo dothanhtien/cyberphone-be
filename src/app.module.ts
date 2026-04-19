@@ -10,7 +10,6 @@ import { MediaModule } from './media/media.module';
 import { StorageModule } from './storage/storage.module';
 import { BrandsModule } from './brands/brands.module';
 import { UsersModule } from './users/users.module';
-import { PasswordModule } from './password/password.module';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { SeedsModule } from './seeds/seeds.module';
@@ -32,7 +31,6 @@ import { IdentitiesModule } from './identities/identities.module';
     StorageModule,
     BrandsModule,
     UsersModule,
-    PasswordModule,
     AuthModule,
     ProductsModule,
     SeedsModule,
