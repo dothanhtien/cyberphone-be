@@ -5,7 +5,7 @@ import { MediaService } from './media.service';
 import { MediaAssetsService } from './media-assets.service';
 import { MediaController } from './media.controller';
 import { Brand } from '@/brands/entities';
-import { Category } from '@/categories/entities/category.entity';
+import { Category } from '@/categories/entities';
 import { Product } from '@/products/entities';
 import { StorageModule } from '@/storage/storage.module';
 

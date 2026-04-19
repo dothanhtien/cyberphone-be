@@ -10,7 +10,7 @@ import { DataSource, Repository } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Brand } from '@/brands/entities';
 import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
-import { Category } from '@/categories/entities/category.entity';
+import { Category } from '@/categories/entities';
 import { Product } from '@/products/entities';
 import { GetMediasDto, UploadMediasDto } from './dto';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
