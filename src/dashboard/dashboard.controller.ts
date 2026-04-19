@@ -1,7 +1,10 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
-import { DateRangeFilterDto, LimitFilterDto } from './dto/requests/filter.dto';
-import { TopProductsFilterDto } from './dto/requests/top-products-filter.dto';
+import {
+  DateRangeFilterDto,
+  LimitFilterDto,
+  TopProductsFilterDto,
+} from './dto';
 
 @Controller('dashboard')
 export class DashboardController {

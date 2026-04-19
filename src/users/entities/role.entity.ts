@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Expose } from 'class-transformer';
 import { User } from './user.entity';
 
 @Entity('roles')
@@ -16,38 +15,30 @@ export class Role {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'pk_roles_id',
   })
-  @Expose()
   id: string;
 
   @Column({ type: 'varchar', length: 255 })
-  @Expose()
   name: string;
 
   @Column({ type: 'text', nullable: true })
-  @Expose()
   description: string | null;
 
   @Column({ name: 'is_system', type: 'boolean', default: false })
-  @Expose()
   isSystem: boolean = false;
 
   @Column({ name: 'is_active', type: 'boolean', default: true })
-  @Expose()
   isActive: boolean = true;
 
   @OneToMany(() => User, (user) => user.role)
   users: User[];
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
-  @Expose()
   createdAt: Date;
 
   @Column({ name: 'created_by', type: 'varchar', length: 100 })
-  @Expose()
   createdBy: string;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: true })
-  @Expose()
   updatedAt: Date | null;
 
   @Column({
@@ -56,6 +47,5 @@ export class Role {
     length: 100,
     nullable: true,
   })
-  @Expose()
   updatedBy: string | null;
 }

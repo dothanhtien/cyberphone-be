@@ -2,7 +2,7 @@ import { ClassSerializerInterceptor } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
-import { ClassValidatorPipe } from './common/pipes/class-validator.pipe';
+import { ClassValidatorPipe } from './common/pipes';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

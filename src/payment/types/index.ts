@@ -1,5 +1,5 @@
-import { CreatePaymentDto } from '../dto/requests/create-payment.dto';
-import { Payment } from '../entities/payment.entity';
+import { CreatePaymentDto } from '../dto';
+import { Payment } from '../entities';
 import { Order } from '@/orders/entities';
 
 export * from './momo';

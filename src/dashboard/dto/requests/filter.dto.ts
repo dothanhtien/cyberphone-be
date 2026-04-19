@@ -1,6 +1,6 @@
 import { IsOptional, IsDateString, IsInt, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ValidateDateRange } from '@/common/validators/validate-date-range.decorator';
+import { ValidateDateRange } from '@/common/validators';
 
 export class DateRangeFilterDto {
   @IsOptional()

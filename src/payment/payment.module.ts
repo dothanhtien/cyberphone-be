@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Payment } from './entities/payment.entity';
+import { Payment } from './entities';
 import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
-import { MomoStrategy } from './strategies/momo.strategy';
+import { MomoStrategy } from './strategies';
 import { Cart } from '@/carts/entities';
 import { Order } from '@/orders/entities';
 

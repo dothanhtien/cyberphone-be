@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import dayjs from 'dayjs';
-import { DateRangeFilterDto, LimitFilterDto } from './dto/requests/filter.dto';
+import { DateRangeFilterDto, LimitFilterDto } from './dto';
 import {
   CategorySalesRaw,
   RecentOrderRaw,

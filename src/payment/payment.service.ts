@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { CreatePaymentDto } from './dto/requests/create-payment.dto';
-import { Payment } from './entities/payment.entity';
+import { CreatePaymentDto } from './dto';
+import { Payment } from './entities';
 import { PaymentProvider, PaymentStatus } from './enums';
-import { MomoStrategy } from './strategies/momo.strategy';
+import { MomoStrategy } from './strategies';
 import {
   MomoCallback,
   MomoReturnQuery,
