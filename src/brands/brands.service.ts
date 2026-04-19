@@ -16,7 +16,6 @@ import {
 import { BrandMapper } from './mappers';
 import { type IBrandRepository, BRAND_REPOSITORY } from './repositories';
 import { MediaAssetsService } from '@/media/media-assets.service';
-import { MediaAsset } from '@/media/entities';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {
   StorageProvider,
@@ -45,10 +44,7 @@ export class BrandsService {
     @Inject(STORAGE_PROVIDER) private readonly storageProvider: StorageProvider,
   ) {}
 
-  async create(
-    createBrandDto: CreateBrandDto,
-    logo?: Express.Multer.File,
-  ): Promise<BrandResponseDto> {
+  async create(createBrandDto: CreateBrandDto, logo?: Express.Multer.File) {
     this.logger.log(
       `[create] Creating brand name=${createBrandDto.name}, slug=${createBrandDto.slug}`,
     );
@@ -73,7 +69,6 @@ export class BrandsService {
       this.logger.debug(`[create] Brand saved with id=${savedBrand.id}`);
 
       let uploadResult: StorageUploadResult | null = null;
-      let media: MediaAsset | null = null;
 
       try {
         if (logo) {
@@ -85,7 +80,7 @@ export class BrandsService {
             folder: BRAND_FOLDER,
           });
 
-          [media] = await this.mediaAssetsService.create(
+          await this.mediaAssetsService.create(
             [
               {
                 publicId: uploadResult.key,
@@ -105,10 +100,7 @@ export class BrandsService {
           );
         }
 
-        return BrandMapper.mapToBrandResponse({
-          ...savedBrand,
-          logo: media?.url ?? null,
-        });
+        return { id: savedBrand.id };
       } catch (error) {
         this.logger.error(
           `[create] Failed to create brand name=${createBrandDto.name}, slug=${createBrandDto.slug}`,
@@ -168,7 +160,7 @@ export class BrandsService {
     id: string,
     updateBrandDto: UpdateBrandDto,
     logo?: Express.Multer.File,
-  ): Promise<BrandResponseDto> {
+  ): Promise<boolean> {
     this.logger.log(`[update] Updating brand id=${id}`);
 
     const brand = await this.brandRepository.findActiveByIdWithProductCount(id);
@@ -193,7 +185,7 @@ export class BrandsService {
       }
     }
 
-    return this.dataSource.transaction(async (tx) => {
+    await this.dataSource.transaction(async (tx) => {
       const entityInput = sanitizeEntityInput(BrandUpdateEntityInput, {
         ...brand,
         ...updateBrandDto,
@@ -226,7 +218,6 @@ export class BrandsService {
       this.logger.debug(`[update] Brand updated id=${updatedBrand.id}`);
 
       let uploadResult: StorageUploadResult | null = null;
-      let logoUrl: string | null = null;
 
       try {
         const oldLogo = await this.mediaAssetsService.findByRefId({
@@ -245,7 +236,7 @@ export class BrandsService {
             folder: BRAND_FOLDER,
           });
 
-          const [newLogo] = await this.mediaAssetsService.create(
+          await this.mediaAssetsService.create(
             [
               {
                 publicId: uploadResult.key,
@@ -259,8 +250,6 @@ export class BrandsService {
             ],
             tx,
           );
-
-          logoUrl = newLogo.url;
         }
 
         if (shouldRemoveOld && oldLogo) {
@@ -278,17 +267,6 @@ export class BrandsService {
             );
           }
         }
-
-        if (!logo && updateBrandDto.removeLogo) {
-          logoUrl = null;
-        } else if (!logo && !updateBrandDto.removeLogo) {
-          logoUrl = oldLogo?.url ?? null;
-        }
-
-        return BrandMapper.mapToBrandResponse({
-          ...updatedBrand,
-          logo: logoUrl,
-        });
       } catch (error) {
         this.logger.error(
           `[update] Failed updating brand ${id}`,
@@ -305,6 +283,8 @@ export class BrandsService {
         throw error;
       }
     });
+
+    return true;
   }
 
   async exists(id: string): Promise<boolean> {
