@@ -9,8 +9,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from '.';
-import { VariantAttribute } from '../../product-variants/entities/variant-attribute.entity';
+import { Product } from './product.entity';
+import { VariantAttribute } from './variant-attribute.entity';
 
 @Entity('product_attributes')
 @Index('idx_product_attributes_product_id', ['productId'])

@@ -1,28 +1,28 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { AdminProductImagesService } from './admin-product-images.service';
 import { AdminProductAttributesService } from './admin-product-attributes.service';
 import { AdminProductCategoriesService } from './admin-product-categories.service';
-import { AdminProductValidatorsService } from './admin-product-validators.service';
+import { AdminProductImagesService } from './admin-product-images.service';
 import { AdminProductImageUploadService } from './admin-product-image-upload.service';
+import { AdminProductValidatorsService } from './admin-product-validators.service';
 import {
   CreateProductDto,
-  UpdateProductDto,
-  ProductUpdateEntityDto,
-  ProductResponseDto,
   ProductCreateEntityDto,
+  ProductResponseDto,
+  ProductUpdateEntityDto,
+  UpdateProductDto,
 } from './dto';
-import { Product } from '../entities';
 import { mapToProductResponseFromProductRaw } from './mappers';
-import { type IProductRepository, PRODUCT_REPOSITORY } from './repositories';
+import { Product } from '../entities';
+import { type IProductRepository, PRODUCT_REPOSITORY } from '../repositories';
 import { PaginationQueryDto } from '@/common/dto';
-import { MediaAssetsService } from '@/media/media-assets.service';
 import { PaginatedEntity } from '@/common/types';
 import {
   extractPaginationParams,
   getErrorStack,
   sanitizeEntityInput,
 } from '@/common/utils';
+import { MediaAssetsService } from '@/media/media-assets.service';
 
 @Injectable()
 export class AdminProductsService {
@@ -49,7 +49,7 @@ export class AdminProductsService {
     const imageMetas = createProductDto.imageMetas ?? [];
 
     this.logger.debug(
-      `[create] Validate images metadata count=${imageMetas.length}`,
+      `[create] Validating images metadata count=${imageMetas.length}`,
     );
 
     this.productValidatorsService.validateImagesMetadata({
@@ -64,7 +64,7 @@ export class AdminProductsService {
     await Promise.all([
       this.productValidatorsService.ensureSlugNotTaken(createProductDto.slug),
       this.productValidatorsService.ensureBrandExists(createProductDto.brandId),
-      this.productValidatorsService.ensureCategoriesExistAndActive(
+      this.productValidatorsService.ensureCategoriesExist(
         createProductDto.categoryIds,
       ),
     ]);

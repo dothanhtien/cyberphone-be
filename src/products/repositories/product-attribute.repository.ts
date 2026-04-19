@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, Repository } from 'typeorm';
-import { ProductAttribute } from '@/products/entities';
 import {
   ProductAttributeCreateEntityDto,
   ProductAttributeUpdateEntityDto,
-} from '../dto';
+} from '../admin/dto';
+import { ProductAttribute } from '@/products/entities';
 
 export interface IProductAttributeRepository {
   findActiveByProductId(

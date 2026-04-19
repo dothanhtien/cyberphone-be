@@ -8,7 +8,7 @@ import { ProductAttribute } from '../entities';
 import {
   type IProductAttributeRepository,
   PRODUCT_ATTRIBUTE_REPOSITORY,
-} from './repositories';
+} from '../repositories';
 import { getErrorStack, sanitizeEntityInput } from '@/common/utils';
 
 @Injectable()

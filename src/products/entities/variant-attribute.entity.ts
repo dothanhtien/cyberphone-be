@@ -8,8 +8,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ProductAttribute } from './product-attribute.entity';
 import { ProductVariant } from './product-variant.entity';
-import { ProductAttribute } from '../../products/entities';
 
 @Entity('variant_attributes')
 @Index(

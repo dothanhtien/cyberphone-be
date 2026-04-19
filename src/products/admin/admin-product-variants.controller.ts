@@ -7,15 +7,14 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { CreateProductVariantDto } from './dto/requests/create-product-variant.dto';
-import { UpdateProductVariantDto } from './dto/requests/update-product-variant.dto';
-import { ProductVariantsService } from './product-variants.service';
+import { AdminProductVariantsService } from './admin-product-variants.service';
+import { CreateProductVariantDto, UpdateProductVariantDto } from './dto';
 import { LoggedInUser } from '@/auth/decorators';
 
 @Controller('admin')
-export class ProductVariantsController {
+export class AdminProductVariantsController {
   constructor(
-    private readonly productVariantsService: ProductVariantsService,
+    private readonly productVariantsService: AdminProductVariantsService,
   ) {}
 
   @Post('products/:productId/variants')
