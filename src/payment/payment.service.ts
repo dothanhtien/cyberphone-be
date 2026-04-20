@@ -1,14 +1,18 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
-import { CreatePaymentDto } from './dto';
-import { Payment } from './entities';
+import { DataSource } from 'typeorm';
+import {
+  CreatePaymentDto,
+  PaymentCreateEntityInput,
+  PaymentUpdateEntityInput,
+} from './dto';
 import { PaymentProvider, PaymentStatus } from './enums';
+import { type IPaymentRepository, PAYMENT_REPOSITORY } from './repositories';
 import { MomoStrategy } from './strategies';
 import {
   MomoCallback,
@@ -16,9 +20,12 @@ import {
   PaymentResult,
   PaymentStrategy,
 } from './types';
-import { Cart } from '@/carts/entities';
+import { AdminCartsService } from '@/carts/admin/carts.service';
+import { CartUpdateEntityDto } from '@/carts/admin/dto';
 import { CartStatus } from '@/carts/enums';
-import { Order } from '@/orders/entities';
+import { sanitizeEntityInput } from '@/common/utils';
+import { AdminOrdersService } from '@/orders/admin/admin-orders.service';
+import { OrderUpdateEntityInput } from '@/orders/admin/dto';
 import { OrderStatus } from '@/orders/enums';
 
 @Injectable()
@@ -27,10 +34,10 @@ export class PaymentService {
   private readonly strategies: Map<PaymentProvider, PaymentStrategy>;
 
   constructor(
-    @InjectRepository(Order)
-    private readonly orderRepository: Repository<Order>,
-    @InjectRepository(Payment)
-    private readonly paymentRepository: Repository<Payment>,
+    @Inject(PAYMENT_REPOSITORY)
+    private readonly paymentRepository: IPaymentRepository,
+    private readonly ordersService: AdminOrdersService,
+    private readonly cartsService: AdminCartsService,
     private readonly dataSource: DataSource,
     private readonly momoStrategy: MomoStrategy,
   ) {
@@ -40,9 +47,9 @@ export class PaymentService {
   }
 
   async createPayment(createPaymentDto: CreatePaymentDto) {
-    const order = await this.orderRepository.findOne({
-      where: { id: createPaymentDto.orderId, isActive: true },
-    });
+    const order = await this.ordersService.findOneById(
+      createPaymentDto.orderId,
+    );
 
     if (!order) {
       throw new NotFoundException('Order not found');
@@ -52,12 +59,14 @@ export class PaymentService {
       throw new BadRequestException('Order cannot be paid');
     }
 
-    const payment = await this.paymentRepository.save({
+    const paymentInput = sanitizeEntityInput(PaymentCreateEntityInput, {
       orderId: order.id,
       provider: createPaymentDto.provider,
       amount: order.orderTotal,
       orderInfo: `Payment for order ${order.code}`,
     });
+
+    const payment = await this.paymentRepository.create(paymentInput);
 
     this.logger.log(
       `Payment created: ${createPaymentDto.orderId} via ${createPaymentDto.provider}`,
@@ -101,82 +110,85 @@ export class PaymentService {
 
   private async updatePaymentStatus(data: PaymentResult) {
     return this.dataSource.transaction(async (tx) => {
-      const paymentRepository = tx.getRepository(Payment);
-      const orderRepository = tx.getRepository(Order);
-      const cartRepository = tx.getRepository(Cart);
+      if (!data.paymentId) {
+        throw new NotFoundException('Payment not found or already updated');
+      }
 
-      const payment = await paymentRepository.findOne({
-        where: { id: data.paymentId },
-        lock: { mode: 'pessimistic_write' },
-      });
+      const payment = await this.paymentRepository.findByIdWithLock(
+        data.paymentId,
+        tx,
+      );
 
       if (!payment) {
         throw new NotFoundException('Payment not found or already updated');
       }
 
-      if (payment.status !== PaymentStatus.PENDING) {
-        this.logger.warn(`Duplicate payment callback: ${payment.id}`);
-
-        const order = await orderRepository.findOne({
-          where: { id: payment.orderId },
-        });
-
-        return {
-          id: payment.id,
-          status: payment.status,
-          orderCode: order?.code,
-        };
-      }
-
-      payment.status = data.success
-        ? PaymentStatus.SUCCESS
-        : PaymentStatus.FAILED;
-
-      payment.transactionId = data.transactionId ?? null;
-      payment.failureReason = data.success ? null : data.message;
-      payment.rawResponse = data.rawData ?? null;
-      payment.paidAt = data.success ? new Date() : null;
-      payment.paymentMethod = data.orderType ?? null;
-
-      await paymentRepository.save(payment);
-
-      const order = await orderRepository.findOne({
-        where: { id: payment.orderId },
-      });
+      const order = await this.ordersService.findOneById(payment.orderId, tx);
 
       if (!order) {
         throw new NotFoundException('Order not found');
       }
 
-      order.paymentStatus = payment.status;
+      if (payment.status !== PaymentStatus.PENDING) {
+        this.logger.warn(`Duplicate payment callback: ${payment.id}`);
+
+        return {
+          id: payment.id,
+          status: payment.status,
+          orderCode: order.code,
+        };
+      }
+
+      const updateInput = sanitizeEntityInput(PaymentUpdateEntityInput, {
+        status: data.success ? PaymentStatus.SUCCESS : PaymentStatus.FAILED,
+        transactionId: data.transactionId ?? null,
+        failureReason: data.success ? null : data.message,
+        rawResponse: data.rawData ?? null,
+        paidAt: data.success ? new Date() : null,
+        paymentMethod: data.orderType ?? null,
+      });
+
+      const updatedPayment = await this.paymentRepository.update(
+        payment.id,
+        updateInput,
+        tx,
+      );
+
+      order.paymentStatus = updatedPayment.status;
       order.updatedBy = 'system';
 
-      if (payment.status === PaymentStatus.SUCCESS) {
+      if (updatedPayment.status === PaymentStatus.SUCCESS) {
         order.orderStatus = OrderStatus.COMPLETED;
       }
 
-      await orderRepository.save(order);
+      await this.ordersService.update(
+        order.id,
+        sanitizeEntityInput(OrderUpdateEntityInput, order),
+        tx,
+      );
 
-      const cart = await cartRepository.findOne({
-        where: { id: order.cartId },
-      });
+      const cart = await this.cartsService.findOne(order.cartId);
 
       if (!cart) {
         throw new NotFoundException('Cart not found');
       }
 
-      if (payment.status === PaymentStatus.SUCCESS) {
+      if (updatedPayment.status === PaymentStatus.SUCCESS) {
         cart.status = CartStatus.CONVERTED;
-        await cartRepository.save(cart);
+        await this.cartsService.update(
+          cart.id,
+          sanitizeEntityInput(CartUpdateEntityDto, cart),
+          tx,
+        );
       }
 
       this.logger.log(
-        `Payment updated: payment=${payment.id} status=${payment.status}`,
+        `Payment updated: payment=${updatedPayment.id} status=${updatedPayment.status}`,
       );
 
       return {
-        id: payment.id,
-        status: payment.status,
+        id: updatedPayment.id,
+        status: updatedPayment.status,
         orderCode: order.code,
       };
     });

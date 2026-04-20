@@ -3,13 +3,21 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from './entities';
 import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
+import { PAYMENT_REPOSITORY, PaymentRepository } from './repositories';
 import { MomoStrategy } from './strategies';
-import { Cart } from '@/carts/entities';
-import { Order } from '@/orders/entities';
+import { CartsModule } from '@/carts/carts.module';
+import { OrdersModule } from '@/orders/orders.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, Payment, Cart])],
-  providers: [PaymentService, MomoStrategy],
+  imports: [TypeOrmModule.forFeature([Payment]), OrdersModule, CartsModule],
+  providers: [
+    PaymentService,
+    MomoStrategy,
+    {
+      provide: PAYMENT_REPOSITORY,
+      useClass: PaymentRepository,
+    },
+  ],
   controllers: [PaymentController],
 })
 export class PaymentModule {}

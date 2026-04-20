@@ -6,6 +6,7 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
+import { CartUpdateEntityDto as AdminCartUpdateEntityDto } from '../admin/dto';
 import { Cart } from '../entities';
 import { CartStatus } from '../enums';
 import { CartCreateEntityInput, CartUpdateEntityDto } from '../storefront/dto';
@@ -19,6 +20,7 @@ interface FindOneActiveByCustomerIdOrSessionIdParams {
 
 export interface ICartRepository {
   create(data: CartCreateEntityInput): Promise<Cart>;
+  findOne(id: string): Promise<Cart | null>;
   findOneActiveByCustomerIdOrSessionId(
     params: FindOneActiveByCustomerIdOrSessionIdParams,
   ): Promise<Cart | null>;
@@ -27,6 +29,11 @@ export interface ICartRepository {
   update(
     id: string,
     data: CartUpdateEntityDto,
+    tx?: EntityManager,
+  ): Promise<void>;
+  adminUpdate(
+    id: string,
+    data: AdminCartUpdateEntityDto,
     tx?: EntityManager,
   ): Promise<void>;
 }
@@ -42,6 +49,10 @@ export class CartRepository implements ICartRepository {
 
   create(data: CartCreateEntityInput): Promise<Cart> {
     return this.cartRepository.save(data);
+  }
+
+  findOne(id: string): Promise<Cart | null> {
+    return this.cartRepository.findOne({ where: { id } });
   }
 
   findOneActiveByCustomerIdOrSessionId({
@@ -124,7 +135,15 @@ export class CartRepository implements ICartRepository {
     tx?: EntityManager,
   ): Promise<void> {
     const repository = tx ? tx.getRepository(Cart) : this.cartRepository;
+    await repository.update(id, data);
+  }
 
+  async adminUpdate(
+    id: string,
+    data: AdminCartUpdateEntityDto,
+    tx?: EntityManager,
+  ): Promise<void> {
+    const repository = tx ? tx.getRepository(Cart) : this.cartRepository;
     await repository.update(id, data);
   }
 }

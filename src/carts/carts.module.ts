@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AdminCartsService } from './admin/carts.service';
 import { Cart, CartItem } from './entities';
 import {
   CART_ITEM_REPOSITORY,
@@ -14,6 +15,7 @@ import { ProductsModule } from '@/products/products.module';
 @Module({
   imports: [TypeOrmModule.forFeature([Cart, CartItem]), ProductsModule],
   providers: [
+    AdminCartsService,
     StorefrontCartsService,
     {
       provide: CART_REPOSITORY,
@@ -25,5 +27,6 @@ import { ProductsModule } from '@/products/products.module';
     },
   ],
   controllers: [StorefrontCartsController],
+  exports: [AdminCartsService],
 })
 export class CartsModule {}
