@@ -13,7 +13,9 @@ export interface ICategoryRepository {
     data: CategoryUpdateEntityDto,
     tx: EntityManager,
   ): Promise<void>;
-  findActiveById(id: string): Promise<Category | null>;
+  findActiveById(
+    id: string,
+  ): Promise<(Category & { logo: string | null }) | null>;
   findAllAndCount(
     limit: number,
     offset: number,
@@ -46,8 +48,41 @@ export class CategoryRepository implements ICategoryRepository {
     await tx.getRepository(Category).update(id, data);
   }
 
-  findActiveById(id: string): Promise<Category | null> {
-    return this.repository.findOne({ where: { id, isActive: true } });
+  async findActiveById(
+    id: string,
+  ): Promise<(Category & { logo: string | null }) | null> {
+    const result = await this.repository
+      .createQueryBuilder('c')
+      .leftJoin(
+        'media_assets',
+        'm',
+        `
+          m.ref_type = :refType
+          AND m.ref_id = c.id::text
+          AND m.is_active = true
+          AND m.usage_type = :usageType
+        `,
+        {
+          refType: MediaAssetRefType.CATEGORY,
+          usageType: MediaAssetUsageType.LOGO,
+        },
+      )
+      .select([
+        'c.id AS id',
+        'c.name AS name',
+        'c.slug AS slug',
+        'c.description AS description',
+        'c.parent_id AS "parentId"',
+        'c.is_active AS "isActive"',
+        'c.created_at AS "createdAt"',
+        'c.created_by AS "createdBy"',
+        'c.updated_at AS "updatedAt"',
+        'c.updated_by AS "updatedBy"',
+        'm.url AS logo',
+      ])
+      .where('c.id = :id AND c.is_active = true', { id })
+      .getRawOne<Category & { logo: string | null }>();
+    return result ?? null;
   }
 
   findAllAndCount(
@@ -116,7 +151,13 @@ export class CategoryRepository implements ICategoryRepository {
           INNER JOIN category_tree ct ON ct.id = c.parent_id
           WHERE c.is_active = TRUE
         )
-        SELECT * FROM category_tree;
+        SELECT ct.*, m.url AS logo
+        FROM category_tree ct
+        LEFT JOIN media_assets m
+          ON m.ref_type = 'category'
+          AND m.ref_id = ct.id::text
+          AND m.is_active = true
+          AND m.usage_type = 'logo';
       `,
       [id],
     );
