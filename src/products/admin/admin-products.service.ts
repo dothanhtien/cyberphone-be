@@ -287,4 +287,8 @@ export class AdminProductsService {
 
     return { id };
   }
+
+  exists(id: string): Promise<boolean> {
+    return this.productRepository.existsActiveById(id);
+  }
 }

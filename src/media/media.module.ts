@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MediaAsset } from './entities';
+import { MediaController } from './media.controller';
 import { MediaService } from './media.service';
 import { MediaAssetsService } from './media-assets.service';
-import { MediaController } from './media.controller';
+import { MediaAssetRepository, MEDIA_ASSET_REPOSITORY } from './repositories';
 import { Brand } from '@/brands/entities';
 import { Category } from '@/categories/entities';
 import { Product } from '@/products/entities';
@@ -14,7 +15,14 @@ import { StorageModule } from '@/storage/storage.module';
     TypeOrmModule.forFeature([MediaAsset, Brand, Category, Product]),
     StorageModule,
   ],
-  providers: [MediaAssetsService, MediaService],
+  providers: [
+    MediaAssetsService,
+    MediaService,
+    {
+      provide: MEDIA_ASSET_REPOSITORY,
+      useClass: MediaAssetRepository,
+    },
+  ],
   controllers: [MediaController],
   exports: [MediaAssetsService],
 })

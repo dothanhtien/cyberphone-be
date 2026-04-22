@@ -90,6 +90,6 @@ import { StorageModule } from '@/storage/storage.module';
     AdminProductVariantsController,
     StorefrontProductsController,
   ],
-  exports: [AdminProductVariantsService],
+  exports: [AdminProductVariantsService, AdminProductsService],
 })
 export class ProductsModule {}
