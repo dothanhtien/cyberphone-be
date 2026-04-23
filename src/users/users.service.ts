@@ -21,7 +21,7 @@ import {
   ROLE_REPOSITORY,
   USER_REPOSITORY,
 } from './repositories';
-import { PaginationQueryDto } from '@/common/dto/paginations.dto';
+import { PaginationQueryDto } from '@/common/dto';
 import { PaginatedEntity } from '@/common/types';
 import {
   extractPaginationParams,

@@ -8,11 +8,17 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Brand } from '@/brands/entities';
-import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
-import { Category } from '@/categories/entities/category.entity';
-import { Product } from '@/products/entities';
 import { GetMediasDto, UploadMediasDto } from './dto';
+import { mapToMediaAssetResponse } from './mappers';
+import { MediaAssetsService } from './media-assets.service';
+import {
+  type IMediaAssetRepository,
+  MEDIA_ASSET_REPOSITORY,
+} from './repositories';
+import { Brand } from '@/brands/entities';
+import { MediaAssetRefType } from '@/common/enums';
+import { Category } from '@/categories/entities';
+import { Product } from '@/products/entities';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {
   StorageProvider,
@@ -24,9 +30,6 @@ import {
   PRODUCT_FOLDER,
 } from '@/common/constants';
 import { getErrorStack } from '@/common/utils';
-import { MediaAssetsService } from './media-assets.service';
-import { MediaAsset } from './entities';
-import { mapToMediaAssetResponse } from './mappers';
 
 @Injectable()
 export class MediaService {
@@ -50,8 +53,8 @@ export class MediaService {
     private readonly categoryRepository: Repository<Category>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
-    @InjectRepository(MediaAsset)
-    private readonly mediaAssetRepository: Repository<MediaAsset>,
+    @Inject(MEDIA_ASSET_REPOSITORY)
+    private readonly mediaAssetRepository: IMediaAssetRepository,
     private readonly dataSource: DataSource,
     private readonly mediaAssetsService: MediaAssetsService,
     @Inject(STORAGE_PROVIDER) private readonly storageProvider: StorageProvider,
@@ -150,19 +153,11 @@ export class MediaService {
       );
     }
 
-    const result = await this.mediaAssetRepository.find({
-      where: {
-        refType: getMediasDto.refType,
-        refId: getMediasDto.refId,
-        usageType: MediaAssetUsageType.DESCRIPTION,
-        isActive: true,
-      },
-      select: ['id', 'url', 'refType', 'refId', 'usageType', 'metadata'],
-      order: {
-        updatedAt: { direction: 'DESC', nulls: 'LAST' },
-        createdAt: 'DESC',
-      },
-    });
+    const result =
+      await this.mediaAssetRepository.findActiveDescriptionsByRefId(
+        getMediasDto.refType,
+        getMediasDto.refId,
+      );
 
     this.logger.debug(`Found ${result.length} medias`);
 
@@ -172,9 +167,7 @@ export class MediaService {
   async delete(id: string, actor: string) {
     this.logger.log(`Delete media start: id=${id}`);
 
-    const media = await this.mediaAssetRepository.findOne({
-      where: { id, isActive: true },
-    });
+    const media = await this.mediaAssetRepository.findActiveById(id);
 
     if (!media) {
       this.logger.warn(`Delete media failed: media not found id=${id}`);
@@ -182,9 +175,7 @@ export class MediaService {
     }
 
     try {
-      media.isActive = false;
-      media.updatedBy = actor;
-      await this.mediaAssetRepository.save(media);
+      await this.mediaAssetRepository.softDelete(id, actor);
 
       this.logger.debug(`Deleting media file from storage: ${media.publicId}`);
 
@@ -203,33 +194,7 @@ export class MediaService {
     this.logger.log('Starting cleanup of orphan temporary media...');
 
     while (true) {
-      const medias = await this.mediaAssetRepository
-        .createQueryBuilder('m')
-        .where('m.is_active = true')
-        .andWhere(
-          `
-            (
-              (m.ref_type = :brandType AND NOT EXISTS (
-                SELECT 1 FROM brands b WHERE b.id = m.ref_id::uuid AND b.is_active = true
-              ))
-              OR
-              (m.ref_type = :categoryType AND NOT EXISTS (
-                SELECT 1 FROM categories c WHERE c.id = m.ref_id::uuid AND c.is_active = true
-              ))
-              OR
-              (m.ref_type = :productType AND NOT EXISTS (
-                SELECT 1 FROM product_images pi WHERE pi.id = m.ref_id::uuid AND pi.is_active = true
-              ))
-            )
-          `,
-          {
-            brandType: MediaAssetRefType.BRAND,
-            categoryType: MediaAssetRefType.CATEGORY,
-            productType: MediaAssetRefType.PRODUCT,
-          },
-        )
-        .take(100)
-        .getMany();
+      const medias = await this.mediaAssetRepository.findOrphanMediasBatch(100);
 
       if (!medias.length) {
         this.logger.log('No orphan media found.');
@@ -243,7 +208,7 @@ export class MediaService {
 
           this.logger.log(`Deleted orphan media file: ${media.publicId}`);
 
-          await this.mediaAssetRepository.remove(media);
+          await this.mediaAssetRepository.removeMany([media]);
           deletedCount++;
         } catch (err) {
           this.logger.error(

@@ -13,7 +13,7 @@ import { CreateUserDto, UpdateUserDto } from './dto';
 import { UsersService } from './users.service';
 import { LoggedInUser } from '@/auth/decorators';
 import { PaginationQueryDto } from '@/common/dto';
-import { NonEmptyBodyPipe } from '@/common/pipes/non-empty-body.pipe';
+import { NonEmptyBodyPipe } from '@/common/pipes';
 
 @Controller('admin/users')
 export class UsersController {

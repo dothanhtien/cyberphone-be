@@ -7,7 +7,7 @@ import {
   Index,
 } from 'typeorm';
 import { Product } from './product.entity';
-import { Category } from '../../categories/entities/category.entity';
+import { Category } from '../../categories/entities';
 
 @Entity('product_categories')
 @Index(

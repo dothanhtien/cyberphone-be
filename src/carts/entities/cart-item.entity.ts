@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Cart } from './cart.entity';
-import { ProductVariant } from '../../products/entities/';
+import { ProductVariant } from '../../products/entities';
 
 @Entity('cart_items')
 @Index('uq_cart_items_cart_variant_active', ['cartId', 'variantId'], {

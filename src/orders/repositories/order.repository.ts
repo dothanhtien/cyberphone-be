@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, EntityManager, Repository } from 'typeorm';
+import { OrderUpdateEntityInput } from '../admin/dto';
 import { OrderRaw } from '../admin/types';
 import { Order } from '../entities';
 import { Cart } from '@/carts/entities';
@@ -9,7 +10,8 @@ import { CartStatus } from '@/carts/enums';
 export interface IOrderRepository {
   countActive(): Promise<number>;
   findAllRaw(limit: number, offset: number): Promise<OrderRaw[]>;
-  findOneActive(id: string): Promise<Order | null>;
+  findOneActive(id: string, tx?: EntityManager): Promise<Order | null>;
+  findOneActiveWithRelations(id: string): Promise<Order | null>;
   findCartForOrderCreation(
     cartId: string,
     tx: EntityManager,
@@ -20,6 +22,11 @@ export interface IOrderRepository {
   ): Promise<number | null>;
   getNextSequence(tx: EntityManager): Promise<number>;
   save(data: DeepPartial<Order>, tx: EntityManager): Promise<Order>;
+  update(
+    id: string,
+    data: OrderUpdateEntityInput,
+    tx: EntityManager,
+  ): Promise<boolean>;
 }
 
 export const ORDER_REPOSITORY = Symbol('IOrderRepository');
@@ -62,7 +69,12 @@ export class OrderRepository implements IOrderRepository {
     );
   }
 
-  findOneActive(id: string): Promise<Order | null> {
+  findOneActive(id: string, tx?: EntityManager): Promise<Order | null> {
+    const repo = tx ? tx.getRepository(Order) : this.orderRepository;
+    return repo.findOne({ where: { id, isActive: true } });
+  }
+
+  findOneActiveWithRelations(id: string): Promise<Order | null> {
     return this.orderRepository.findOne({
       where: { id, isActive: true },
       relations: { items: true, customer: true },
@@ -137,5 +149,16 @@ export class OrderRepository implements IOrderRepository {
 
   save(data: DeepPartial<Order>, tx: EntityManager): Promise<Order> {
     return tx.save(Order, data);
+  }
+
+  async update(
+    id: string,
+    data: OrderUpdateEntityInput,
+    tx: EntityManager,
+  ): Promise<boolean> {
+    const result = await tx
+      .getRepository(Order)
+      .update({ id, isActive: true }, data);
+    return (result.affected ?? 0) > 0;
   }
 }

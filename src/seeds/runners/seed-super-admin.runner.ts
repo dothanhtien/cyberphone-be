@@ -2,17 +2,14 @@ import { DataSource } from 'typeorm';
 import { Injectable, Logger } from '@nestjs/common';
 import { Identity } from '@/identities/entities';
 import { AuthProvider, IdentityType } from '@/identities/enums';
-import { PasswordService } from '@/password/password.service';
+import { hashPassword } from '@/common/utils';
 import { Role, User } from '@/users/entities';
 
 @Injectable()
 export class SeedSuperAdminRunner {
   private readonly logger = new Logger(SeedSuperAdminRunner.name);
 
-  constructor(
-    private readonly dataSource: DataSource,
-    private readonly passwordService: PasswordService,
-  ) {}
+  constructor(private readonly dataSource: DataSource) {}
 
   async run(): Promise<void> {
     const phone = process.env.SUPER_ADMIN_PHONE;
@@ -77,7 +74,7 @@ export class SeedSuperAdminRunner {
 
       await userRepository.save(user);
 
-      const passwordHash = await this.passwordService.hashPassword(password);
+      const passwordHash = await hashPassword(password);
 
       const identitiesToCreate = [
         {

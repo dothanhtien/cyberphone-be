@@ -9,14 +9,14 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Gender } from '@/customers/enums';
-import { Match } from '@/common/validators/match.decorator';
 import {
   MAX_EMAIL_LENGTH,
   MAX_FIRST_NAME_LENGTH,
   MAX_LAST_NAME_LENGTH,
   MAX_PHONE_LENGTH,
 } from '@/common/constants';
+import { Match } from '@/common/validators';
+import { Gender } from '@/customers/enums';
 
 export class RegisterDto {
   @Matches(/^\+?[0-9](?:[0-9\s-]{6,30}[0-9])$/, {

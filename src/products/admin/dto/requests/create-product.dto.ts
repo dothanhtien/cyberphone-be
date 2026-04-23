@@ -13,11 +13,11 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { plainToInstance, Transform } from 'class-transformer';
-import { ProductStatus } from '@/common/enums';
-import { CreateProductImageDto } from './create-product-image.dto';
 import { CreateProductAttributeDto } from './create-product-attribute.dto';
+import { CreateProductImageDto } from './create-product-image.dto';
+import { ProductStatus } from '@/common/enums';
 import { normalizeSlug, safeJsonParse } from '@/common/utils';
-import { ArrayUniqueBy } from '@/common/validators/array-unique-by.decorator';
+import { ArrayUniqueBy } from '@/common/validators';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SLUG_LENGTH = 255;

@@ -1,5 +1,7 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { OrderResponseDto } from './dto';
+import { EntityManager } from 'typeorm';
+import { OrderResponseDto, OrderUpdateEntityInput } from './dto';
+import { Order } from '../entities';
 import { OrderMapper } from './mappers';
 import { type IOrderRepository, ORDER_REPOSITORY } from '../repositories';
 import { PaginationQueryDto } from '@/common/dto';
@@ -43,12 +45,22 @@ export class AdminOrdersService {
   async findOne(id: string) {
     this.logger.debug(`[findOne] Fetching order id=${id}`);
 
-    const order = await this.orderRepository.findOneActive(id);
+    const order = await this.orderRepository.findOneActiveWithRelations(id);
 
     if (!order) throw new NotFoundException('Order not found');
 
     this.logger.log(`[findOne] Fetched order successful id=${id}`);
 
     return OrderMapper.mapToOrderDetailsResponse(order);
+  }
+
+  /** @internal */
+  findOneById(id: string, tx?: EntityManager): Promise<Order | null> {
+    return this.orderRepository.findOneActive(id, tx);
+  }
+
+  /** @internal */
+  update(id: string, data: OrderUpdateEntityInput, tx: EntityManager) {
+    return this.orderRepository.update(id, data, tx);
   }
 }

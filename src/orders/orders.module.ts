@@ -27,5 +27,6 @@ import { StorefrontOrdersService } from './storefront/storefront-orders.service'
     },
   ],
   controllers: [AdminOrdersController, StorefrontOrdersController],
+  exports: [AdminOrdersService],
 })
 export class OrdersModule {}
