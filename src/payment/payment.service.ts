@@ -167,13 +167,11 @@ export class PaymentService {
         tx,
       );
 
-      const cart = await this.cartsService.findOne(order.cartId);
-
-      if (!cart) {
-        throw new NotFoundException('Cart not found');
-      }
-
       if (updatedPayment.status === PaymentStatus.SUCCESS) {
+        const cart = await this.cartsService.findOne(order.cartId, tx);
+        if (!cart) {
+          throw new NotFoundException('Cart not found');
+        }
         cart.status = CartStatus.CONVERTED;
         await this.cartsService.update(
           cart.id,

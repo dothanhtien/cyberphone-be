@@ -11,8 +11,7 @@ export class BrandMapper {
       description: brand.description,
       websiteUrl: brand.websiteUrl,
       logo: brand.logo,
-      productCount:
-        brand.productCount !== null ? Number(brand.productCount) : undefined,
+      productCount: brand.productCount ? Number(brand.productCount) : undefined,
       isActive: brand.isActive,
       createdAt: brand.createdAt,
       createdBy: brand.createdBy,

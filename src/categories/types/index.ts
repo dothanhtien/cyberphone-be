@@ -5,5 +5,5 @@ export interface CategoryRaw {
   description: string | null;
   parentId: string | null;
   logo: string | null;
-  productCount: number;
+  productCount: string;
 }

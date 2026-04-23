@@ -156,7 +156,9 @@ export class OrderRepository implements IOrderRepository {
     data: OrderUpdateEntityInput,
     tx: EntityManager,
   ): Promise<boolean> {
-    const result = await tx.getRepository(Order).update(id, data);
+    const result = await tx
+      .getRepository(Order)
+      .update({ id, isActive: true }, data);
     return (result.affected ?? 0) > 0;
   }
 }

@@ -111,7 +111,7 @@ export class CategoryRepository implements ICategoryRepository {
         'c.name AS name',
         'c.slug AS slug',
         'c.description AS description',
-        'c.parent_id AS parentId',
+        'c.parent_id AS "parentId"',
       ])
       .addSelect('m.url', 'logo')
       .addSelect('COUNT(pc.id)', 'productCount')

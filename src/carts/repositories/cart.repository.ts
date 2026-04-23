@@ -20,7 +20,7 @@ interface FindOneActiveByCustomerIdOrSessionIdParams {
 
 export interface ICartRepository {
   create(data: CartCreateEntityInput): Promise<Cart>;
-  findOne(id: string): Promise<Cart | null>;
+  findOne(id: string, tx: EntityManager): Promise<Cart | null>;
   findOneActiveByCustomerIdOrSessionId(
     params: FindOneActiveByCustomerIdOrSessionIdParams,
   ): Promise<Cart | null>;
@@ -51,8 +51,8 @@ export class CartRepository implements ICartRepository {
     return this.cartRepository.save(data);
   }
 
-  findOne(id: string): Promise<Cart | null> {
-    return this.cartRepository.findOne({ where: { id } });
+  findOne(id: string, tx: EntityManager): Promise<Cart | null> {
+    return tx.getRepository(Cart).findOne({ where: { id } });
   }
 
   findOneActiveByCustomerIdOrSessionId({

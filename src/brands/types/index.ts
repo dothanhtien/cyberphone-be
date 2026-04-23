@@ -2,7 +2,7 @@ import { Brand } from '../entities';
 
 export type BrandWithExtras = Brand & {
   logo?: string | null;
-  productCount?: number;
+  productCount?: string;
 };
 
 export interface BrandQueryRaw {

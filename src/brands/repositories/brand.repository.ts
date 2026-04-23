@@ -53,12 +53,26 @@ export class BrandRepository implements IBrandRepository {
     }
   }
 
-  update(
+  async update(
     id: string,
     data: BrandUpdateEntityInput,
     tx: EntityManager,
   ): Promise<Brand> {
-    return tx.save(Brand, { id, ...data });
+    try {
+      return await tx.save(Brand, { id, ...data });
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        this.logger.warn(
+          `Unique constraint violation on slug (update id=${id})`,
+        );
+        throw new ConflictException('Brand with this slug already exists');
+      }
+      this.logger.error(
+        `Failed to update brand entity id=${id}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
   }
 
   findActiveByIdWithProductCount(

@@ -11,8 +11,8 @@ export class AdminCartsService {
   ) {}
 
   /** @internal */
-  findOne(id: string) {
-    return this.cartRepository.findOne(id);
+  findOne(id: string, tx: EntityManager) {
+    return this.cartRepository.findOne(id, tx);
   }
 
   /** @internal */
