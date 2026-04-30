@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { PaginationQueryDto } from '@/common/dto';
 import { ProductSortEnum } from '../../enums';
 
@@ -22,4 +22,17 @@ export class FilterProductsDto extends PaginationQueryDto {
   })
   @IsOptional()
   sort?: ProductSortEnum;
+
+  @IsBoolean()
+  @Transform(({ value }: { value: unknown }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  @IsOptional()
+  isFeatured?: boolean;
+
+  @IsString()
+  @IsOptional()
+  categorySlug?: string;
 }

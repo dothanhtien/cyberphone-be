@@ -33,6 +33,7 @@ import {
 } from './repositories';
 import { StorefrontProductsController } from './storefront/storefront-products.controller';
 import { StorefrontProductsService } from './storefront/storefront-products.service';
+import { StorefrontProductsResolver } from './storefront/graphql';
 import { BrandsModule } from '@/brands/brands.module';
 import { CategoriesModule } from '@/categories/categories.module';
 import { MediaModule } from '@/media/media.module';
@@ -63,6 +64,7 @@ import { StorageModule } from '@/storage/storage.module';
     AdminProductVariantsService,
     AdminVariantAttributesService,
     StorefrontProductsService,
+    StorefrontProductsResolver,
     {
       provide: PRODUCT_REPOSITORY,
       useClass: ProductRepository,

@@ -73,3 +73,7 @@ npm run test:e2e
 # test coverage
 npm run test:cov
 ```
+
+## Storefront Product GraphQL API
+
+See [src/products/storefront/graphql/README.md](src/products/storefront/graphql/README.md)

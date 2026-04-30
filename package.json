@@ -25,9 +25,13 @@
     "seed": "ts-node -r tsconfig-paths/register src/seeds/cli.ts"
   },
   "dependencies": {
+    "@apollo/server": "^5.5.0",
+    "@as-integrations/express5": "^1.1.2",
+    "@nestjs/apollo": "^13.3.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/graphql": "^13.3.0",
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/passport": "^11.0.5",
@@ -41,6 +45,7 @@
     "cloudinary": "^2.9.0",
     "cookie-parser": "^1.4.7",
     "dayjs": "^1.11.19",
+    "graphql": "^16.13.2",
     "multer": "^2.0.2",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
