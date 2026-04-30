@@ -25,8 +25,11 @@ export class FilterProductsDto extends PaginationQueryDto {
 
   @IsBoolean()
   @Transform(({ value }: { value: unknown }) => {
-    if (value === 'true') return true;
-    if (value === 'false') return false;
+    if (typeof value === 'string') {
+      const normalized = value.toLowerCase().trim();
+      if (normalized === 'true') return true;
+      if (normalized === 'false') return false;
+    }
     return value;
   })
   @IsOptional()
