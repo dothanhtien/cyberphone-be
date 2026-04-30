@@ -216,6 +216,21 @@ export class ProductRepository implements IProductRepository {
       whereClause += ` AND p.name ILIKE $${values.length}`;
     }
 
+    if (params.isFeatured !== undefined) {
+      values.push(params.isFeatured);
+      whereClause += ` AND p.is_featured = $${values.length}`;
+    }
+
+    if (params.categorySlug) {
+      values.push(params.categorySlug);
+      whereClause += `
+        AND EXISTS (
+          SELECT 1 FROM product_categories pc
+          JOIN categories cat ON cat.id = pc.category_id AND cat.is_active = true
+          WHERE pc.product_id = p.id AND cat.slug = $${values.length}
+        )`;
+    }
+
     let orderClause = `ORDER BY p.created_at DESC, p.id DESC`;
 
     if (params.sort === ProductSortEnum.PRICE_ASC) {
