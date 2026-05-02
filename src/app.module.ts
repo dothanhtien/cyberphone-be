@@ -22,6 +22,7 @@ import { PaymentModule } from './payment/payment.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { CustomersModule } from './customers/customers.module';
 import { IdentitiesModule } from './identities/identities.module';
+import { StorefrontConfigModule } from './storefront-config/storefront-config.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { IdentitiesModule } from './identities/identities.module';
     DashboardModule,
     CustomersModule,
     IdentitiesModule,
+    StorefrontConfigModule,
   ],
   controllers: [AppController],
   providers: [AppService],

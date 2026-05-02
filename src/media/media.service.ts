@@ -35,12 +35,11 @@ import { getErrorStack } from '@/common/utils';
 export class MediaService {
   private readonly logger = new Logger(MediaService.name);
 
-  private readonly repositoryMap: Record<
-    MediaAssetRefType,
-    Repository<Brand | Category | Product>
+  private readonly repositoryMap: Partial<
+    Record<MediaAssetRefType, Repository<Brand | Category | Product>>
   >;
 
-  private readonly folderMap: Record<MediaAssetRefType, string> = {
+  private readonly folderMap: Partial<Record<MediaAssetRefType, string>> = {
     [MediaAssetRefType.BRAND]: BRAND_FOLDER,
     [MediaAssetRefType.CATEGORY]: CATEGORY_FOLDER,
     [MediaAssetRefType.PRODUCT]: PRODUCT_FOLDER,
