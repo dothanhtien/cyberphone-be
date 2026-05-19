@@ -1,18 +1,18 @@
 import { Expose } from 'class-transformer';
 
-export class SliderCreateEntityInput {
-  @Expose()
-  id: string;
-
+export class StorefrontConfigurationUpdateEntityInput {
   @Expose()
   title?: string | null;
 
   @Expose()
-  altText?: string | null;
+  icon?: string | null;
 
   @Expose()
   displayOrder?: number;
 
   @Expose()
-  createdBy: string;
+  isActive?: boolean;
+
+  @Expose()
+  updatedBy: string;
 }

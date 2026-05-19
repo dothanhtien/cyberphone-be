@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, Repository } from 'typeorm';
-import { SliderCreateEntityInput, SliderUpdateEntityInput } from '../admin/dto';
+import {
+  StorefrontSliderCreateEntityInput,
+  StorefrontSliderUpdateEntityInput,
+} from '../dto';
 import { StorefrontSlider } from '../entities';
 import { SliderWithExtras } from '../types';
 import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
@@ -10,11 +13,11 @@ export interface IStorefrontSliderRepository {
   findByIds(ids: string[]): Promise<StorefrontSlider[]>;
   bulkInsert(
     tx: EntityManager,
-    data: SliderCreateEntityInput[],
+    data: StorefrontSliderCreateEntityInput[],
   ): Promise<StorefrontSlider[]>;
   bulkUpdate(
     tx: EntityManager,
-    updates: { id: string; data: SliderUpdateEntityInput }[],
+    updates: { id: string; data: StorefrontSliderUpdateEntityInput }[],
   ): Promise<void>;
   bulkDeactivate(
     tx: EntityManager,
@@ -43,7 +46,7 @@ export class StorefrontSliderRepository implements IStorefrontSliderRepository {
 
   async bulkInsert(
     tx: EntityManager,
-    data: SliderCreateEntityInput[],
+    data: StorefrontSliderCreateEntityInput[],
   ): Promise<StorefrontSlider[]> {
     if (!data.length) return [];
 
@@ -60,7 +63,7 @@ export class StorefrontSliderRepository implements IStorefrontSliderRepository {
 
   async bulkUpdate(
     tx: EntityManager,
-    updates: { id: string; data: SliderUpdateEntityInput }[],
+    updates: { id: string; data: StorefrontSliderUpdateEntityInput }[],
   ): Promise<void> {
     if (!updates.length) return;
     await Promise.all(

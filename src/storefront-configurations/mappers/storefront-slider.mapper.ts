@@ -1,10 +1,10 @@
-import { SliderResponseDto } from '../admin/dto/responses';
+import { StorefrontSliderResponseDto } from '../dto';
 import { SliderWithExtras } from '../types';
 import { toDto } from '@/common/utils';
 
-export class SliderMapper {
-  static mapToResponse(slider: SliderWithExtras): SliderResponseDto {
-    return toDto(SliderResponseDto, {
+export class StorefrontSliderMapper {
+  static mapToResponse(slider: SliderWithExtras): StorefrontSliderResponseDto {
+    return toDto(StorefrontSliderResponseDto, {
       id: slider.id,
       title: slider.title ?? null,
       altText: slider.altText ?? null,

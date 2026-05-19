@@ -1,16 +1,16 @@
 import { DataSource, EntityManager } from 'typeorm';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
-  SliderCreateEntityInput,
-  SliderResponseDto,
-  SliderUpdateEntityInput,
-  SyncSliderItemDto,
+  StorefrontSliderCreateEntityInput,
+  StorefrontSliderResponseDto,
+  StorefrontSliderUpdateEntityInput,
+  SyncStorefrontSliderItemDto,
 } from './dto';
-import { SliderMapper } from '../mappers';
+import { StorefrontSliderMapper } from './mappers';
 import {
   type IStorefrontSliderRepository,
   STOREFRONT_SLIDER_REPOSITORY,
-} from '../repositories';
+} from './repositories';
 import { SLIDER_FOLDER } from '@/common/constants';
 import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
 import {
@@ -25,11 +25,11 @@ import type {
   StorageUploadResult,
 } from '@/storage/storage.provider';
 
-type SliderItem = SyncSliderItemDto & { hasFile: boolean };
+type SliderItem = SyncStorefrontSliderItemDto & { hasFile: boolean };
 
 @Injectable()
-export class AdminStorefrontSlidersService {
-  private readonly logger = new Logger(AdminStorefrontSlidersService.name);
+export class StorefrontSlidersService {
+  private readonly logger = new Logger(StorefrontSlidersService.name);
 
   constructor(
     private readonly dataSource: DataSource,
@@ -39,12 +39,14 @@ export class AdminStorefrontSlidersService {
     @Inject(STORAGE_PROVIDER) private readonly storageProvider: StorageProvider,
   ) {}
 
-  async syncSliders(
-    items: SyncSliderItemDto[],
+  async syncStorefrontSliders(
+    items: SyncStorefrontSliderItemDto[],
     images: Express.Multer.File[],
     actor: string,
   ): Promise<boolean> {
-    this.logger.log(`[syncSliders] Syncing ${items.length} slider(s)`);
+    this.logger.log(
+      `[syncStorefrontSliders] Syncing ${items.length} slider(s)`,
+    );
 
     const ids = items.map((i) => i.id);
     const existing = await this.sliderRepository.findByIds(ids);
@@ -57,7 +59,7 @@ export class AdminStorefrontSlidersService {
       this.classifySliderItems(items, fileMap, existingIds);
 
     this.logger.log(
-      `[syncSliders] insert=${toInsert.length}, update=${toUpdate.length}, deactivate=${toDeactivate.length}, delete=${toDelete.length}`,
+      `[syncStorefrontSliders] insert=${toInsert.length}, update=${toUpdate.length}, deactivate=${toDeactivate.length}, delete=${toDelete.length}`,
     );
 
     const itemsNeedingUpload = [
@@ -86,7 +88,7 @@ export class AdminStorefrontSlidersService {
       });
     } catch (error) {
       this.logger.error(
-        `[syncSliders] Transaction failed`,
+        `[syncStorefrontSliders] Transaction failed`,
         getErrorStack(error),
       );
       await Promise.all(
@@ -100,13 +102,13 @@ export class AdminStorefrontSlidersService {
     return true;
   }
 
-  async findAllSliders(): Promise<SliderResponseDto[]> {
+  async findAllStorefrontSliders(): Promise<StorefrontSliderResponseDto[]> {
     const result = await this.sliderRepository.findAll();
-    return result.map((r) => SliderMapper.mapToResponse(r));
+    return result.map((r) => StorefrontSliderMapper.mapToResponse(r));
   }
 
   private classifySliderItems(
-    items: SyncSliderItemDto[],
+    items: SyncStorefrontSliderItemDto[],
     fileMap: Map<string, Express.Multer.File>,
     existingIds: Set<string>,
   ): {
@@ -123,7 +125,9 @@ export class AdminStorefrontSlidersService {
     for (const item of items) {
       const hasFile = fileMap.has(item.id);
       if (!existingIds.has(item.id)) {
-        toInsert.push({ ...item, hasFile });
+        if (!item.isDeleted && !item.isDeactivated) {
+          toInsert.push({ ...item, hasFile });
+        }
       } else if (item.isDeleted) {
         toDelete.push(item.id);
       } else if (item.isDeactivated) {
@@ -157,7 +161,7 @@ export class AdminStorefrontSlidersService {
     if (failures.length > 0) {
       const firstError: unknown = failures[0].reason;
       this.logger.error(
-        `[syncSliders] ${failures.length} upload(s) failed`,
+        `[syncStorefrontSliders] ${failures.length} upload(s) failed`,
         getErrorStack(firstError),
       );
       await Promise.all(
@@ -197,7 +201,7 @@ export class AdminStorefrontSlidersService {
       this.sliderRepository.bulkInsert(
         tx,
         toInsert.map((item) =>
-          sanitizeEntityInput(SliderCreateEntityInput, {
+          sanitizeEntityInput(StorefrontSliderCreateEntityInput, {
             id: item.id,
             title: item.title,
             altText: item.altText,
@@ -210,7 +214,7 @@ export class AdminStorefrontSlidersService {
         tx,
         toUpdate.map((item) => ({
           id: item.id,
-          data: sanitizeEntityInput(SliderUpdateEntityInput, {
+          data: sanitizeEntityInput(StorefrontSliderUpdateEntityInput, {
             title: item.title,
             altText: item.altText,
             displayOrder: item.displayOrder,
@@ -291,7 +295,7 @@ export class AdminStorefrontSlidersService {
                       ? this.mediaAssetsService.deleteById(oldImage.id, tx)
                       : deleteMediaAsset(
                           oldImage,
-                          `[syncSliders] Failed to delete old image id=${item.id}`,
+                          `[syncStorefrontSliders] Failed to delete old image id=${item.id}`,
                         ),
                   );
                 }
@@ -321,7 +325,7 @@ export class AdminStorefrontSlidersService {
                 ? [
                     deleteMediaAsset(
                       oldImage,
-                      `[syncSliders] Failed to delete image for deleted slider id=${id}`,
+                      `[syncStorefrontSliders] Failed to delete image for deleted slider id=${id}`,
                     ),
                   ]
                 : [],

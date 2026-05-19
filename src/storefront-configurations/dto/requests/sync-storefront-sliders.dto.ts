@@ -14,7 +14,7 @@ import {
 import { plainToInstance, Transform, Type } from 'class-transformer';
 import { safeJsonParse, toOptionalBoolean } from '@/common/utils';
 
-export class SyncSliderItemDto {
+export class SyncStorefrontSliderItemDto {
   @IsUUID('4', { message: 'id must be a valid UUID' })
   @IsNotEmpty({ message: 'id is required' })
   id: string;
@@ -30,6 +30,11 @@ export class SyncSliderItemDto {
   @IsString({ message: 'altText must be a string' })
   @IsOptional()
   altText?: string | null;
+
+  @MaxLength(100, { message: 'icon must not exceed 100 characters' })
+  @IsString({ message: 'icon must be a string' })
+  @IsOptional()
+  icon?: string | null;
 
   @Min(0, { message: 'displayOrder must be greater than or equal to 0' })
   @IsInt({ message: 'displayOrder must be an integer' })
@@ -48,7 +53,7 @@ export class SyncSliderItemDto {
   isDeactivated?: boolean;
 }
 
-export class SyncSlidersDto {
+export class SyncStorefrontSlidersDto {
   @ValidateNested({ each: true })
   @ArrayNotEmpty({ message: 'items must not be empty' })
   @IsArray({ message: 'items must be an array' })
@@ -63,7 +68,9 @@ export class SyncSlidersDto {
       return parsed;
     }
 
-    return parsed.map((item) => plainToInstance(SyncSliderItemDto, item));
+    return parsed.map((item) =>
+      plainToInstance(SyncStorefrontSliderItemDto, item),
+    );
   })
-  items: SyncSliderItemDto[];
+  items: SyncStorefrontSliderItemDto[];
 }

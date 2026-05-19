@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 
-export class SliderResponseDto {
+export class StorefrontSliderResponseDto {
   @Expose()
   id: string;
 
