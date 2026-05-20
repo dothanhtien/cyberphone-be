@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { MediaAssetRefType } from '@/common/enums';
+import { toOptionalBoolean } from '@/common/utils';
 
 export class GetMediasDto {
   @IsUUID('4', { message: 'Ref Id must be a valid UUID (v4)' })
@@ -21,12 +22,7 @@ export class GetMediasDto {
   refType: MediaAssetRefType;
 
   @IsBoolean({ message: 'Is temporary must be a boolean' })
-  @Transform(({ value }: { value: unknown }) => {
-    if (value === undefined || value === null || value === '') return undefined;
-    if (value === true || value === 'true') return true;
-    if (value === false || value === 'false') return false;
-    return value;
-  })
+  @Transform(({ value }) => toOptionalBoolean(value))
   @IsOptional()
   isTemporary = false;
 }

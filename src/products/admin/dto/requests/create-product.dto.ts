@@ -16,7 +16,11 @@ import { plainToInstance, Transform } from 'class-transformer';
 import { CreateProductAttributeDto } from './create-product-attribute.dto';
 import { CreateProductImageDto } from './create-product-image.dto';
 import { ProductStatus } from '@/common/enums';
-import { normalizeSlug, safeJsonParse } from '@/common/utils';
+import {
+  normalizeSlug,
+  safeJsonParse,
+  toOptionalBoolean,
+} from '@/common/utils';
 import { ArrayUniqueBy } from '@/common/validators';
 
 const MAX_NAME_LENGTH = 255;
@@ -58,23 +62,12 @@ export class CreateProductDto {
   status: ProductStatus;
 
   @IsBoolean({ message: 'isFeatured must be a boolean' })
-  @Transform(({ value }: { value: unknown }) => {
-    if (value === undefined || value === null || value === '') return undefined;
-    if (value === true || value === 'true') return true;
-    if (value === false || value === 'false') return false;
-    return value;
-  })
+  @Transform(({ value }) => toOptionalBoolean(value))
   @IsOptional()
   isFeatured?: boolean;
 
-  @Transform(({ value }) => value === 'true')
   @IsBoolean({ message: 'isBestseller must be a boolean' })
-  @Transform(({ value }: { value: unknown }) => {
-    if (value === undefined || value === null || value === '') return undefined;
-    if (value === true || value === 'true') return true;
-    if (value === false || value === 'false') return false;
-    return value;
-  })
+  @Transform(({ value }) => toOptionalBoolean(value))
   @IsOptional()
   isBestseller?: boolean;
 

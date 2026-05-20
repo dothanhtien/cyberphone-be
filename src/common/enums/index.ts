@@ -2,6 +2,7 @@ export enum MediaAssetRefType {
   CATEGORY = 'category',
   BRAND = 'brand',
   PRODUCT = 'product',
+  SLIDER = 'slider',
 }
 
 export enum MediaAssetResourceType {

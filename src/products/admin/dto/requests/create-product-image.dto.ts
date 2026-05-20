@@ -12,6 +12,7 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ProductImageType } from '@/common/enums';
+import { toOptionalBoolean } from '@/common/utils';
 
 const MAX_TITLE_LENGTH = 255;
 const MAX_ALT_TEXT_LENGTH = 255;
@@ -48,12 +49,7 @@ export class CreateProductImageDto {
   displayOrder?: number;
 
   @IsBoolean({ message: 'isDeleted must be a boolean' })
-  @Transform(({ value }: { value: unknown }) => {
-    if (value === undefined || value === null || value === '') return undefined;
-    if (value === true || value === 'true') return true;
-    if (value === false || value === 'false') return false;
-    return value;
-  })
+  @Transform(({ value }) => toOptionalBoolean(value))
   @IsOptional()
   isDeleted?: boolean;
 
