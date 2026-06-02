@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { CartType } from '@/carts/enums';
 
 export class CartCreateEntityInput {
   @Expose()
@@ -9,4 +10,7 @@ export class CartCreateEntityInput {
 
   @Expose()
   expiresAt: Date;
+
+  @Expose()
+  type?: CartType;
 }

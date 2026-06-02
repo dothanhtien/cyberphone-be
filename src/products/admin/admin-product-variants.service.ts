@@ -5,6 +5,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { AdminProductValidatorsService } from './admin-product-validators.service';
@@ -243,6 +244,36 @@ export class AdminProductVariantsService {
 
       return savedVariant;
     });
+  }
+
+  async reserveStock(
+    items: { variantId: string; quantity: number }[],
+    tx: EntityManager,
+  ): Promise<void> {
+    for (const { variantId, quantity } of items) {
+      const ok = await this.productVariantRepository.decrementStock(
+        variantId,
+        quantity,
+        tx,
+      );
+
+      if (!ok) {
+        throw new UnprocessableEntityException(
+          `Insufficient stock for variant ${variantId}`,
+        );
+      }
+    }
+  }
+
+  async restoreStock(
+    items: { variantId: string; quantity: number }[],
+    tx: EntityManager,
+  ): Promise<void> {
+    await Promise.all(
+      items.map(({ variantId, quantity }) =>
+        this.productVariantRepository.restoreStock(variantId, quantity, tx),
+      ),
+    );
   }
 
   private validatePrices(price: number, salePrice?: number | null) {

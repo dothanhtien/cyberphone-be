@@ -11,7 +11,8 @@ export class CreateCartsTable1772245023149 implements MigrationInterface {
           "customer_id" uuid, 
           "session_id" character varying(100) NOT NULL, 
           "expires_at" TIMESTAMP WITH TIME ZONE NOT NULL, 
-          "status" character varying(50) NOT NULL DEFAULT 'active',  
+          "status" character varying(50) NOT NULL DEFAULT 'active', 
+          "type" character varying(50) NOT NULL DEFAULT 'regular', 
           "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
           "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(), 
           CONSTRAINT "pk_carts_id" PRIMARY KEY ("id")
@@ -22,7 +23,7 @@ export class CreateCartsTable1772245023149 implements MigrationInterface {
       `CREATE INDEX "idx_carts_customer_id" ON "carts" ("customer_id")`,
     );
     await queryRunner.query(
-      `CREATE UNIQUE INDEX "uq_active_cart_per_customer" ON "carts" ("customer_id") WHERE "status" = 'active' AND "customer_id" IS NOT NULL`,
+      `CREATE UNIQUE INDEX "uq_active_cart_per_customer" ON "carts" ("customer_id") WHERE "status" = 'active' AND "customer_id" IS NOT NULL AND "type" = 'regular'`,
     );
     await queryRunner.query(
       `ALTER TABLE "carts" ADD CONSTRAINT "fk_carts_customer_id" FOREIGN KEY ("customer_id") REFERENCES "customers"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,

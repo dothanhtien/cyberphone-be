@@ -5,6 +5,7 @@ export interface MomoConfig {
   apiEndpoint: string;
   redirectUrl?: string;
   ipnUrl: string;
+  storeId: string;
   isSandbox: boolean;
 }
 

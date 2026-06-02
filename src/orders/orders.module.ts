@@ -11,9 +11,10 @@ import {
 } from './repositories';
 import { StorefrontOrdersController } from './storefront/storefront-orders.controller';
 import { StorefrontOrdersService } from './storefront/storefront-orders.service';
+import { ProductsModule } from '@/products/products.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, OrderItem])],
+  imports: [TypeOrmModule.forFeature([Order, OrderItem]), ProductsModule],
   providers: [
     AdminOrdersService,
     StorefrontOrdersService,

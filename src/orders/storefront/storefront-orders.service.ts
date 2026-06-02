@@ -1,19 +1,25 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, EntityManager } from 'typeorm';
+import Big from 'big.js';
 import dayjs from 'dayjs';
+import { DataSource, EntityManager } from 'typeorm';
 import {
   CreateOrderDto,
   OrderCreateEntityInput,
   OrderItemCreateEntityDto,
 } from './dto';
+import { OrderCalculationInput, OrderCalculationResult } from './types';
+import { OrderUpdateEntityInput } from '../admin/dto';
+import { Order } from '../entities';
+import { OrderStatus } from '../enums';
 import {
   type IOrderItemRepository,
   type IOrderRepository,
   ORDER_ITEM_REPOSITORY,
   ORDER_REPOSITORY,
 } from '../repositories';
-import { OrderCalculationInput, OrderCalculationResult } from './types';
-import { sanitizeEntityInput } from '@/common/utils';
+import { isUniqueConstraintError, sanitizeEntityInput } from '@/common/utils';
+import { PaymentStatus } from '@/payment/enums';
+import { AdminProductVariantsService } from '@/products/admin/admin-product-variants.service';
 
 @Injectable()
 export class StorefrontOrdersService {
@@ -23,9 +29,12 @@ export class StorefrontOrdersService {
     private readonly orderRepository: IOrderRepository,
     @Inject(ORDER_ITEM_REPOSITORY)
     private readonly orderItemRepository: IOrderItemRepository,
+    private readonly productVariantsService: AdminProductVariantsService,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto) {
+  private static readonly PAYMENT_TTL_MS = 15 * 60 * 1000;
+
+  async create(createOrderDto: CreateOrderDto): Promise<Order> {
     return await this.dataSource.transaction(async (tx) => {
       const cart = await this.orderRepository.findCartForOrderCreation(
         createOrderDto.cartId,
@@ -33,31 +42,68 @@ export class StorefrontOrdersService {
       );
 
       if (!cart) {
-        throw new NotFoundException('Cart not found');
+        throw new NotFoundException('Cart not found or expired');
       }
 
       if (!cart.items.length) {
         throw new NotFoundException('Cart is empty');
       }
 
-      const shippingFee = 0;
-      const discountTotal = 0;
-      const taxTotal = 0;
+      const existingPending = await this.orderRepository.findPendingByCartId(
+        cart.id,
+        tx,
+      );
 
-      const { orderTotal, itemsTotal, shippingTotal } = this.calculateOrder({
-        cart,
-        shippingFee,
-        discountTotal,
-        taxTotal,
-      });
+      if (existingPending) {
+        const pendingPayment = existingPending.payments?.find(
+          (p) => p.status === PaymentStatus.PENDING,
+        );
 
-      const orderCode = await this.generateOrderCode(tx);
+        const referenceTime =
+          pendingPayment?.createdAt ?? existingPending.createdAt;
+
+        if (
+          Date.now() - referenceTime.getTime() <
+          StorefrontOrdersService.PAYMENT_TTL_MS
+        ) {
+          return existingPending;
+        }
+
+        await this.productVariantsService.restoreStock(
+          existingPending.items.map((item) => ({
+            variantId: item.variantId,
+            quantity: item.quantity,
+          })),
+          tx,
+        );
+
+        await this.orderRepository.update(
+          existingPending.id,
+          sanitizeEntityInput(OrderUpdateEntityInput, {
+            orderStatus: OrderStatus.CANCELLED,
+            updatedBy: 'system',
+          }),
+          tx,
+        );
+      }
+
+      const shippingFee = new Big(0);
+
+      const { orderTotal, itemsTotal, shippingTotal, discountTotal, taxTotal } =
+        this.calculateOrder({
+          cart,
+          shippingFee,
+          discountTotal: new Big(0),
+          taxTotal: new Big(0),
+        });
 
       const lastRevision = await this.orderRepository.findLastRevisionByCartId(
         cart.id,
         tx,
       );
-      const nextRevision = (lastRevision ?? 0) + 1;
+      const nextRevision = (lastRevision?.revision ?? 0) + 1;
+      const orderCode =
+        lastRevision?.code ?? (await this.generateOrderCode(tx));
 
       const order = sanitizeEntityInput(OrderCreateEntityInput, {
         ...createOrderDto,
@@ -75,14 +121,27 @@ export class StorefrontOrdersService {
         createdBy: cart.customerId ?? cart.sessionId ?? 'guest',
       });
 
-      const savedOrder = await this.orderRepository.save(order, tx);
+      let savedOrder: Order;
+      try {
+        savedOrder = await this.orderRepository.save(order, tx);
+      } catch (error) {
+        if (isUniqueConstraintError(error)) {
+          const concurrent = await this.orderRepository.findPendingByCartId(
+            cart.id,
+            tx,
+          );
+          if (concurrent) return concurrent;
+        }
+        throw error;
+      }
 
       const orderItems = cart.items.map((item) => {
-        const price = parseFloat(item.variant.price);
+        const price = new Big(item.variant.price);
         const salePrice = item.variant.salePrice
-          ? parseFloat(item.variant.salePrice)
+          ? new Big(item.variant.salePrice)
           : null;
-        const itemTotal = item.quantity * (salePrice ?? price);
+        const effectivePrice = salePrice ?? price;
+        const itemTotal = effectivePrice.times(item.quantity);
 
         return sanitizeEntityInput(OrderItemCreateEntityDto, {
           orderId: savedOrder.id,
@@ -106,6 +165,14 @@ export class StorefrontOrdersService {
 
       const savedItems = await this.orderItemRepository.save(orderItems, tx);
 
+      await this.productVariantsService.reserveStock(
+        cart.items.map((item) => ({
+          variantId: item.variant.id,
+          quantity: item.quantity,
+        })),
+        tx,
+      );
+
       savedOrder.items = savedItems;
 
       return savedOrder;
@@ -115,28 +182,30 @@ export class StorefrontOrdersService {
   private async generateOrderCode(tx: EntityManager): Promise<string> {
     const seq = await this.orderRepository.getNextSequence(tx);
 
-    return `ODR${dayjs().format('YYYYMMDD')}${seq}`;
+    return `ODR${dayjs().format('YYYYMMDD')}${String(seq).padStart(6, '0')}`;
   }
 
   private calculateOrder({
     cart,
-    shippingFee = 0,
-    discountTotal = 0,
-    taxTotal = 0,
+    shippingFee = new Big(0),
+    discountTotal = new Big(0),
+    taxTotal = new Big(0),
   }: OrderCalculationInput): OrderCalculationResult {
-    let itemsTotal = 0;
+    let itemsTotal = new Big(0);
 
     for (const item of cart.items) {
-      const price = parseFloat(item.variant.price);
+      const price = new Big(item.variant.price);
       const salePrice = item.variant.salePrice
-        ? parseFloat(item.variant.salePrice)
+        ? new Big(item.variant.salePrice)
         : null;
-      itemsTotal += (salePrice ?? price) * item.quantity;
+      itemsTotal = itemsTotal.plus((salePrice ?? price).times(item.quantity));
     }
 
     const shippingTotal = shippingFee;
-
-    const orderTotal = itemsTotal - discountTotal + taxTotal + shippingTotal;
+    const orderTotal = itemsTotal
+      .minus(discountTotal)
+      .plus(taxTotal)
+      .plus(shippingTotal);
 
     return {
       itemsTotal,

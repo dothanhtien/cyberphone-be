@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { CartItem } from './cart-item.entity';
-import { CartStatus } from '../enums';
+import { CartStatus, CartType } from '../enums';
 import { Customer } from '../../customers/entities';
 import { Order } from '../../orders/entities';
 
@@ -18,7 +18,7 @@ import { Order } from '../../orders/entities';
 @Index('idx_carts_customer_id', ['customerId'])
 @Index('uq_active_cart_per_customer', ['customerId'], {
   unique: true,
-  where: `"status" = '${CartStatus.ACTIVE}' AND "customer_id" IS NOT NULL`,
+  where: `"status" = '${CartStatus.ACTIVE}' AND "customer_id" IS NOT NULL AND "type" = '${CartType.REGULAR}'`,
 })
 export class Cart {
   @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'pk_carts_id' })
@@ -40,6 +40,14 @@ export class Cart {
     default: CartStatus.ACTIVE,
   })
   status: CartStatus = CartStatus.ACTIVE;
+
+  @Column({
+    name: 'type',
+    type: 'varchar',
+    length: 50,
+    default: CartType.REGULAR,
+  })
+  type: CartType = CartType.REGULAR;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
