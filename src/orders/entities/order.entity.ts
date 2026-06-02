@@ -5,7 +5,6 @@ import {
   Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  Unique,
   ManyToOne,
   JoinColumn,
   OneToMany,
@@ -18,11 +17,14 @@ import { PaymentMethod, PaymentStatus } from '../../payment/enums';
 import { Customer } from '../../customers/entities';
 
 @Entity('orders')
-@Unique('idx_orders_code', ['code'])
 @Index('idx_orders_customer_id', ['customerId'])
 @Index('idx_orders_order_status', ['orderStatus'])
 @Index('idx_orders_payment_status', ['paymentStatus'])
 @Index('idx_orders_cart_revision', ['cartId', 'revision'])
+@Index('uq_orders_pending_cart_id', ['cartId'], {
+  unique: true,
+  where: `"order_status" = 'pending'`,
+})
 export class Order {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'pk_orders_id',

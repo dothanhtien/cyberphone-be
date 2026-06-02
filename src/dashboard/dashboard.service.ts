@@ -35,8 +35,8 @@ export class DashboardService {
         .leftJoin('payments', 'p', 'p.orderId = o.id')
         .select([
           `
-            COUNT(*) FILTER (
-              WHERE o.orderStatus = :orderStatus
+            COUNT(DISTINCT o.id) FILTER (
+              WHERE o.orderStatus IN (:...orderStatuses)
               AND GREATEST(o.createdAt, o.updatedAt) BETWEEN :startDate AND :endDate
             ) as total_orders
           `,
@@ -44,6 +44,7 @@ export class DashboardService {
             COALESCE(
               SUM(p.amount) FILTER (
                 WHERE p.status = :paymentStatus
+                AND o.orderStatus IN (:...orderStatuses)
                 AND GREATEST(o.createdAt, o.updatedAt) BETWEEN :startDate AND :endDate
               ), 0
             ) as total_revenue
@@ -52,7 +53,7 @@ export class DashboardService {
         .setParameters({
           startDate,
           endDate,
-          orderStatus: OrderStatus.COMPLETED,
+          orderStatuses: [OrderStatus.COMPLETED, OrderStatus.CONFIRMED],
           paymentStatus: PaymentStatus.SUCCESS,
         })
         .getRawOne<SummaryRaw>(),
@@ -80,16 +81,21 @@ export class DashboardService {
           COALESCE(SUM(p.amount),0) as revenue
         FROM generate_series($1::date, $2::date, interval '1 day') d
         LEFT JOIN orders o
-          ON o.created_at >= d
-            AND o.created_at < d + interval '1 day'
-            AND o."order_status" = $3
+          ON GREATEST(o.created_at, o.updated_at) >= d
+            AND GREATEST(o.created_at, o.updated_at) < d + interval '1 day'
+            AND o."order_status" = ANY($3)
         LEFT JOIN payments p
           ON p.order_id = o.id
           AND p.status = $4
         GROUP BY d
         ORDER BY d
       `,
-      [startDate, endDate, OrderStatus.COMPLETED, PaymentStatus.SUCCESS],
+      [
+        startDate,
+        endDate,
+        [OrderStatus.COMPLETED, OrderStatus.CONFIRMED],
+        PaymentStatus.SUCCESS,
+      ],
     );
 
     return raw.map((r) => ({
@@ -112,13 +118,13 @@ export class DashboardService {
         JOIN products p ON p.id = v.product_id AND p.is_active = true
         JOIN product_categories pc ON pc.product_id = p.id
         JOIN categories c ON c.id = pc.category_id AND c.is_active = true
-        WHERE o.order_status = $1
+        WHERE o.order_status = ANY($1)
           AND o.created_at BETWEEN $2 AND $3
         GROUP BY c.id, c.name
         ORDER BY total DESC
         LIMIT 3
       `,
-      [OrderStatus.COMPLETED, startDate, endDate],
+      [[OrderStatus.CONFIRMED, OrderStatus.COMPLETED], startDate, endDate],
     );
 
     return raw.map((r) => ({
@@ -147,7 +153,7 @@ export class DashboardService {
           FROM order_items oi
           JOIN orders o ON o.id = oi.order_id
           JOIN product_variants v ON v.id = oi.variant_id AND v.is_active = true
-          WHERE o.order_status = $1 AND o.created_at BETWEEN $2 AND $3
+          WHERE o.order_status = ANY($1) AND o.created_at BETWEEN $2 AND $3
           GROUP BY v.id, v.name, v.product_id
           ORDER BY total_sales DESC
           LIMIT $4
@@ -180,7 +186,7 @@ export class DashboardService {
         ORDER BY s.total_sales DESC
       `,
       [
-        OrderStatus.COMPLETED,
+        [OrderStatus.CONFIRMED, OrderStatus.COMPLETED],
         startDate,
         endDate,
         limit,

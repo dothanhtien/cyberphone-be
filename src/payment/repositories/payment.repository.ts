@@ -3,14 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { PaymentCreateEntityInput, PaymentUpdateEntityInput } from '../dto';
 import { Payment } from '../entities';
+import { PaymentStatus } from '../enums';
 
 export interface IPaymentRepository {
   create(data: PaymentCreateEntityInput, tx?: EntityManager): Promise<Payment>;
+  findPendingByOrderId(orderId: string): Promise<Payment | null>;
   findByIdWithLock(id: string, tx: EntityManager): Promise<Payment | null>;
   update(
     id: string,
     data: PaymentUpdateEntityInput,
-    tx: EntityManager,
+    tx?: EntityManager,
   ): Promise<Payment>;
 }
 
@@ -28,6 +30,12 @@ export class PaymentRepository implements IPaymentRepository {
     return repo.save(data);
   }
 
+  findPendingByOrderId(orderId: string): Promise<Payment | null> {
+    return this.repository.findOne({
+      where: { orderId, status: PaymentStatus.PENDING },
+    });
+  }
+
   findByIdWithLock(id: string, tx: EntityManager): Promise<Payment | null> {
     return tx.getRepository(Payment).findOne({
       where: { id },
@@ -38,8 +46,9 @@ export class PaymentRepository implements IPaymentRepository {
   update(
     id: string,
     data: PaymentUpdateEntityInput,
-    tx: EntityManager,
+    tx?: EntityManager,
   ): Promise<Payment> {
-    return tx.save(Payment, { id, ...data });
+    const repo = tx ? tx.getRepository(Payment) : this.repository;
+    return repo.save({ id, ...data });
   }
 }

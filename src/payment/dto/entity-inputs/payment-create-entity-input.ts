@@ -3,6 +3,9 @@ import { PaymentProvider } from '../../enums';
 
 export class PaymentCreateEntityInput {
   @Expose()
+  id?: string;
+
+  @Expose()
   orderId: string;
 
   @Expose()
@@ -13,4 +16,7 @@ export class PaymentCreateEntityInput {
 
   @Expose()
   orderInfo?: string | null;
+
+  @Expose()
+  checkoutUrl?: string | null;
 }

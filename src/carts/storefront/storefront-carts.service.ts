@@ -12,6 +12,7 @@ import { DataSource } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import {
   AddToCartDto,
+  BuyNowDto,
   CartCreateEntityInput,
   CartItemCreateEntityInput,
   CartItemUpdateEntityInput,
@@ -19,6 +20,7 @@ import {
   ResolveCartDto,
 } from './dto';
 import { CartItemMapper, CartMapper } from './mappers';
+import { CartQuantityAction, CartType } from '../enums';
 import {
   CART_REPOSITORY,
   type ICartRepository,
@@ -110,6 +112,48 @@ export class StorefrontCartsService {
     }
   }
 
+  async buyNow(buyNowDto: BuyNowDto) {
+    const { variantId, customerId } = buyNowDto;
+
+    this.logger.debug(
+      `[buyNow] Creating buy-now cart variantId=${variantId}, customerId=${customerId}`,
+    );
+
+    const cartId = await this.dataSource.transaction(async (tx) => {
+      const variant = await this.productVariantsService.findOneActiveById(
+        variantId,
+        tx,
+      );
+
+      if (!variant) throw new NotFoundException('Product variant not found');
+
+      this.validateStock(variant, 1);
+
+      const cart = await this.cartRepository.create(
+        sanitizeEntityInput(CartCreateEntityInput, {
+          customerId,
+          sessionId: uuid(),
+          expiresAt: dayjs().utc().add(30, 'minute').toDate(),
+          type: CartType.BUY_NOW,
+        }),
+        tx,
+      );
+
+      await this.cartItemRepository.create(
+        sanitizeEntityInput(CartItemCreateEntityInput, {
+          cartId: cart.id,
+          variantId,
+          quantity: 1,
+        }),
+        tx,
+      );
+
+      return cart.id;
+    });
+
+    return this.findOne(cartId);
+  }
+
   async addToCart(cartId: string, addToCartDto: AddToCartDto) {
     const { quantity, variantId } = addToCartDto;
 
@@ -168,12 +212,6 @@ export class StorefrontCartsService {
         cartItemId = cartItem.id;
       }
 
-      await this.cartRepository.update(
-        cartId,
-        sanitizeEntityInput(CartUpdateEntityDto, cart),
-        tx,
-      );
-
       this.logger.debug(
         `[addToCart] Added item to cart success cartId=${cartId}, variantId=${variantId}, quantity=${quantity}`,
       );
@@ -187,46 +225,51 @@ export class StorefrontCartsService {
   async updateItemQuantity(
     cartId: string,
     itemId: string,
-    type: 'increase' | 'decrease',
+    type: CartQuantityAction,
   ) {
     this.logger.debug(
       `[updateItemQuantity] Updating cart item quantity cartId=${cartId}, itemId=${itemId}, type=${type}`,
     );
 
-    const cartItem = await this.cartItemRepository.findOneActiveById(itemId);
+    await this.dataSource.transaction(async (tx) => {
+      const cartItem = await this.cartItemRepository.findOneActiveByIdWithLock(
+        itemId,
+        tx,
+      );
 
-    if (!cartItem || cartItem.cartId !== cartId) {
-      throw new NotFoundException('Cart item not found');
-    }
-
-    const [cart, variant] = await Promise.all([
-      this.cartRepository.findOneActiveById(cartId),
-      this.productVariantsService.findOneActiveById(cartItem.variantId),
-    ]);
-
-    if (!cart) throw new NotFoundException('Cart not found');
-
-    if (!variant) throw new NotFoundException('Variant not found');
-
-    if (type === 'increase') {
-      this.validateStock(variant, cartItem.quantity + 1);
-      cartItem.quantity += 1;
-    } else {
-      cartItem.quantity -= 1;
-
-      if (cartItem.quantity <= 0) {
-        this.logger.debug(
-          `[updateItemQuantity] Removing item itemId=${itemId}`,
-        );
-        cartItem.isActive = false;
-        cartItem.quantity = 0;
+      if (!cartItem || cartItem.cartId !== cartId) {
+        throw new NotFoundException('Cart item not found');
       }
-    }
 
-    await this.cartItemRepository.update(
-      itemId,
-      sanitizeEntityInput(CartItemUpdateEntityInput, cartItem),
-    );
+      const [cart, variant] = await Promise.all([
+        this.cartRepository.findOneActiveById(cartId, tx),
+        this.productVariantsService.findOneActiveById(cartItem.variantId, tx),
+      ]);
+
+      if (!cart) throw new NotFoundException('Cart not found');
+      if (!variant) throw new NotFoundException('Variant not found');
+
+      if (type === CartQuantityAction.Increase) {
+        this.validateStock(variant, cartItem.quantity + 1);
+        cartItem.quantity += 1;
+      } else {
+        cartItem.quantity -= 1;
+
+        if (cartItem.quantity <= 0) {
+          this.logger.debug(
+            `[updateItemQuantity] Removing item itemId=${itemId}`,
+          );
+          cartItem.isActive = false;
+          cartItem.quantity = 0;
+        }
+      }
+
+      await this.cartItemRepository.update(
+        itemId,
+        sanitizeEntityInput(CartItemUpdateEntityInput, cartItem),
+        tx,
+      );
+    });
 
     return true;
   }
@@ -241,9 +284,10 @@ export class StorefrontCartsService {
       throw new NotFoundException('Cart item not found');
     }
 
-    const updated = await this.cartItemRepository.update(itemId, {
-      isActive: false,
-    } as CartItemUpdateEntityInput);
+    const updated = await this.cartItemRepository.update(
+      itemId,
+      sanitizeEntityInput(CartItemUpdateEntityInput, { isActive: false }),
+    );
 
     if (!updated) {
       throw new NotFoundException('Cart item not found');

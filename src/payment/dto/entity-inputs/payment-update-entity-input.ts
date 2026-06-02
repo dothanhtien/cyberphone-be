@@ -19,4 +19,7 @@ export class PaymentUpdateEntityInput {
 
   @Expose()
   paymentMethod?: string | null;
+
+  @Expose()
+  checkoutUrl?: string | null;
 }

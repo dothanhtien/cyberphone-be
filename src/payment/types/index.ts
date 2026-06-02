@@ -16,7 +16,7 @@ export interface PaymentStrategy {
 export interface CreatePaymentUrlParams {
   createPaymentDto: CreatePaymentDto;
   order: Order;
-  payment: Payment;
+  payment: Pick<Payment, 'id' | 'amount' | 'orderInfo'>;
 }
 
 export interface PaymentResult {

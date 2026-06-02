@@ -28,6 +28,16 @@ export interface IProductVariantRepository {
     tx: EntityManager,
   ): Promise<ProductVariant>;
   unsetDefaultVariant(productId: string, tx: EntityManager): Promise<void>;
+  decrementStock(
+    variantId: string,
+    quantity: number,
+    tx: EntityManager,
+  ): Promise<boolean>;
+  restoreStock(
+    variantId: string,
+    quantity: number,
+    tx: EntityManager,
+  ): Promise<void>;
 }
 
 export const PRODUCT_VARIANT_REPOSITORY = Symbol('IProductVariantRepository');
@@ -108,6 +118,59 @@ export class ProductVariantRepository implements IProductVariantRepository {
       ProductVariant,
       { productId, isDefault: true, isActive: true },
       { isDefault: false },
+    );
+  }
+
+  async decrementStock(
+    variantId: string,
+    quantity: number,
+    tx: EntityManager,
+  ): Promise<boolean> {
+    if (quantity <= 0) return false;
+    const result = await tx.query<{ id: string }[]>(
+      `
+        UPDATE product_variants
+        SET
+          stock_quantity = stock_quantity - $1,
+          stock_status = CASE
+            WHEN stock_quantity - $1 <= 0 THEN 'out_of_stock'
+            WHEN stock_quantity - $1 <= low_stock_threshold THEN 'low_stock'
+            ELSE 'in_stock'
+          END
+        WHERE id = $2
+          AND is_active = true
+          AND stock_quantity >= $1
+        RETURNING id
+      `,
+      [quantity, variantId],
+    );
+
+    return result.length > 0;
+  }
+
+  async restoreStock(
+    variantId: string,
+    quantity: number,
+    tx: EntityManager,
+  ): Promise<void> {
+    if (quantity <= 0) {
+      throw new Error(
+        `restoreStock requires a positive quantity, got ${quantity} for variant ${variantId}`,
+      );
+    }
+    await tx.query(
+      `
+        UPDATE product_variants
+        SET
+          stock_quantity = stock_quantity + $1,
+          stock_status = CASE
+            WHEN stock_quantity + $1 <= 0 THEN 'out_of_stock'
+            WHEN stock_quantity + $1 <= low_stock_threshold THEN 'low_stock'
+            ELSE 'in_stock'
+          END
+        WHERE id = $2
+      `,
+      [quantity, variantId],
     );
   }
 }

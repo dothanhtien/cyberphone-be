@@ -23,6 +23,7 @@ export class CreatePaymentsTable1772722663123 implements MigrationInterface {
           "refund_transaction_id" character varying(100), 
           "confirmed_by" character varying(100), 
           "confirmed_at" TIMESTAMP WITH TIME ZONE, 
+          "checkout_url" character varying, 
           "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
           "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(), 
           CONSTRAINT "pk_payments_id" PRIMARY KEY ("id")
@@ -42,10 +43,10 @@ export class CreatePaymentsTable1772722663123 implements MigrationInterface {
       `CREATE INDEX "idx_payments_provider" ON "payments" ("provider") `,
     );
     await queryRunner.query(
-      `CREATE UNIQUE INDEX "idx_payments_transaction_id" ON "payments" ("transaction_id") `,
+      `CREATE INDEX "idx_payments_order_id" ON "payments" ("order_id") `,
     );
     await queryRunner.query(
-      `CREATE INDEX "idx_payments_order_id" ON "payments" ("order_id") `,
+      `CREATE UNIQUE INDEX "uq_payments_pending_order_id" ON "payments" ("order_id") WHERE "status" = 'pending'`,
     );
     await queryRunner.query(
       `ALTER TABLE "payments" ADD CONSTRAINT "fk_payments_order_id" FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE RESTRICT ON UPDATE NO ACTION`,
@@ -58,7 +59,7 @@ export class CreatePaymentsTable1772722663123 implements MigrationInterface {
     );
     await queryRunner.query(`DROP INDEX "public"."idx_payments_order_id"`);
     await queryRunner.query(
-      `DROP INDEX "public"."idx_payments_transaction_id"`,
+      `DROP INDEX "public"."uq_payments_pending_order_id"`,
     );
     await queryRunner.query(`DROP INDEX "public"."idx_payments_provider"`);
     await queryRunner.query(`DROP INDEX "public"."idx_payments_status"`);

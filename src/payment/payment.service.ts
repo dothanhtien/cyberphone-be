@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DataSource } from 'typeorm';
+import { v4 as uuid } from 'uuid';
 import {
   CreatePaymentDto,
   PaymentCreateEntityInput,
@@ -20,6 +21,7 @@ import {
   PaymentResult,
   PaymentStrategy,
 } from './types';
+import { isUniqueConstraintError } from '@/common/utils';
 import { AdminCartsService } from '@/carts/admin/carts.service';
 import { CartUpdateEntityDto } from '@/carts/admin/dto';
 import { CartStatus } from '@/carts/enums';
@@ -59,22 +61,58 @@ export class PaymentService {
       throw new BadRequestException('Order cannot be paid');
     }
 
+    const existingPending = await this.paymentRepository.findPendingByOrderId(
+      order.id,
+    );
+
+    if (existingPending?.checkoutUrl) {
+      return { payUrl: existingPending.checkoutUrl };
+    }
+
+    if (existingPending) {
+      await this.paymentRepository.update(existingPending.id, {
+        status: PaymentStatus.FAILED,
+      });
+    }
+
+    const paymentId = uuid();
+    const strategy = this.getStrategy(createPaymentDto.provider);
+    const orderInfo = `Payment for order ${order.code}`;
+
+    const result = await strategy.createPaymentUrl({
+      createPaymentDto,
+      order,
+      payment: { id: paymentId, amount: order.orderTotal, orderInfo },
+    });
+
     const paymentInput = sanitizeEntityInput(PaymentCreateEntityInput, {
+      id: paymentId,
       orderId: order.id,
       provider: createPaymentDto.provider,
       amount: order.orderTotal,
-      orderInfo: `Payment for order ${order.code}`,
+      orderInfo,
+      checkoutUrl: result.payUrl,
     });
 
-    const payment = await this.paymentRepository.create(paymentInput);
+    try {
+      await this.paymentRepository.create(paymentInput);
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        const concurrent = await this.paymentRepository.findPendingByOrderId(
+          order.id,
+        );
+
+        return { payUrl: concurrent?.checkoutUrl ?? result.payUrl };
+      }
+
+      throw error;
+    }
 
     this.logger.log(
       `Payment created: ${createPaymentDto.orderId} via ${createPaymentDto.provider}`,
     );
 
-    const strategy = this.getStrategy(createPaymentDto.provider);
-
-    return strategy.createPaymentUrl({ createPaymentDto, order, payment });
+    return result;
   }
 
   async handleMomoReturn(query: MomoReturnQuery) {
@@ -90,6 +128,8 @@ export class PaymentService {
     } catch (error) {
       if (error instanceof BadRequestException) {
         this.logger.log(error);
+
+        return;
       }
 
       this.logger.error('An error occurred when processing momo ipn', error);
@@ -158,7 +198,7 @@ export class PaymentService {
       order.updatedBy = 'system';
 
       if (updatedPayment.status === PaymentStatus.SUCCESS) {
-        order.orderStatus = OrderStatus.COMPLETED;
+        order.orderStatus = OrderStatus.CONFIRMED;
       }
 
       await this.ordersService.update(

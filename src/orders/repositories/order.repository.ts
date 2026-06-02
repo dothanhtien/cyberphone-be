@@ -4,6 +4,7 @@ import { DeepPartial, EntityManager, Repository } from 'typeorm';
 import { OrderUpdateEntityInput } from '../admin/dto';
 import { OrderRaw } from '../admin/types';
 import { Order } from '../entities';
+import { OrderStatus } from '../enums';
 import { Cart } from '@/carts/entities';
 import { CartStatus } from '@/carts/enums';
 
@@ -16,10 +17,19 @@ export interface IOrderRepository {
     cartId: string,
     tx: EntityManager,
   ): Promise<Cart | null>;
+  findPendingByCartId(
+    cartId: string,
+    tx?: EntityManager,
+  ): Promise<Order | null>;
+  cancelPendingById(
+    id: string,
+    data: OrderUpdateEntityInput,
+    tx: EntityManager,
+  ): Promise<boolean>;
   findLastRevisionByCartId(
     cartId: string,
     tx: EntityManager,
-  ): Promise<number | null>;
+  ): Promise<{ revision: number; code: string } | null>;
   getNextSequence(tx: EntityManager): Promise<number>;
   save(data: DeepPartial<Order>, tx: EntityManager): Promise<Order>;
   update(
@@ -45,13 +55,19 @@ export class OrderRepository implements IOrderRepository {
   async findAllRaw(limit: number, offset: number): Promise<OrderRaw[]> {
     return this.orderRepository.query<OrderRaw[]>(
       `
-          SELECT
-            o.id, o.code,
-            o.order_total AS "orderTotal",
-            o.payment_status AS "paymentStatus",
-            o.order_status AS "orderStatus",
-            o.created_at AS "createdAt",
-            o.updated_at AS "updatedAt",
+        WITH latest_orders AS (
+          SELECT DISTINCT ON (cart_id) *
+          FROM orders
+          WHERE is_active = true
+          ORDER BY cart_id, revision DESC
+        )
+        SELECT
+          o.id, o.code,
+          o.order_total AS "orderTotal",
+          o.payment_status AS "paymentStatus",
+          o.order_status AS "orderStatus",
+          o.created_at AS "createdAt",
+          o.updated_at AS "updatedAt",
           CASE WHEN c.id IS NOT NULL THEN
             json_build_object(
               'id', c.id,
@@ -59,12 +75,11 @@ export class OrderRepository implements IOrderRepository {
               'lastName', c.last_name
             )
           END AS customer
-          FROM orders o
-          LEFT JOIN customers c ON o.customer_id = c.id
-          WHERE o.is_active = true
-          ORDER BY COALESCE(o.updated_at, o.created_at) DESC
-          LIMIT $1 OFFSET $2
-        `,
+        FROM latest_orders o
+        LEFT JOIN customers c ON o.customer_id = c.id
+        ORDER BY COALESCE(o.updated_at, o.created_at) DESC
+        LIMIT $1 OFFSET $2
+      `,
       [limit, offset],
     );
   }
@@ -79,6 +94,28 @@ export class OrderRepository implements IOrderRepository {
       where: { id, isActive: true },
       relations: { items: true, customer: true },
     });
+  }
+
+  findPendingByCartId(
+    cartId: string,
+    tx?: EntityManager,
+  ): Promise<Order | null> {
+    const repo = tx ? tx.getRepository(Order) : this.orderRepository;
+    return repo.findOne({
+      where: { cartId, orderStatus: OrderStatus.PENDING, isActive: true },
+      relations: { payments: true, items: true },
+    });
+  }
+
+  async cancelPendingById(
+    id: string,
+    data: OrderUpdateEntityInput,
+    tx: EntityManager,
+  ): Promise<boolean> {
+    const result = await tx
+      .getRepository(Order)
+      .update({ id, isActive: true, orderStatus: OrderStatus.PENDING }, data);
+    return (result.affected ?? 0) > 0;
   }
 
   findCartForOrderCreation(
@@ -97,6 +134,7 @@ export class OrderRepository implements IOrderRepository {
       .leftJoinAndSelect('attributes.productAttribute', 'productAttribute')
       .where('cart.id = :cartId', { cartId })
       .andWhere('cart.status = :status', { status: CartStatus.ACTIVE })
+      .andWhere('cart.expiresAt > NOW()')
       .select([
         'cart.id',
         'cart.customerId',
@@ -137,14 +175,15 @@ export class OrderRepository implements IOrderRepository {
   async findLastRevisionByCartId(
     cartId: string,
     tx: EntityManager,
-  ): Promise<number | null> {
+  ): Promise<{ revision: number; code: string } | null> {
     const order = await tx.getRepository(Order).findOne({
       where: { cartId },
       order: { revision: 'DESC' },
-      select: ['revision'],
+      select: ['revision', 'code'],
     });
 
-    return order?.revision ?? null;
+    if (!order) return null;
+    return { revision: order.revision, code: order.code };
   }
 
   save(data: DeepPartial<Order>, tx: EntityManager): Promise<Order> {
