@@ -17,7 +17,15 @@ export interface IOrderRepository {
     cartId: string,
     tx: EntityManager,
   ): Promise<Cart | null>;
-  findPendingByCartId(cartId: string, tx: EntityManager): Promise<Order | null>;
+  findPendingByCartId(
+    cartId: string,
+    tx?: EntityManager,
+  ): Promise<Order | null>;
+  cancelPendingById(
+    id: string,
+    data: OrderUpdateEntityInput,
+    tx: EntityManager,
+  ): Promise<boolean>;
   findLastRevisionByCartId(
     cartId: string,
     tx: EntityManager,
@@ -90,12 +98,24 @@ export class OrderRepository implements IOrderRepository {
 
   findPendingByCartId(
     cartId: string,
-    tx: EntityManager,
+    tx?: EntityManager,
   ): Promise<Order | null> {
-    return tx.getRepository(Order).findOne({
+    const repo = tx ? tx.getRepository(Order) : this.orderRepository;
+    return repo.findOne({
       where: { cartId, orderStatus: OrderStatus.PENDING, isActive: true },
       relations: { payments: true, items: true },
     });
+  }
+
+  async cancelPendingById(
+    id: string,
+    data: OrderUpdateEntityInput,
+    tx: EntityManager,
+  ): Promise<boolean> {
+    const result = await tx
+      .getRepository(Order)
+      .update({ id, isActive: true, orderStatus: OrderStatus.PENDING }, data);
+    return (result.affected ?? 0) > 0;
   }
 
   findCartForOrderCreation(

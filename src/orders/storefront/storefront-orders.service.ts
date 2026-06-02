@@ -69,15 +69,7 @@ export class StorefrontOrdersService {
           return existingPending;
         }
 
-        await this.productVariantsService.restoreStock(
-          existingPending.items.map((item) => ({
-            variantId: item.variantId,
-            quantity: item.quantity,
-          })),
-          tx,
-        );
-
-        await this.orderRepository.update(
+        const cancelled = await this.orderRepository.cancelPendingById(
           existingPending.id,
           sanitizeEntityInput(OrderUpdateEntityInput, {
             orderStatus: OrderStatus.CANCELLED,
@@ -85,6 +77,16 @@ export class StorefrontOrdersService {
           }),
           tx,
         );
+
+        if (cancelled) {
+          await this.productVariantsService.restoreStock(
+            existingPending.items.map((item) => ({
+              variantId: item.variantId,
+              quantity: item.quantity,
+            })),
+            tx,
+          );
+        }
       }
 
       const shippingFee = new Big(0);
@@ -128,7 +130,6 @@ export class StorefrontOrdersService {
         if (isUniqueConstraintError(error)) {
           const concurrent = await this.orderRepository.findPendingByCartId(
             cart.id,
-            tx,
           );
           if (concurrent) return concurrent;
         }

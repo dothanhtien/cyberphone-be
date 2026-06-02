@@ -126,6 +126,7 @@ export class ProductVariantRepository implements IProductVariantRepository {
     quantity: number,
     tx: EntityManager,
   ): Promise<boolean> {
+    if (quantity <= 0) return false;
     const result = await tx.query<{ id: string }[]>(
       `
         UPDATE product_variants
@@ -152,6 +153,11 @@ export class ProductVariantRepository implements IProductVariantRepository {
     quantity: number,
     tx: EntityManager,
   ): Promise<void> {
+    if (quantity <= 0) {
+      throw new Error(
+        `restoreStock requires a positive quantity, got ${quantity} for variant ${variantId}`,
+      );
+    }
     await tx.query(
       `
         UPDATE product_variants
@@ -162,7 +168,7 @@ export class ProductVariantRepository implements IProductVariantRepository {
             WHEN stock_quantity + $1 <= low_stock_threshold THEN 'low_stock'
             ELSE 'in_stock'
           END
-        WHERE id = $2 AND is_active = true
+        WHERE id = $2
       `,
       [quantity, variantId],
     );

@@ -11,7 +11,7 @@ export interface MomoConfig {
 
 export interface MomoCreatePaymentUrlRequest {
   partnerCode: string;
-  storeId?: string;
+  storeId: string;
   requestId: string;
   amount: number;
   orderId: string;
