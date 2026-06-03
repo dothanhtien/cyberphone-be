@@ -122,6 +122,17 @@ export class AdminProductAttributesService {
       );
 
       if (toUpdate.length) {
+        const TEMP_OFFSET = 1_000_000;
+        await Promise.all(
+          toUpdate.map((attr, index) =>
+            this.productAttributeRepository.update(
+              attr.id!,
+              { displayOrder: TEMP_OFFSET + index, updatedBy: actor },
+              tx,
+            ),
+          ),
+        );
+
         await Promise.all(
           toUpdate.map((attr) =>
             this.productAttributeRepository.update(
