@@ -14,9 +14,11 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BrandsService } from './brands.service';
 import { CreateBrandDto, UpdateBrandDto } from './dto';
+import { LoggedInUser, Roles } from '@/auth/decorators';
 import { PaginationQueryDto } from '@/common/dto';
-import { LoggedInUser } from '@/auth/decorators';
+import { UserRole } from '@/users/enums';
 
+@Roles(UserRole.ADMIN)
 @Controller('admin/brands')
 export class BrandsController {
   constructor(private readonly brandsService: BrandsService) {}

@@ -9,8 +9,10 @@ import {
 } from '@nestjs/common';
 import { AdminProductVariantsService } from './admin-product-variants.service';
 import { CreateProductVariantDto, UpdateProductVariantDto } from './dto';
-import { LoggedInUser } from '@/auth/decorators';
+import { LoggedInUser, Roles } from '@/auth/decorators';
+import { UserRole } from '@/users/enums';
 
+@Roles(UserRole.ADMIN)
 @Controller('admin')
 export class AdminProductVariantsController {
   constructor(

@@ -4,8 +4,10 @@ import {
   SyncStorefrontConfigurationsDto,
 } from './dto';
 import { StorefrontConfigurationsService } from './storefront-configurations.service';
-import { LoggedInUser, Public } from '@/auth/decorators';
+import { LoggedInUser, Public, Roles } from '@/auth/decorators';
+import { UserRole } from '@/users/enums';
 
+@Roles(UserRole.ADMIN)
 @Controller('storefront-configurations')
 export class StorefrontConfigurationsController {
   constructor(

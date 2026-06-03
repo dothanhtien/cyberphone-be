@@ -1,6 +1,9 @@
 import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
 import { AdminProductAttributesService } from './admin-product-attributes.service';
+import { Roles } from '@/auth/decorators';
+import { UserRole } from '@/users/enums';
 
+@Roles(UserRole.ADMIN)
 @Controller('admin/products')
 export class AdminProductAttributesController {
   constructor(

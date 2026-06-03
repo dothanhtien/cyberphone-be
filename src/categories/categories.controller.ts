@@ -14,9 +14,11 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
-import { LoggedInUser } from '@/auth/decorators';
+import { LoggedInUser, Roles } from '@/auth/decorators';
 import { PaginationQueryDto } from '@/common/dto';
+import { UserRole } from '@/users/enums';
 
+@Roles(UserRole.ADMIN)
 @Controller('admin/categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}

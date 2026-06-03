@@ -3,6 +3,7 @@ import { AuthUserType } from '../enums';
 import { AuthUser } from '../types';
 import { toDto } from '@/common/utils';
 import { Customer } from '@/customers/entities';
+import { UserRole } from '@/users/enums';
 import { User } from '@/users/entities';
 
 export class AuthMapper {
@@ -34,6 +35,7 @@ export class AuthMapper {
       lastName: user.lastName,
       isActive: user.isActive,
       roleId: user.roleId,
+      roleName: user.role?.name as UserRole | undefined,
       identityId: user.identityId,
     };
   }

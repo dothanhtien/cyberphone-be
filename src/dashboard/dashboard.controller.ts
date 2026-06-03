@@ -5,7 +5,10 @@ import {
   LimitFilterDto,
   TopProductsFilterDto,
 } from './dto';
+import { Roles } from '@/auth/decorators';
+import { UserRole } from '@/users/enums';
 
+@Roles(UserRole.ADMIN, UserRole.STAFF)
 @Controller('dashboard')
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}

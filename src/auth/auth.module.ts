@@ -10,7 +10,7 @@ import {
   REFRESH_TOKEN_REPOSITORY,
   RefreshTokenRepository,
 } from './repositories';
-import { JwtAuthGuard } from './guards';
+import { JwtAuthGuard, RolesGuard } from './guards';
 import { RefreshTokenService } from './refresh-token.service';
 import { LocalStrategy, JwtStrategy } from './strategies';
 import { CustomersModule } from '@/customers/customers.module';
@@ -51,6 +51,10 @@ import { UsersModule } from '@/users/users.module';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
     {
       provide: REFRESH_TOKEN_REPOSITORY,
