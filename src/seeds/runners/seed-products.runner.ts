@@ -929,7 +929,11 @@ export class SeedProductsRunner {
 
       for (const [key, value] of Object.entries(v.attributes)) {
         const productAttributeId = attrMap.get(key);
-        if (!productAttributeId) continue;
+        if (!productAttributeId) {
+          throw new Error(
+            `Unknown attribute key "${key}" for variant "${v.sku}" (product ${productId})`,
+          );
+        }
 
         await variantAttrRepo.save(
           variantAttrRepo.create({

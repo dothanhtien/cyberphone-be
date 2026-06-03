@@ -94,6 +94,11 @@ export class SeedCategoriesRunner {
           continue;
         }
 
+        if (data.parentSlug && !slugToId.has(data.parentSlug)) {
+          throw new Error(
+            `Parent slug "${data.parentSlug}" not found for category "${data.slug}"`,
+          );
+        }
         const parentId = data.parentSlug
           ? (slugToId.get(data.parentSlug) ?? null)
           : null;
