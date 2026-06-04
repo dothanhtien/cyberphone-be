@@ -23,6 +23,7 @@ export class MomoStrategy implements PaymentStrategy {
       secretKey: this.configService.getOrThrow<string>('MOMO_SECRET_KEY'),
       apiEndpoint: this.configService.getOrThrow<string>('MOMO_API_ENDPOINT'),
       ipnUrl: this.configService.getOrThrow<string>('MOMO_IPN_URL'),
+      storeId: this.configService.getOrThrow<string>('MOMO_STORE_ID'),
       isSandbox: this.configService.get('MOMO_SANDBOX', 'true') === 'true',
     };
   }
@@ -78,12 +79,12 @@ export class MomoStrategy implements PaymentStrategy {
       .update(rawSignature)
       .digest('hex');
 
-    this.logger.log(`signature: ${signature}`);
+    this.logger.debug(`signature: ${signature}`);
 
     // TODO: add items to show them in Momo redirect page
     const requestBody: MomoCreatePaymentUrlRequest = {
       partnerCode: this.config.partnerCode,
-      storeId: 'CyberPhone',
+      storeId: this.config.storeId,
       requestId,
       amount,
       orderId: orderId,
@@ -97,7 +98,7 @@ export class MomoStrategy implements PaymentStrategy {
       signature,
     };
 
-    this.logger.log(`requestBody: ${JSON.stringify(requestBody)}`);
+    this.logger.debug(`requestBody: ${JSON.stringify(requestBody)}`);
 
     try {
       const response = await axios.post<MomoCreatePaymentUrlResponse>(

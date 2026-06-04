@@ -1,4 +1,3 @@
-import { Expose } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -22,15 +21,12 @@ export class MediaAsset {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'pk_media_assets_id',
   })
-  @Expose()
   id: string;
 
   @Column({ name: 'public_id', type: 'varchar', length: 255 })
-  @Expose()
   publicId: string;
 
   @Column('text')
-  @Expose()
   url: string;
 
   @Column({
@@ -39,19 +35,15 @@ export class MediaAsset {
     enum: MediaAssetResourceType,
     default: MediaAssetResourceType.OTHER,
   })
-  @Expose()
   resourceType: MediaAssetResourceType = MediaAssetResourceType.OTHER;
 
   @Column({ name: 'ref_type', type: 'varchar', length: 100 })
-  @Expose()
   refType: MediaAssetRefType;
 
   @Column({ name: 'ref_id', type: 'varchar', length: 100 })
-  @Expose()
   refId: string;
 
   @Column({ name: 'usage_type', type: 'varchar', length: 100 })
-  @Expose()
   usageType: MediaAssetUsageType;
 
   @Column({
@@ -60,23 +52,18 @@ export class MediaAsset {
     nullable: true,
     default: null,
   })
-  @Expose()
   metadata: Record<string, any> | null = null;
 
   @Column({ name: 'is_active', type: 'boolean', default: true })
-  @Expose()
   isActive: boolean = true;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
-  @Expose()
   createdAt: Date;
 
   @Column({ name: 'created_by', type: 'varchar', length: 100 })
-  @Expose()
   createdBy: string;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: true })
-  @Expose()
   updatedAt: Date | null;
 
   @Column({
@@ -85,6 +72,5 @@ export class MediaAsset {
     length: 100,
     nullable: true,
   })
-  @Expose()
   updatedBy: string | null;
 }

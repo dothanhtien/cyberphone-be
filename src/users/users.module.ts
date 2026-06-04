@@ -11,10 +11,9 @@ import {
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { Identity } from '@/identities/entities';
-import { PasswordModule } from '@/password/password.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Identity, Role, User]), PasswordModule],
+  imports: [TypeOrmModule.forFeature([Identity, Role, User])],
   providers: [
     {
       provide: ROLE_REPOSITORY,

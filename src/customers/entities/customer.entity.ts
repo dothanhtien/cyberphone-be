@@ -10,6 +10,7 @@ import {
 import { Gender } from '../enums';
 import { Cart } from '../../carts/entities';
 import { Identity } from '../../identities/entities';
+import { Order } from '../../orders/entities';
 
 @Entity('customers')
 @Index('uq_customers_phone_active', ['phone'], {
@@ -88,4 +89,7 @@ export class Customer {
 
   @OneToMany(() => Cart, (cart) => cart.customer)
   carts: Cart[];
+
+  @OneToMany(() => Order, (order) => order.customer)
+  orders: Order[];
 }

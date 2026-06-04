@@ -1,31 +1,28 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, In, Repository } from 'typeorm';
-import { MediaAsset } from './entities';
+import { Inject, Injectable } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
 import { CreateMediaAssetDto, MediaAssetCreateEntityDto } from './dto';
-import { sanitizeEntityInput } from '@/common/utils';
+import {
+  type IMediaAssetRepository,
+  MEDIA_ASSET_REPOSITORY,
+} from './repositories';
 import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
+import { sanitizeEntityInput } from '@/common/utils';
 
 @Injectable()
 export class MediaAssetsService {
   constructor(
-    @InjectRepository(MediaAsset)
-    private readonly mediaAssetRepository: Repository<MediaAsset>,
+    @Inject(MEDIA_ASSET_REPOSITORY)
+    private readonly mediaAssetRepository: IMediaAssetRepository,
   ) {}
 
   create(createMediaAssetDtos: CreateMediaAssetDto[], tx?: EntityManager) {
-    const repository = tx
-      ? tx.getRepository(MediaAsset)
-      : this.mediaAssetRepository;
-
     const entities = createMediaAssetDtos.map((dto) =>
       sanitizeEntityInput(MediaAssetCreateEntityDto, dto),
     );
-
-    return repository.save(entities);
+    return this.mediaAssetRepository.create(entities, tx);
   }
 
-  async findByRefId({
+  findByRefId({
     refType,
     refId,
     usageType,
@@ -36,40 +33,18 @@ export class MediaAssetsService {
     usageType: MediaAssetUsageType;
     tx?: EntityManager;
   }) {
-    const repository = tx
-      ? tx.getRepository(MediaAsset)
-      : this.mediaAssetRepository;
-
-    return repository.findOne({
-      where: {
-        refType,
-        refId,
-        usageType,
-        isActive: true,
-      },
-    });
+    return this.mediaAssetRepository.findByRefId(refType, refId, usageType, tx);
   }
 
-  async findByRefIds(
+  findByRefIds(
     refType: MediaAssetRefType,
     refIds: string[],
     usageType: MediaAssetUsageType,
   ) {
-    return this.mediaAssetRepository.find({
-      where: {
-        refType,
-        refId: In(refIds),
-        usageType,
-        isActive: true,
-      },
-    });
+    return this.mediaAssetRepository.findByRefIds(refType, refIds, usageType);
   }
 
-  async deleteById(id: string, entityManager?: EntityManager) {
-    const repository = entityManager
-      ? entityManager.getRepository(MediaAsset)
-      : this.mediaAssetRepository;
-
-    return repository.delete(id);
+  deleteById(id: string, entityManager?: EntityManager) {
+    return this.mediaAssetRepository.deleteById(id, entityManager);
   }
 }

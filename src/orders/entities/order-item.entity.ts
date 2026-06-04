@@ -7,8 +7,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Order } from './order.entity';
-import { Product } from '../../products/entities';
-import { ProductVariant } from '../../product-variants/entities/product-variant.entity';
+import { Product, ProductVariant } from '../../products/entities';
 
 @Entity('order_items')
 @Index('idx_order_items_order_id', ['orderId'])
@@ -39,7 +38,7 @@ export class OrderItem {
   sku: string;
 
   @Column({ name: 'attributes', type: 'json', nullable: true })
-  attributes: Record<string, any> | null;
+  attributes: Record<string, unknown> | null;
 
   @Column({
     name: 'unit_price',

@@ -14,9 +14,11 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { AdminProductsService } from './admin-products.service';
 import { CreateProductDto, UpdateProductDto } from './dto';
-import { LoggedInUser } from '@/auth/decorators';
+import { LoggedInUser, Roles } from '@/auth/decorators';
 import { PaginationQueryDto } from '@/common/dto';
+import { UserRole } from '@/users/enums';
 
+@Roles(UserRole.ADMIN)
 @Controller('admin/products')
 export class AdminProductsController {
   constructor(private readonly productsService: AdminProductsService) {}

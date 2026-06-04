@@ -11,6 +11,7 @@ import {
   UserCreateEntityDto,
   UpdateUserDto,
   UserResponseDto,
+  UserUpdateEntityDto,
 } from './dto';
 import { User } from './entities';
 import { UserMapper } from './mappers';
@@ -20,7 +21,7 @@ import {
   ROLE_REPOSITORY,
   USER_REPOSITORY,
 } from './repositories';
-import { PaginationQueryDto } from '@/common/dto/paginations.dto';
+import { PaginationQueryDto } from '@/common/dto';
 import { PaginatedEntity } from '@/common/types';
 import {
   extractPaginationParams,
@@ -184,7 +185,10 @@ export class UsersService {
     try {
       // TODO: update password via identities table
 
-      const result = await this.userRepository.update(id, updateUserDto);
+      const result = await this.userRepository.update(
+        id,
+        sanitizeEntityInput(UserUpdateEntityDto, updateUserDto),
+      );
       this.logger.log(`[update] User updated successfully id=${id}`);
       return result;
     } catch (error) {

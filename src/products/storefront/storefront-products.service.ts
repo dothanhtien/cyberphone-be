@@ -1,10 +1,7 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { FilterProductsDto } from './dto';
-import { mapToStorefrontProductResponse } from './mappers';
-import {
-  type IStorefrontProductRepository,
-  STOREFRONT_PRODUCT_REPOSITORY,
-} from './repositories';
+import { StorefrontProductMapper } from './mappers';
+import { type IProductRepository, PRODUCT_REPOSITORY } from '../repositories';
 import { extractPaginationParams } from '@/common/utils';
 
 @Injectable()
@@ -12,8 +9,8 @@ export class StorefrontProductsService {
   private readonly logger = new Logger(StorefrontProductsService.name);
 
   constructor(
-    @Inject(STOREFRONT_PRODUCT_REPOSITORY)
-    private readonly repo: IStorefrontProductRepository,
+    @Inject(PRODUCT_REPOSITORY)
+    private readonly productRepository: IProductRepository,
   ) {}
 
   async findAll(params: FilterProductsDto) {
@@ -23,14 +20,17 @@ export class StorefrontProductsService {
       `[findAll] Fetching products page=${page}, limit=${limit}`,
     );
 
-    const { items, total } = await this.repo.findAll(params);
+    const { items, total } =
+      await this.productRepository.findAllForStorefront(params);
 
     this.logger.log(
       `[findAll] Fetched products page=${page}, count=${items.length}, total=${total}`,
     );
 
     return {
-      items: items.map(mapToStorefrontProductResponse),
+      items: items.map((i) =>
+        StorefrontProductMapper.mapToStorefrontProductResponse(i),
+      ),
       totalCount: total,
       currentPage: page,
       itemsPerPage: limit,
@@ -40,14 +40,14 @@ export class StorefrontProductsService {
   async findOne(slug: string) {
     this.logger.debug(`[findOne] Fetching product slug=${slug}`);
 
-    const result = await this.repo.findOne(slug);
+    const result = await this.productRepository.findOneForStorefront(slug);
 
     if (!result) {
       this.logger.warn(`[findOne] Product not found slug=${slug}`);
       throw new NotFoundException('Product not found');
     }
 
-    this.logger.log(`[findOne] Product fetched successfully slug=${slug}`);
+    this.logger.log(`[findOne] Fetched product successful slug=${slug}`);
 
     return result;
   }

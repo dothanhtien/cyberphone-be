@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
-import { AddToCartDto, ResolveCartDto } from './dto';
+import { AddToCartDto, BuyNowDto, ResolveCartDto } from './dto';
 import { StorefrontCartsService } from './storefront-carts.service';
+import { CartQuantityAction } from '../enums';
 import { Public } from '@/auth/decorators';
 
 @Controller('carts')
@@ -13,6 +14,11 @@ export class StorefrontCartsController {
     return this.cartsService.resolve(resolveCartDto);
   }
 
+  @Post('buy-now')
+  buyNow(@Body() buyNowDto: BuyNowDto) {
+    return this.cartsService.buyNow(buyNowDto);
+  }
+
   @Post(':id/items')
   addToCart(@Param('id') id: string, @Body() addToCartDto: AddToCartDto) {
     return this.cartsService.addToCart(id, addToCartDto);
@@ -20,12 +26,20 @@ export class StorefrontCartsController {
 
   @Patch(':id/items/:itemId/increase')
   increaseCartItem(@Param('id') id: string, @Param('itemId') itemId: string) {
-    return this.cartsService.updateItemQuantity(id, itemId, 'increase');
+    return this.cartsService.updateItemQuantity(
+      id,
+      itemId,
+      CartQuantityAction.Increase,
+    );
   }
 
   @Patch(':id/items/:itemId/decrease')
   decreaseCartItem(@Param('id') id: string, @Param('itemId') itemId: string) {
-    return this.cartsService.updateItemQuantity(id, itemId, 'decrease');
+    return this.cartsService.updateItemQuantity(
+      id,
+      itemId,
+      CartQuantityAction.Decrease,
+    );
   }
 
   @Delete(':id/items/:itemId')

@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import { AuthUserType } from '../enums';
+import { UserRole } from '@/users/enums';
 
 export interface AuthUser {
   id: string;
@@ -10,6 +11,7 @@ export interface AuthUser {
   isActive: boolean;
 
   roleId?: string;
+  roleName?: UserRole;
 
   identityId: string;
   type: AuthUserType;
@@ -21,6 +23,7 @@ export type JwtPayload = {
   sub: string;
   type: AuthUserType;
   roleId?: string;
+  roleName?: string;
   identityId: string;
 };
 

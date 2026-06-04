@@ -7,7 +7,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { CreatePaymentDto } from './dto/requests/create-payment.dto';
+import { CreatePaymentDto } from './dto';
 import { PaymentService } from './payment.service';
 import type { MomoCallback, MomoReturnQuery } from './types';
 import { Public } from '@/auth/decorators';
