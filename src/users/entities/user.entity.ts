@@ -11,7 +11,6 @@ import {
 } from 'typeorm';
 import { Role } from './role.entity';
 import { Identity } from '../../identities/entities';
-import { Order } from '../../orders/entities/order.entity';
 
 @Entity('users')
 @Index('uq_users_phone_active', ['phone'], {
@@ -84,7 +83,4 @@ export class User {
 
   @OneToMany(() => Identity, (i) => i.user)
   identities: Identity[];
-
-  @OneToMany(() => Order, (order) => order.customer)
-  orders: Order[];
 }

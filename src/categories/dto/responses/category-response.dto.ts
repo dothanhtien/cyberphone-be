@@ -17,17 +17,8 @@ export class CategoryResponseDto {
   parentId: string | null;
 
   @Expose()
-  isActive: boolean;
+  logo: string | null;
 
   @Expose()
-  createdAt: Date;
-
-  @Expose()
-  createdBy: string;
-
-  @Expose()
-  updatedAt: Date | null;
-
-  @Expose()
-  updatedBy: string | null;
+  productCount: number;
 }

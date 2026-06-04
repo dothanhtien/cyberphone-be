@@ -1,16 +1,17 @@
+import Big from 'big.js';
 import { Cart } from '@/carts/entities';
 
 export interface OrderCalculationInput {
   cart: Cart;
-  shippingFee?: number;
-  discountTotal?: number;
-  taxTotal?: number;
+  shippingFee?: Big;
+  discountTotal?: Big;
+  taxTotal?: Big;
 }
 
 export interface OrderCalculationResult {
-  itemsTotal: number;
-  discountTotal: number;
-  taxTotal: number;
-  shippingTotal: number;
-  orderTotal: number;
+  itemsTotal: Big;
+  discountTotal: Big;
+  taxTotal: Big;
+  shippingTotal: Big;
+  orderTotal: Big;
 }

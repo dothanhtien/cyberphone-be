@@ -6,8 +6,9 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
+import { CartUpdateEntityDto as AdminCartUpdateEntityDto } from '../admin/dto';
+import { CartStatus, CartType } from '../enums';
 import { Cart } from '../entities';
-import { CartStatus } from '../enums';
 import { CartCreateEntityInput, CartUpdateEntityDto } from '../storefront/dto';
 import { FindOneCartRaw } from '../storefront/types';
 import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
@@ -18,7 +19,8 @@ interface FindOneActiveByCustomerIdOrSessionIdParams {
 }
 
 export interface ICartRepository {
-  create(data: CartCreateEntityInput): Promise<Cart>;
+  create(data: CartCreateEntityInput, tx?: EntityManager): Promise<Cart>;
+  findOne(id: string, tx: EntityManager): Promise<Cart | null>;
   findOneActiveByCustomerIdOrSessionId(
     params: FindOneActiveByCustomerIdOrSessionIdParams,
   ): Promise<Cart | null>;
@@ -27,6 +29,11 @@ export interface ICartRepository {
   update(
     id: string,
     data: CartUpdateEntityDto,
+    tx?: EntityManager,
+  ): Promise<void>;
+  adminUpdate(
+    id: string,
+    data: AdminCartUpdateEntityDto,
     tx?: EntityManager,
   ): Promise<void>;
 }
@@ -40,8 +47,13 @@ export class CartRepository implements ICartRepository {
     @InjectRepository(Cart) private readonly cartRepository: Repository<Cart>,
   ) {}
 
-  create(data: CartCreateEntityInput): Promise<Cart> {
-    return this.cartRepository.save(data);
+  create(data: CartCreateEntityInput, tx?: EntityManager): Promise<Cart> {
+    const repo = tx ? tx.getRepository(Cart) : this.cartRepository;
+    return repo.save(data);
+  }
+
+  findOne(id: string, tx: EntityManager): Promise<Cart | null> {
+    return tx.getRepository(Cart).findOne({ where: { id } });
   }
 
   findOneActiveByCustomerIdOrSessionId({
@@ -49,8 +61,20 @@ export class CartRepository implements ICartRepository {
     sessionId,
   }: FindOneActiveByCustomerIdOrSessionIdParams): Promise<Cart | null> {
     const conditions: FindOptionsWhere<Cart>[] = [];
-    if (customerId) conditions.push({ customerId, status: CartStatus.ACTIVE });
-    if (sessionId) conditions.push({ sessionId, status: CartStatus.ACTIVE });
+    if (customerId)
+      conditions.push({
+        customerId,
+        status: CartStatus.ACTIVE,
+        type: CartType.REGULAR,
+      });
+
+    if (sessionId)
+      conditions.push({
+        sessionId,
+        status: CartStatus.ACTIVE,
+        type: CartType.REGULAR,
+      });
+
     if (!conditions.length) return Promise.resolve(null);
 
     return this.cartRepository.findOne({ where: conditions });
@@ -124,7 +148,15 @@ export class CartRepository implements ICartRepository {
     tx?: EntityManager,
   ): Promise<void> {
     const repository = tx ? tx.getRepository(Cart) : this.cartRepository;
+    await repository.update(id, data);
+  }
 
+  async adminUpdate(
+    id: string,
+    data: AdminCartUpdateEntityDto,
+    tx?: EntityManager,
+  ): Promise<void> {
+    const repository = tx ? tx.getRepository(Cart) : this.cartRepository;
     await repository.update(id, data);
   }
 }

@@ -51,7 +51,6 @@ export class CreateOrdersTable1772541379498 implements MigrationInterface {
           "created_by" character varying(100) NOT NULL, 
           "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(), 
           "updated_by" character varying(100), 
-          CONSTRAINT "idx_orders_code" UNIQUE ("code"), 
           CONSTRAINT "pk_orders_id" PRIMARY KEY ("id")
         )
       `,
@@ -69,10 +68,13 @@ export class CreateOrdersTable1772541379498 implements MigrationInterface {
       `CREATE INDEX "idx_orders_customer_id" ON "orders" ("customer_id") `,
     );
     await queryRunner.query(
+      `CREATE UNIQUE INDEX "uq_orders_pending_cart_id" ON "orders" ("cart_id") WHERE "order_status" = 'pending'`,
+    );
+    await queryRunner.query(
       `ALTER TABLE "orders" ADD CONSTRAINT "fk_orders_cart_id" FOREIGN KEY ("cart_id") REFERENCES "carts"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
-      `ALTER TABLE "orders" ADD CONSTRAINT "fk_orders_customer_id" FOREIGN KEY ("customer_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+      `ALTER TABLE "orders" ADD CONSTRAINT "fk_orders_customer_id" FOREIGN KEY ("customer_id") REFERENCES "customers"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
   }
 
@@ -84,6 +86,7 @@ export class CreateOrdersTable1772541379498 implements MigrationInterface {
       `ALTER TABLE "orders" DROP CONSTRAINT "fk_orders_cart_id"`,
     );
     await queryRunner.query(`DROP INDEX "public"."idx_orders_customer_id"`);
+    await queryRunner.query(`DROP INDEX "public"."uq_orders_pending_cart_id"`);
     await queryRunner.query(`DROP INDEX "public"."idx_orders_order_status"`);
     await queryRunner.query(`DROP INDEX "public"."idx_orders_payment_status"`);
     await queryRunner.query(`DROP INDEX "public"."idx_orders_cart_revision"`);

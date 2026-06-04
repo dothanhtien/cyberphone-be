@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere, Not } from 'typeorm';
-import { UserCreateEntityDto } from '../dto/entity-inputs';
+import { UserCreateEntityDto, UserUpdateEntityDto } from '../dto';
 import { User } from '../entities';
 import { buildPaginationParams } from '@/common/utils';
 import { PaginatedEntity } from '@/common/types';
@@ -24,7 +24,7 @@ export interface IUserRepository {
   findAllActive(page: number, limit: number): Promise<PaginatedEntity<User>>;
   update(
     id: string,
-    updateUserDto: Partial<User>,
+    updateUserDto: UserUpdateEntityDto,
   ): Promise<{ id: string } | null>;
   updateLastLogin(id: string): Promise<void>;
 }
@@ -71,6 +71,7 @@ export class UserRepository implements IUserRepository {
   findOneActiveById(id: string): Promise<User | null> {
     return this.userRepository.findOne({
       where: { id, isActive: true },
+      relations: ['role'],
     });
   }
 
@@ -132,7 +133,7 @@ export class UserRepository implements IUserRepository {
 
   async update(
     id: string,
-    updateUserDto: Partial<User>,
+    updateUserDto: UserUpdateEntityDto,
   ): Promise<{ id: string } | null> {
     const result = await this.userRepository.update(id, updateUserDto);
 

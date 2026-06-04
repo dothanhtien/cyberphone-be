@@ -5,12 +5,13 @@ export interface MomoConfig {
   apiEndpoint: string;
   redirectUrl?: string;
   ipnUrl: string;
+  storeId: string;
   isSandbox: boolean;
 }
 
 export interface MomoCreatePaymentUrlRequest {
   partnerCode: string;
-  storeId?: string;
+  storeId: string;
   requestId: string;
   amount: number;
   orderId: string;

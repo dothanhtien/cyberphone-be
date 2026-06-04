@@ -10,7 +10,7 @@ import { mapProductImageTypeToMediaUsage } from './mappers';
 import {
   type IProductImageRepository,
   PRODUCT_IMAGE_REPOSITORY,
-} from './repositories';
+} from '../repositories';
 import { MediaAssetRefType } from '@/common/enums';
 import { sanitizeEntityInput } from '@/common/utils';
 import { MediaAssetCreateEntityDto } from '@/media/dto';

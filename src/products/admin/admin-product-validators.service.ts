@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { CreateProductImageDto, UpdateProductDto } from './dto';
 import { Product } from '../entities';
-import { PRODUCT_REPOSITORY, type IProductRepository } from './repositories';
+import { PRODUCT_REPOSITORY, type IProductRepository } from '../repositories';
 import { BrandsService } from '@/brands/brands.service';
 import { CategoriesService } from '@/categories/categories.service';
 import { getFilename } from '@/common/utils';
@@ -51,18 +51,16 @@ export class AdminProductValidatorsService {
     }
   }
 
-  async ensureCategoriesExistAndActive(categoryIds: string[]): Promise<void> {
+  async ensureCategoriesExist(categoryIds: string[]): Promise<void> {
     if (!categoryIds.length) {
-      this.logger.debug(
-        `[ensureCategoriesExistAndActive] No categories provided`,
-      );
+      this.logger.debug(`[ensureCategoriesExist] No categories provided`);
       return;
     }
 
     const uniqueCategoryIds = [...new Set(categoryIds)];
     if (uniqueCategoryIds.length !== categoryIds.length) {
       this.logger.debug(
-        `[ensureCategoriesExistAndActive] categoryIds must be unique uniuniqueCategoryIds=${uniqueCategoryIds.length}, categoryIds=${categoryIds.length}`,
+        `[ensureCategoriesExist] categoryIds must be unique uniqueCategoryIds=${uniqueCategoryIds.length}, categoryIds=${categoryIds.length}`,
       );
 
       throw new BadRequestException('categoryIds must be unique');
@@ -76,12 +74,27 @@ export class AdminProductValidatorsService {
       const invalidIds = uniqueCategoryIds.filter((id) => !foundIds.has(id));
 
       this.logger.warn(
-        `[ensureCategoriesExistAndActive] Invalid or inactive categories ids=[${invalidIds.join(', ')}]`,
+        `[ensureCategoriesExist] Invalid or inactive categories ids=[${invalidIds.join(', ')}]`,
       );
 
       throw new BadRequestException(
         'One or more categories are invalid or inactive',
       );
+    }
+  }
+
+  async ensureProductExists(productId: string) {
+    this.logger.debug(
+      `[ensureProductExists] Validating product productId=${productId}`,
+    );
+
+    const exists = await this.productRepository.existsActiveById(productId);
+
+    if (!exists) {
+      this.logger.warn(
+        `[ensureProductExists] Product not found productId=${productId}`,
+      );
+      throw new NotFoundException('Product not found');
     }
   }
 
@@ -148,7 +161,7 @@ export class AdminProductValidatorsService {
     }
 
     if (updateProductDto.categoryIds?.length) {
-      await this.ensureCategoriesExistAndActive(updateProductDto.categoryIds);
+      await this.ensureCategoriesExist(updateProductDto.categoryIds);
     }
 
     if (updateProductDto.slug && updateProductDto.slug !== product.slug) {

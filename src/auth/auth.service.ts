@@ -6,11 +6,15 @@ import { AuthUserType } from './enums';
 import { AuthMapper } from './mappers';
 import { RefreshTokenService } from './refresh-token.service';
 import { AuthUser, JwtPayload } from './types';
-import { getErrorStack, maskIdentifier } from '@/common/utils';
+import {
+  comparePassword,
+  hashPassword,
+  getErrorStack,
+  maskIdentifier,
+} from '@/common/utils';
 import { CustomersService } from '@/customers/customers.service';
 import { AuthProvider } from '@/identities/enums';
 import { IdentitiesService } from '@/identities/identities.service';
-import { PasswordService } from '@/password/password.service';
 import { UsersService } from '@/users/users.service';
 
 @Injectable()
@@ -21,7 +25,6 @@ export class AuthService {
     private readonly dataSource: DataSource,
     private readonly customersService: CustomersService,
     private readonly identitiesService: IdentitiesService,
-    private readonly passwordService: PasswordService,
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
     private readonly refreshTokenService: RefreshTokenService,
@@ -69,10 +72,7 @@ export class AuthService {
         return null;
       }
 
-      const isMatch = await this.passwordService.comparePassword(
-        password,
-        identity.passwordHash,
-      );
+      const isMatch = await comparePassword(password, identity.passwordHash);
 
       if (!isMatch) {
         this.logger.debug(
@@ -99,13 +99,14 @@ export class AuthService {
 
   async login(user: AuthUser) {
     this.logger.debug(
-      `[login] Attemptinng login id=${user.id}, type=${user.type}`,
+      `[login] Attempting login id=${user.id}, type=${user.type}`,
     );
 
     const payload: JwtPayload = {
       sub: user.id,
       type: user.type,
       roleId: user.roleId,
+      roleName: user.roleName,
       identityId: user.identityId,
     };
 
@@ -145,6 +146,7 @@ export class AuthService {
         sub: authUser.id,
         type: authUser.type,
         roleId: authUser.roleId,
+        roleName: authUser.roleName,
         identityId: authUser.identityId,
       };
 
@@ -239,7 +241,7 @@ export class AuthService {
           customer = await this.customersService.create(registerDto, tx);
         }
 
-        const passwordHash = await this.passwordService.hashPassword(password);
+        const passwordHash = await hashPassword(password);
 
         this.logger.debug(`[register] Creating identities`);
 

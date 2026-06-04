@@ -2,36 +2,42 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, In, Not, Repository } from 'typeorm';
-import { PaginationQueryDto } from '@/common/dto/paginations.dto';
+import { DataSource } from 'typeorm';
+import {
+  CategoryCreateEntityDto,
+  CategoryUpdateEntityDto,
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from './dto';
+import { Category } from './entities';
+import { CategoryMapper } from './mappers';
+import { type ICategoryRepository, CATEGORY_REPOSITORY } from './repositories';
+import { CATEGORY_FOLDER } from '@/common/constants';
+import { PaginationQueryDto } from '@/common/dto';
+import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
 import {
   buildPaginationParams,
   extractPaginationParams,
-  toEntity,
+  sanitizeEntityInput,
 } from '@/common/utils';
-import { Category } from './entities/category.entity';
-import { CreateCategoryDto } from './dto/requests/create-category.dto';
-import { UpdateCategoryDto } from './dto/requests/update-category.dto';
 import { MediaAssetsService } from '@/media/media-assets.service';
-import { MediaAsset } from '@/media/entities';
-import { MediaAssetRefType, MediaAssetUsageType } from '@/common/enums';
-import { CATEGORY_FOLDER } from '@/common/constants/paths';
 import { STORAGE_PROVIDER } from '@/storage/storage.module';
 import type {
   StorageProvider,
   StorageUploadResult,
 } from '@/storage/storage.provider';
-import { CategoryWithLogo } from '@/common/types/categories.type';
 
 @Injectable()
 export class CategoriesService {
+  private readonly logger = new Logger(CategoriesService.name);
+
   constructor(
-    @InjectRepository(Category)
-    private readonly categoryRepository: Repository<Category>,
     private readonly dataSource: DataSource,
+    @Inject(CATEGORY_REPOSITORY)
+    private readonly categoryRepository: ICategoryRepository,
     private readonly mediaAssetService: MediaAssetsService,
     @Inject(STORAGE_PROVIDER) private readonly storageProvider: StorageProvider,
   ) {}
@@ -42,24 +48,39 @@ export class CategoriesService {
   ) {
     createCategoryDto.slug = this.normalizeSlug(createCategoryDto.slug);
 
-    if (await this.doesSlugExist(createCategoryDto.slug)) {
+    this.logger.debug(
+      `[create] Creating category slug=${createCategoryDto.slug}`,
+    );
+
+    if (
+      await this.categoryRepository.existsActiveBySlug(createCategoryDto.slug)
+    ) {
+      this.logger.warn(
+        `[create] Duplicate slug slug=${createCategoryDto.slug}`,
+      );
       throw new BadRequestException('Category with this slug already exists');
     }
 
     return this.dataSource.transaction(async (tx) => {
-      const category = toEntity(Category, createCategoryDto);
-      const savedCategory = await tx.save(category);
+      const entity = sanitizeEntityInput(
+        CategoryCreateEntityDto,
+        createCategoryDto,
+      );
+
+      const savedCategory = await this.categoryRepository.create(entity, tx);
 
       let uploadResult: StorageUploadResult | null = null;
-      let media: MediaAsset | null = null;
 
       try {
         if (logo) {
+          this.logger.debug(
+            `[create] Uploading logo slug=${savedCategory.slug}`,
+          );
           uploadResult = await this.storageProvider.upload(logo, {
             folder: CATEGORY_FOLDER,
           });
 
-          [media] = await this.mediaAssetService.create(
+          await this.mediaAssetService.create(
             [
               {
                 publicId: uploadResult.key,
@@ -75,10 +96,11 @@ export class CategoriesService {
           );
         }
 
-        return {
-          ...savedCategory,
-          logo: media?.url ?? null,
-        };
+        this.logger.debug(
+          `[create] Created category successful id=${savedCategory.id}, slug=${savedCategory.slug}`,
+        );
+
+        return { id: savedCategory.id };
       } catch (error) {
         if (uploadResult?.key) {
           await this.storageProvider.delete(uploadResult.key);
@@ -90,17 +112,23 @@ export class CategoriesService {
 
   async findAll(paginationQueryDto: PaginationQueryDto) {
     const { page, limit } = extractPaginationParams(paginationQueryDto);
+    const { skip } = buildPaginationParams(page, limit);
 
-    const [items, totalCount] = await this.categoryRepository.findAndCount({
-      where: { isActive: true },
-      ...buildPaginationParams(page, limit),
-      order: { createdAt: 'DESC' },
-    });
+    this.logger.debug(
+      `[findAll] Fetching categories page=${page}, limit=${limit}`,
+    );
 
-    const itemsWithLogo = await this.attachCategoryLogos(items);
+    const [items, totalCount] = await this.categoryRepository.findAllAndCount(
+      limit,
+      skip,
+    );
+
+    this.logger.debug(
+      `[findAll] Fetched categories successful count=${items.length}, totalCount=${totalCount}`,
+    );
 
     return {
-      items: itemsWithLogo,
+      items: items.map((i) => CategoryMapper.mapToCategoryResponse(i)),
       totalCount,
       currentPage: page,
       itemsPerPage: limit,
@@ -108,9 +136,12 @@ export class CategoriesService {
   }
 
   async findOne(id: string): Promise<Category | null> {
-    const rows = await this.fetchCategoryTree(id);
+    this.logger.debug(`[findOne] Fetching category id=${id}`);
+
+    const rows = await this.categoryRepository.fetchCategoryTree(id);
 
     if (!rows.length) {
+      this.logger.debug(`[findOne] Category not found id=${id}`);
       throw new NotFoundException('Category not found');
     }
 
@@ -118,12 +149,12 @@ export class CategoriesService {
 
     if (result.parentId) {
       result.parent =
-        (await this.categoryRepository.findOne({
-          where: { id: result.parentId, isActive: true },
-        })) ?? null;
+        (await this.categoryRepository.findActiveById(result.parentId)) ?? null;
     }
 
-    return this.attachLogosToTree(result);
+    this.logger.debug(`[findOne] Fetched category successful id=${id}`);
+
+    return result;
   }
 
   async update(
@@ -131,14 +162,12 @@ export class CategoriesService {
     updateCategoryDto: UpdateCategoryDto,
     logo?: Express.Multer.File,
   ) {
-    const category = await this.categoryRepository.findOne({
-      where: {
-        id,
-        isActive: true,
-      },
-    });
+    this.logger.debug(`[update] Updating category id=${id}`);
+
+    const category = await this.categoryRepository.findActiveById(id);
 
     if (!category) {
+      this.logger.debug(`[update] Category not found id=${id}`);
       throw new NotFoundException('Category not found');
     }
 
@@ -147,7 +176,15 @@ export class CategoriesService {
     }
 
     if (updateCategoryDto.slug && updateCategoryDto.slug !== category.slug) {
-      if (await this.doesSlugExist(updateCategoryDto.slug, id)) {
+      if (
+        await this.categoryRepository.existsActiveBySlug(
+          updateCategoryDto.slug,
+          id,
+        )
+      ) {
+        this.logger.warn(
+          `[update] Duplicate slug id=${id}, slug=${updateCategoryDto.slug}`,
+        );
         throw new BadRequestException('Slug already exists');
       }
     }
@@ -159,7 +196,7 @@ export class CategoriesService {
     );
 
     if (updateCategoryDto.isActive === false && category.isActive) {
-      const descendants = await this.getDescendants(id);
+      const descendants = await this.categoryRepository.getDescendants(id);
       if (descendants.length) {
         throw new BadRequestException(
           'Cannot deactivate category with descendants',
@@ -167,9 +204,14 @@ export class CategoriesService {
       }
     }
 
-    return this.dataSource.transaction(async (tx) => {
-      const updatedCategory = await tx.save(
-        toEntity(Category, { ...category, ...updateCategoryDto }),
+    await this.dataSource.transaction(async (tx) => {
+      await this.categoryRepository.update(
+        id,
+        sanitizeEntityInput(CategoryUpdateEntityDto, {
+          ...category,
+          ...updateCategoryDto,
+        }),
+        tx,
       );
 
       let uploadResult: StorageUploadResult | null = null;
@@ -187,7 +229,7 @@ export class CategoriesService {
             folder: CATEGORY_FOLDER,
           });
 
-          const [newMedia] = await this.mediaAssetService.create(
+          await this.mediaAssetService.create(
             [
               {
                 publicId: uploadResult.key,
@@ -209,14 +251,9 @@ export class CategoriesService {
           if (oldMedia?.publicId) {
             await this.storageProvider.delete(oldMedia.publicId);
           }
-
-          return {
-            ...updatedCategory,
-            logo: newMedia.url,
-          };
         }
 
-        return (await this.attachCategoryLogos([updatedCategory]))[0];
+        this.logger.debug(`[update] Updated category successful id=${id}`);
       } catch (error) {
         if (uploadResult?.key) {
           await this.storageProvider.delete(uploadResult.key);
@@ -224,78 +261,27 @@ export class CategoriesService {
         throw error;
       }
     });
+
+    return true;
   }
 
-  async findActiveByIds(
-    ids: string[],
-    entityManager?: EntityManager,
-  ): Promise<Pick<Category, 'id'>[]> {
+  findActiveByIds(ids: string[]): Promise<Pick<Category, 'id'>[]> {
     if (!ids.length) {
-      return [];
+      return Promise.resolve([]);
     }
 
-    const repository = entityManager
-      ? entityManager.getRepository(Category)
-      : this.categoryRepository;
-
-    return repository.find({
-      where: {
-        id: In(ids),
-        isActive: true,
-      },
-      select: ['id'],
-    });
+    return this.categoryRepository.findActiveByIds(ids);
   }
 
   private normalizeSlug(slug: string) {
     return slug.trim().toLowerCase();
   }
 
-  private doesSlugExist(slug: string, excludeId?: string) {
-    return this.categoryRepository.exists({
-      where: {
-        slug,
-        isActive: true,
-        ...(excludeId && { id: Not(excludeId) }),
-      },
-    });
-  }
-
-  private async fetchCategoryTree(id: string): Promise<Category[]> {
-    return this.categoryRepository.query<Category[]>(
-      `
-        WITH RECURSIVE category_tree AS (
-          SELECT
-            id, name, slug, description,
-            parent_id AS "parentId",
-            is_active AS "isActive",
-            created_at AS "createdAt",
-            created_by AS "createdBy",
-            updated_at AS "updatedAt",
-            updated_by AS "updatedBy"
-          FROM categories
-          WHERE id = $1 AND is_active = TRUE
-          UNION ALL
-          SELECT
-            c.id, c.name, c.slug, c.description,
-            c.parent_id, c.is_active,
-            c.created_at, c.created_by,
-            c.updated_at, c.updated_by
-          FROM categories c
-          INNER JOIN category_tree ct ON ct.id = c.parent_id
-          WHERE c.is_active = TRUE
-        )
-        SELECT * FROM category_tree;
-      `,
-      [id],
-    );
-  }
-
   private buildCategoryTree(rows: Category[], rootId: string): Category {
     const map = new Map<string, Category>();
 
     for (const row of rows) {
-      const category = toEntity(Category, { ...row, children: [] });
+      const category = { ...row, children: [] };
       map.set(category.id, category);
     }
 
@@ -324,95 +310,18 @@ export class CategoriesService {
       throw new BadRequestException('Category cannot be its own parent');
     }
 
-    const parentExists = await this.categoryRepository.exists({
-      where: { id: newParentId, isActive: true },
-    });
+    const parentExists =
+      await this.categoryRepository.existsActiveById(newParentId);
 
     if (!parentExists) {
       throw new BadRequestException('Parent category not found');
     }
 
-    const descendants = await this.getDescendants(id);
+    const descendants = await this.categoryRepository.getDescendants(id);
     if (descendants.some((d) => d.id === newParentId)) {
       throw new BadRequestException(
         'Cannot set a descendant as parent category',
       );
     }
-  }
-
-  private async getDescendants(id: string) {
-    return this.categoryRepository.query<Pick<Category, 'id' | 'parentId'>[]>(
-      `
-        WITH RECURSIVE category_tree AS (
-          SELECT id, parent_id FROM categories WHERE id = $1 AND is_active = TRUE
-          UNION ALL
-          SELECT c.id, c.parent_id
-          FROM categories c
-          INNER JOIN category_tree ct ON ct.id = c.parent_id
-          WHERE c.is_active = TRUE
-        )
-        SELECT id, parent_id AS "parentId" 
-        FROM category_tree 
-        WHERE id != $1;
-      `,
-      [id],
-    );
-  }
-
-  private async attachCategoryLogos<T extends { id: string }>(
-    categories: T[],
-  ): Promise<(T & { logo: string | null })[]> {
-    if (!categories.length) return [];
-
-    const ids = categories.map((c) => c.id);
-
-    const medias = await this.mediaAssetService.findByRefIds(
-      MediaAssetRefType.CATEGORY,
-      ids,
-      MediaAssetUsageType.LOGO,
-    );
-
-    const mediaMap = new Map(medias.map((m) => [m.refId, m.url]));
-
-    return categories.map((c) => ({
-      ...c,
-      logo: mediaMap.get(c.id) ?? null,
-    }));
-  }
-
-  private async attachLogosToTree(
-    category: Category,
-  ): Promise<CategoryWithLogo> {
-    const flat: Category[] = [];
-
-    const collect = (node: Category) => {
-      flat.push(node);
-      node.children?.forEach(collect);
-    };
-
-    collect(category);
-
-    const withLogos = await this.attachCategoryLogos(flat);
-    const map = new Map<string, CategoryWithLogo>(
-      withLogos.map((c) => [
-        c.id,
-        { ...c, children: [] as CategoryWithLogo[] } as CategoryWithLogo,
-      ]),
-    );
-
-    const rebuild = (node: Category): CategoryWithLogo => {
-      const current = map.get(node.id);
-
-      if (!current) {
-        throw new Error(`Category ${node.id} not found in logo map`);
-      }
-
-      return {
-        ...current,
-        children: node.children?.map(rebuild) ?? [],
-      } as CategoryWithLogo;
-    };
-
-    return rebuild(category);
   }
 }

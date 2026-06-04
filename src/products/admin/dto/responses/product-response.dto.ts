@@ -1,8 +1,8 @@
 import { Expose, Type } from 'class-transformer';
-import { BrandResponseDto } from '@/brands/dto';
-import { CategoryResponseDto } from '@/categories/dto/responses/category-response.dto';
 import { ProductAttributeResponseDto } from './product-attribute-response.dto';
 import { ProductImageResponseDto } from './product-image-response.dto';
+import { BrandResponseDto } from '@/brands/dto';
+import { CategoryResponseDto } from '@/categories/dto';
 
 export class ProductResponseDto {
   @Expose()

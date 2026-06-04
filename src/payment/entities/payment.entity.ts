@@ -8,16 +8,19 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Order } from '../../orders/entities/order.entity';
 import { PaymentProvider, PaymentStatus } from '../enums';
+import { Order } from '../../orders/entities';
 
 @Entity('payments')
 @Index('idx_payments_order_id', ['orderId'])
-@Index('idx_payments_transaction_id', ['transactionId'], { unique: true })
 @Index('idx_payments_provider', ['provider'])
 @Index('idx_payments_status', ['status'])
 @Index('idx_payments_paid_at', ['paidAt'])
 @Index('idx_payments_created_at', ['createdAt'])
+@Index('uq_payments_pending_order_id', ['orderId'], {
+  unique: true,
+  where: `"status" = 'pending'`,
+})
 export class Payment {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'pk_payments_id',
@@ -88,6 +91,9 @@ export class Payment {
 
   @Column({ name: 'confirmed_at', type: 'timestamptz', nullable: true })
   confirmedAt: Date | null;
+
+  @Column({ name: 'checkout_url', type: 'varchar', nullable: true })
+  checkoutUrl: string | null;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;

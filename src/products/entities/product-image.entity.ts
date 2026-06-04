@@ -8,8 +8,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from '.';
-import { ProductVariant } from '../../product-variants/entities/product-variant.entity';
+import { Product } from './product.entity';
+import { ProductVariant } from './product-variant.entity';
 import { ProductImageType } from '../../common/enums';
 
 @Entity('product_images')

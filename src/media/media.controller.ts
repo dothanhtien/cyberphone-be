@@ -13,8 +13,10 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { GetMediasDto, UploadMediasDto } from './dto';
 import { MediaService } from './media.service';
-import { LoggedInUser } from '@/auth/decorators';
+import { LoggedInUser, Roles } from '@/auth/decorators';
+import { UserRole } from '@/users/enums';
 
+@Roles(UserRole.ADMIN, UserRole.STAFF)
 @Controller('media')
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
