@@ -213,12 +213,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(dataSource: DataSource, customersService: <a href="../injectables/CustomersService.html" target="_self">CustomersService</a>, identitiesService: <a href="../injectables/IdentitiesService.html" target="_self">IdentitiesService</a>, passwordService: <a href="../injectables/PasswordService.html" target="_self">PasswordService</a>, jwtService: JwtService, usersService: <a href="../injectables/UsersService.html" target="_self">UsersService</a>, refreshTokenService: <a href="../injectables/RefreshTokenService.html" target="_self">RefreshTokenService</a>)</code>
+<code>constructor(dataSource: DataSource, customersService: <a href="../injectables/CustomersService.html" target="_self">CustomersService</a>, identitiesService: <a href="../injectables/IdentitiesService.html" target="_self">IdentitiesService</a>, jwtService: JwtService, usersService: <a href="../injectables/UsersService.html" target="_self">UsersService</a>, refreshTokenService: <a href="../injectables/RefreshTokenService.html" target="_self">RefreshTokenService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/auth/auth.service.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/auth/auth.service.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -264,18 +264,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/IdentitiesService.html" target="_self" >IdentitiesService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>passwordService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/PasswordService.html" target="_self" >PasswordService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -424,8 +412,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="137"
-                                    class="link-to-prism">src/auth/auth.service.ts:137</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="138"
+                                    class="link-to-prism">src/auth/auth.service.ts:138</a></div>
                         </td>
                     </tr>
 
@@ -493,8 +481,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="184"
-                                    class="link-to-prism">src/auth/auth.service.ts:184</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="186"
+                                    class="link-to-prism">src/auth/auth.service.ts:186</a></div>
                         </td>
                     </tr>
 
@@ -562,8 +550,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="169"
-                                    class="link-to-prism">src/auth/auth.service.ts:169</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">src/auth/auth.service.ts:171</a></div>
                         </td>
                     </tr>
 
@@ -644,8 +632,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="273"
-                                    class="link-to-prism">src/auth/auth.service.ts:273</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="275"
+                                    class="link-to-prism">src/auth/auth.service.ts:275</a></div>
                         </td>
                     </tr>
 
@@ -713,8 +701,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">src/auth/auth.service.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">src/auth/auth.service.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -804,7 +792,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/auth/auth.service.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/auth/auth.service.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -825,11 +813,15 @@ import { AuthUserType } from &#x27;./enums&#x27;;
 import { AuthMapper } from &#x27;./mappers&#x27;;
 import { RefreshTokenService } from &#x27;./refresh-token.service&#x27;;
 import { AuthUser, JwtPayload } from &#x27;./types&#x27;;
-import { getErrorStack, maskIdentifier } from &#x27;@/common/utils&#x27;;
+import {
+  comparePassword,
+  hashPassword,
+  getErrorStack,
+  maskIdentifier,
+} from &#x27;@/common/utils&#x27;;
 import { CustomersService } from &#x27;@/customers/customers.service&#x27;;
 import { AuthProvider } from &#x27;@/identities/enums&#x27;;
 import { IdentitiesService } from &#x27;@/identities/identities.service&#x27;;
-import { PasswordService } from &#x27;@/password/password.service&#x27;;
 import { UsersService } from &#x27;@/users/users.service&#x27;;
 
 @Injectable()
@@ -840,7 +832,6 @@ export class AuthService {
     private readonly dataSource: DataSource,
     private readonly customersService: CustomersService,
     private readonly identitiesService: IdentitiesService,
-    private readonly passwordService: PasswordService,
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
     private readonly refreshTokenService: RefreshTokenService,
@@ -888,10 +879,7 @@ export class AuthService {
         return null;
       }
 
-      const isMatch &#x3D; await this.passwordService.comparePassword(
-        password,
-        identity.passwordHash,
-      );
+      const isMatch &#x3D; await comparePassword(password, identity.passwordHash);
 
       if (!isMatch) {
         this.logger.debug(
@@ -918,13 +906,14 @@ export class AuthService {
 
   async login(user: AuthUser) {
     this.logger.debug(
-      &#x60;[login] Attemptinng login id&#x3D;${user.id}, type&#x3D;${user.type}&#x60;,
+      &#x60;[login] Attempting login id&#x3D;${user.id}, type&#x3D;${user.type}&#x60;,
     );
 
     const payload: JwtPayload &#x3D; {
       sub: user.id,
       type: user.type,
       roleId: user.roleId,
+      roleName: user.roleName,
       identityId: user.identityId,
     };
 
@@ -964,6 +953,7 @@ export class AuthService {
         sub: authUser.id,
         type: authUser.type,
         roleId: authUser.roleId,
+        roleName: authUser.roleName,
         identityId: authUser.identityId,
       };
 
@@ -1058,7 +1048,7 @@ export class AuthService {
           customer &#x3D; await this.customersService.create(registerDto, tx);
         }
 
-        const passwordHash &#x3D; await this.passwordService.hashPassword(password);
+        const passwordHash &#x3D; await hashPassword(password);
 
         this.logger.debug(&#x60;[register] Creating identities&#x60;);
 

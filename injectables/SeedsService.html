@@ -176,12 +176,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(seedRoles: <a href="../injectables/SeedRolesRunner.html" target="_self">SeedRolesRunner</a>, seedSuperAdmin: <a href="../injectables/SeedSuperAdminRunner.html" target="_self">SeedSuperAdminRunner</a>)</code>
+<code>constructor(seedRoles: <a href="../injectables/SeedRolesRunner.html" target="_self">SeedRolesRunner</a>, seedSuperAdmin: <a href="../injectables/SeedSuperAdminRunner.html" target="_self">SeedSuperAdminRunner</a>, seedBrands: <a href="../injectables/SeedBrandsRunner.html" target="_self">SeedBrandsRunner</a>, seedCategories: <a href="../injectables/SeedCategoriesRunner.html" target="_self">SeedCategoriesRunner</a>, seedProducts: <a href="../injectables/SeedProductsRunner.html" target="_self">SeedProductsRunner</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">src/seeds/seeds.service.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/seeds/seeds.service.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -215,6 +215,42 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/SeedSuperAdminRunner.html" target="_self" >SeedSuperAdminRunner</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>seedBrands</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SeedBrandsRunner.html" target="_self" >SeedBrandsRunner</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>seedCategories</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SeedCategoriesRunner.html" target="_self" >SeedCategoriesRunner</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>seedProducts</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SeedProductsRunner.html" target="_self" >SeedProductsRunner</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -258,8 +294,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">src/seeds/seeds.service.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">src/seeds/seeds.service.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -284,17 +320,26 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { SeedRolesRunner } from &#x27;./runners/seed-roles.runner&#x27;;
 import { SeedSuperAdminRunner } from &#x27;./runners/seed-super-admin.runner&#x27;;
+import { SeedBrandsRunner } from &#x27;./runners/seed-brands.runner&#x27;;
+import { SeedCategoriesRunner } from &#x27;./runners/seed-categories.runner&#x27;;
+import { SeedProductsRunner } from &#x27;./runners/seed-products.runner&#x27;;
 
 @Injectable()
 export class SeedsService {
   constructor(
     private readonly seedRoles: SeedRolesRunner,
     private readonly seedSuperAdmin: SeedSuperAdminRunner,
+    private readonly seedBrands: SeedBrandsRunner,
+    private readonly seedCategories: SeedCategoriesRunner,
+    private readonly seedProducts: SeedProductsRunner,
   ) {}
 
   async run() {
     await this.seedRoles.run();
     await this.seedSuperAdmin.run();
+    await this.seedBrands.run();
+    await this.seedCategories.run();
+    await this.seedProducts.run();
   }
 }
 </code></pre>

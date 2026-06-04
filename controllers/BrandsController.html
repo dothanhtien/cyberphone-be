@@ -231,8 +231,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">src/brands/brands.controller.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/brands/brands.controller.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -331,8 +331,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">src/brands/brands.controller.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">src/brands/brands.controller.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -407,8 +407,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">src/brands/brands.controller.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">src/brands/brands.controller.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -484,8 +484,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">src/brands/brands.controller.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">src/brands/brands.controller.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -574,8 +574,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">src/brands/brands.controller.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">src/brands/brands.controller.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -677,9 +677,11 @@
 import { FileInterceptor } from &#x27;@nestjs/platform-express&#x27;;
 import { BrandsService } from &#x27;./brands.service&#x27;;
 import { CreateBrandDto, UpdateBrandDto } from &#x27;./dto&#x27;;
+import { LoggedInUser, Roles } from &#x27;@/auth/decorators&#x27;;
 import { PaginationQueryDto } from &#x27;@/common/dto&#x27;;
-import { LoggedInUser } from &#x27;@/auth/decorators&#x27;;
+import { UserRole } from &#x27;@/users/enums&#x27;;
 
+@Roles(UserRole.ADMIN)
 @Controller(&#x27;admin/brands&#x27;)
 export class BrandsController {
   constructor(private readonly brandsService: BrandsService) {}

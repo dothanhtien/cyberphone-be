@@ -145,6 +145,22 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#logger" >logger</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -156,16 +172,6 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#attachCategoryLogos" >attachCategoryLogos</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#attachLogosToTree" >attachLogosToTree</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
                                 <a href="#buildCategoryTree" >buildCategoryTree</a>
                             </li>
                             <li>
@@ -173,16 +179,6 @@
                                 <a href="#create" >create</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#doesSlugExist" >doesSlugExist</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#fetchCategoryTree" >fetchCategoryTree</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
                                 <a href="#findActiveByIds" >findActiveByIds</a>
                             </li>
                             <li>
@@ -192,11 +188,6 @@
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findOne" >findOne</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getDescendants" >getDescendants</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -229,12 +220,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(categoryRepository: <a href="../classes/Category.html" target="_self">Repository&lt;Category&gt;</a>, dataSource: DataSource, mediaAssetService: <a href="../injectables/MediaAssetsService.html" target="_self">MediaAssetsService</a>, storageProvider: <a href="../interfaces/StorageProvider.html" target="_self">StorageProvider</a>)</code>
+<code>constructor(dataSource: DataSource, categoryRepository: <a href="../interfaces/ICategoryRepository.html" target="_self">ICategoryRepository</a>, mediaAssetService: <a href="../injectables/MediaAssetsService.html" target="_self">MediaAssetsService</a>, storageProvider: <a href="../interfaces/StorageProvider.html" target="_self">StorageProvider</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/categories/categories.service.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/categories/categories.service.ts:35</a></div>
                             </td>
                         </tr>
 
@@ -252,10 +243,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>categoryRepository</td>
+                                                        <td>dataSource</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../classes/Category.html" target="_self" >Repository&lt;Category&gt;</a></code>
+                                                                    <code>DataSource</code>
                                                         </td>
                                                   
                                                     <td>
@@ -264,10 +255,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>dataSource</td>
+                                                        <td>categoryRepository</td>
                                                   
                                                         <td>
-                                                                    <code>DataSource</code>
+                                                                        <code><a href="../interfaces/ICategoryRepository.html" target="_self" >ICategoryRepository</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -317,154 +308,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="attachCategoryLogos"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>attachCategoryLogos</b></span>
-                        <a href="#attachCategoryLogos"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>attachCategoryLogos(categories: T[])</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="362"
-                                    class="link-to-prism">src/categories/categories.service.ts:362</a></div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="col-md-4">
-                            <b>Type parameters :</b>
-                            <ul class="type-parameters">
-                                    <li>T</li>
-                            </ul>
-                        </td>
-                    </tr>
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>categories</td>
-                                            <td>
-                                                        <code>T[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;unknown[]&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="attachLogosToTree"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>attachLogosToTree</b></span>
-                        <a href="#attachLogosToTree"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>attachLogosToTree(category: <a href="../classes/Category.html" target="_self">Category</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="383"
-                                    class="link-to-prism">src/categories/categories.service.ts:383</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>category</td>
-                                            <td>
-                                                            <code><a href="../classes/Category.html" target="_self" >Category</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Category.html" target="_self" >Promise&lt;CategoryWithLogo&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="buildCategoryTree"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -483,8 +326,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="294"
-                                    class="link-to-prism">src/categories/categories.service.ts:294</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="280"
+                                    class="link-to-prism">src/categories/categories.service.ts:280</a></div>
                         </td>
                     </tr>
 
@@ -564,8 +407,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">src/categories/categories.service.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">src/categories/categories.service.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -627,160 +470,8 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="doesSlugExist"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>doesSlugExist</b></span>
-                        <a href="#doesSlugExist"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>doesSlugExist(slug: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, excludeId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="254"
-                                    class="link-to-prism">src/categories/categories.service.ts:254</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>slug</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>excludeId</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="fetchCategoryTree"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>fetchCategoryTree</b></span>
-                        <a href="#fetchCategoryTree"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>fetchCategoryTree(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="264"
-                                    class="link-to-prism">src/categories/categories.service.ts:264</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>id</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Category.html" target="_self" >Promise&lt;Category[]&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="findActiveByIds"></a>
                     <span class="name">
-                            <span class="modifier">Async</span>
                         <span ><b>findActiveByIds</b></span>
                         <a href="#findActiveByIds"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -788,16 +479,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findActiveByIds(ids: string[], entityManager?: EntityManager)</code>
+<code>findActiveByIds(ids: string[])</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="229"
-                                    class="link-to-prism">src/categories/categories.service.ts:229</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="268"
+                                    class="link-to-prism">src/categories/categories.service.ts:268</a></div>
                         </td>
                     </tr>
 
@@ -825,18 +515,6 @@
 
                                             <td>
                                                     No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>entityManager</td>
-                                            <td>
-                                                        <code>EntityManager</code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
                                             </td>
 
 
@@ -877,8 +555,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="91"
-                                    class="link-to-prism">src/categories/categories.service.ts:91</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">src/categories/categories.service.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -946,8 +624,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="110"
-                                    class="link-to-prism">src/categories/categories.service.ts:110</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="138"
+                                    class="link-to-prism">src/categories/categories.service.ts:138</a></div>
                         </td>
                     </tr>
 
@@ -997,76 +675,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getDescendants"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>getDescendants</b></span>
-                        <a href="#getDescendants"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getDescendants(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="343"
-                                    class="link-to-prism">src/categories/categories.service.ts:343</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>id</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="normalizeSlug"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -1085,8 +693,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="250"
-                                    class="link-to-prism">src/categories/categories.service.ts:250</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="276"
+                                    class="link-to-prism">src/categories/categories.service.ts:276</a></div>
                         </td>
                     </tr>
 
@@ -1154,8 +762,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="129"
-                                    class="link-to-prism">src/categories/categories.service.ts:129</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="160"
+                                    class="link-to-prism">src/categories/categories.service.ts:160</a></div>
                         </td>
                     </tr>
 
@@ -1248,8 +856,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="316"
-                                    class="link-to-prism">src/categories/categories.service.ts:316</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="302"
+                                    class="link-to-prism">src/categories/categories.service.ts:302</a></div>
                         </td>
                     </tr>
 
@@ -1320,6 +928,45 @@
         </tbody>
     </table>
 </section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logger"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>logger</b></span>
+                        <a href="#logger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Logger(CategoriesService.name)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/categories/categories.service.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
     </div>
 
@@ -1329,36 +976,42 @@
   BadRequestException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from &#x27;@nestjs/common&#x27;;
-import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
-import { DataSource, EntityManager, In, Not, Repository } from &#x27;typeorm&#x27;;
-import { PaginationQueryDto } from &#x27;@/common/dto/paginations.dto&#x27;;
+import { DataSource } from &#x27;typeorm&#x27;;
+import {
+  CategoryCreateEntityDto,
+  CategoryUpdateEntityDto,
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from &#x27;./dto&#x27;;
+import { Category } from &#x27;./entities&#x27;;
+import { CategoryMapper } from &#x27;./mappers&#x27;;
+import { type ICategoryRepository, CATEGORY_REPOSITORY } from &#x27;./repositories&#x27;;
+import { CATEGORY_FOLDER } from &#x27;@/common/constants&#x27;;
+import { PaginationQueryDto } from &#x27;@/common/dto&#x27;;
+import { MediaAssetRefType, MediaAssetUsageType } from &#x27;@/common/enums&#x27;;
 import {
   buildPaginationParams,
   extractPaginationParams,
-  toEntity,
+  sanitizeEntityInput,
 } from &#x27;@/common/utils&#x27;;
-import { Category } from &#x27;./entities/category.entity&#x27;;
-import { CreateCategoryDto } from &#x27;./dto/requests/create-category.dto&#x27;;
-import { UpdateCategoryDto } from &#x27;./dto/requests/update-category.dto&#x27;;
 import { MediaAssetsService } from &#x27;@/media/media-assets.service&#x27;;
-import { MediaAsset } from &#x27;@/media/entities&#x27;;
-import { MediaAssetRefType, MediaAssetUsageType } from &#x27;@/common/enums&#x27;;
-import { CATEGORY_FOLDER } from &#x27;@/common/constants/paths&#x27;;
 import { STORAGE_PROVIDER } from &#x27;@/storage/storage.module&#x27;;
 import type {
   StorageProvider,
   StorageUploadResult,
 } from &#x27;@/storage/storage.provider&#x27;;
-import { CategoryWithLogo } from &#x27;@/common/types/categories.type&#x27;;
 
 @Injectable()
 export class CategoriesService {
+  private readonly logger &#x3D; new Logger(CategoriesService.name);
+
   constructor(
-    @InjectRepository(Category)
-    private readonly categoryRepository: Repository&lt;Category&gt;,
     private readonly dataSource: DataSource,
+    @Inject(CATEGORY_REPOSITORY)
+    private readonly categoryRepository: ICategoryRepository,
     private readonly mediaAssetService: MediaAssetsService,
     @Inject(STORAGE_PROVIDER) private readonly storageProvider: StorageProvider,
   ) {}
@@ -1369,24 +1022,39 @@ export class CategoriesService {
   ) {
     createCategoryDto.slug &#x3D; this.normalizeSlug(createCategoryDto.slug);
 
-    if (await this.doesSlugExist(createCategoryDto.slug)) {
+    this.logger.debug(
+      &#x60;[create] Creating category slug&#x3D;${createCategoryDto.slug}&#x60;,
+    );
+
+    if (
+      await this.categoryRepository.existsActiveBySlug(createCategoryDto.slug)
+    ) {
+      this.logger.warn(
+        &#x60;[create] Duplicate slug slug&#x3D;${createCategoryDto.slug}&#x60;,
+      );
       throw new BadRequestException(&#x27;Category with this slug already exists&#x27;);
     }
 
     return this.dataSource.transaction(async (tx) &#x3D;&gt; {
-      const category &#x3D; toEntity(Category, createCategoryDto);
-      const savedCategory &#x3D; await tx.save(category);
+      const entity &#x3D; sanitizeEntityInput(
+        CategoryCreateEntityDto,
+        createCategoryDto,
+      );
+
+      const savedCategory &#x3D; await this.categoryRepository.create(entity, tx);
 
       let uploadResult: StorageUploadResult | null &#x3D; null;
-      let media: MediaAsset | null &#x3D; null;
 
       try {
         if (logo) {
+          this.logger.debug(
+            &#x60;[create] Uploading logo slug&#x3D;${savedCategory.slug}&#x60;,
+          );
           uploadResult &#x3D; await this.storageProvider.upload(logo, {
             folder: CATEGORY_FOLDER,
           });
 
-          [media] &#x3D; await this.mediaAssetService.create(
+          await this.mediaAssetService.create(
             [
               {
                 publicId: uploadResult.key,
@@ -1402,10 +1070,11 @@ export class CategoriesService {
           );
         }
 
-        return {
-          ...savedCategory,
-          logo: media?.url ?? null,
-        };
+        this.logger.debug(
+          &#x60;[create] Created category successful id&#x3D;${savedCategory.id}, slug&#x3D;${savedCategory.slug}&#x60;,
+        );
+
+        return { id: savedCategory.id };
       } catch (error) {
         if (uploadResult?.key) {
           await this.storageProvider.delete(uploadResult.key);
@@ -1417,17 +1086,23 @@ export class CategoriesService {
 
   async findAll(paginationQueryDto: PaginationQueryDto) {
     const { page, limit } &#x3D; extractPaginationParams(paginationQueryDto);
+    const { skip } &#x3D; buildPaginationParams(page, limit);
 
-    const [items, totalCount] &#x3D; await this.categoryRepository.findAndCount({
-      where: { isActive: true },
-      ...buildPaginationParams(page, limit),
-      order: { createdAt: &#x27;DESC&#x27; },
-    });
+    this.logger.debug(
+      &#x60;[findAll] Fetching categories page&#x3D;${page}, limit&#x3D;${limit}&#x60;,
+    );
 
-    const itemsWithLogo &#x3D; await this.attachCategoryLogos(items);
+    const [items, totalCount] &#x3D; await this.categoryRepository.findAllAndCount(
+      limit,
+      skip,
+    );
+
+    this.logger.debug(
+      &#x60;[findAll] Fetched categories successful count&#x3D;${items.length}, totalCount&#x3D;${totalCount}&#x60;,
+    );
 
     return {
-      items: itemsWithLogo,
+      items: items.map((i) &#x3D;&gt; CategoryMapper.mapToCategoryResponse(i)),
       totalCount,
       currentPage: page,
       itemsPerPage: limit,
@@ -1435,9 +1110,12 @@ export class CategoriesService {
   }
 
   async findOne(id: string): Promise&lt;Category | null&gt; {
-    const rows &#x3D; await this.fetchCategoryTree(id);
+    this.logger.debug(&#x60;[findOne] Fetching category id&#x3D;${id}&#x60;);
+
+    const rows &#x3D; await this.categoryRepository.fetchCategoryTree(id);
 
     if (!rows.length) {
+      this.logger.debug(&#x60;[findOne] Category not found id&#x3D;${id}&#x60;);
       throw new NotFoundException(&#x27;Category not found&#x27;);
     }
 
@@ -1445,12 +1123,12 @@ export class CategoriesService {
 
     if (result.parentId) {
       result.parent &#x3D;
-        (await this.categoryRepository.findOne({
-          where: { id: result.parentId, isActive: true },
-        })) ?? null;
+        (await this.categoryRepository.findActiveById(result.parentId)) ?? null;
     }
 
-    return this.attachLogosToTree(result);
+    this.logger.debug(&#x60;[findOne] Fetched category successful id&#x3D;${id}&#x60;);
+
+    return result;
   }
 
   async update(
@@ -1458,14 +1136,12 @@ export class CategoriesService {
     updateCategoryDto: UpdateCategoryDto,
     logo?: Express.Multer.File,
   ) {
-    const category &#x3D; await this.categoryRepository.findOne({
-      where: {
-        id,
-        isActive: true,
-      },
-    });
+    this.logger.debug(&#x60;[update] Updating category id&#x3D;${id}&#x60;);
+
+    const category &#x3D; await this.categoryRepository.findActiveById(id);
 
     if (!category) {
+      this.logger.debug(&#x60;[update] Category not found id&#x3D;${id}&#x60;);
       throw new NotFoundException(&#x27;Category not found&#x27;);
     }
 
@@ -1474,7 +1150,15 @@ export class CategoriesService {
     }
 
     if (updateCategoryDto.slug &amp;&amp; updateCategoryDto.slug !&#x3D;&#x3D; category.slug) {
-      if (await this.doesSlugExist(updateCategoryDto.slug, id)) {
+      if (
+        await this.categoryRepository.existsActiveBySlug(
+          updateCategoryDto.slug,
+          id,
+        )
+      ) {
+        this.logger.warn(
+          &#x60;[update] Duplicate slug id&#x3D;${id}, slug&#x3D;${updateCategoryDto.slug}&#x60;,
+        );
         throw new BadRequestException(&#x27;Slug already exists&#x27;);
       }
     }
@@ -1486,7 +1170,7 @@ export class CategoriesService {
     );
 
     if (updateCategoryDto.isActive &#x3D;&#x3D;&#x3D; false &amp;&amp; category.isActive) {
-      const descendants &#x3D; await this.getDescendants(id);
+      const descendants &#x3D; await this.categoryRepository.getDescendants(id);
       if (descendants.length) {
         throw new BadRequestException(
           &#x27;Cannot deactivate category with descendants&#x27;,
@@ -1494,9 +1178,14 @@ export class CategoriesService {
       }
     }
 
-    return this.dataSource.transaction(async (tx) &#x3D;&gt; {
-      const updatedCategory &#x3D; await tx.save(
-        toEntity(Category, { ...category, ...updateCategoryDto }),
+    await this.dataSource.transaction(async (tx) &#x3D;&gt; {
+      await this.categoryRepository.update(
+        id,
+        sanitizeEntityInput(CategoryUpdateEntityDto, {
+          ...category,
+          ...updateCategoryDto,
+        }),
+        tx,
       );
 
       let uploadResult: StorageUploadResult | null &#x3D; null;
@@ -1514,7 +1203,7 @@ export class CategoriesService {
             folder: CATEGORY_FOLDER,
           });
 
-          const [newMedia] &#x3D; await this.mediaAssetService.create(
+          await this.mediaAssetService.create(
             [
               {
                 publicId: uploadResult.key,
@@ -1536,14 +1225,9 @@ export class CategoriesService {
           if (oldMedia?.publicId) {
             await this.storageProvider.delete(oldMedia.publicId);
           }
-
-          return {
-            ...updatedCategory,
-            logo: newMedia.url,
-          };
         }
 
-        return (await this.attachCategoryLogos([updatedCategory]))[0];
+        this.logger.debug(&#x60;[update] Updated category successful id&#x3D;${id}&#x60;);
       } catch (error) {
         if (uploadResult?.key) {
           await this.storageProvider.delete(uploadResult.key);
@@ -1551,78 +1235,27 @@ export class CategoriesService {
         throw error;
       }
     });
+
+    return true;
   }
 
-  async findActiveByIds(
-    ids: string[],
-    entityManager?: EntityManager,
-  ): Promise&lt;Pick&lt;Category, &#x27;id&#x27;&gt;[]&gt; {
+  findActiveByIds(ids: string[]): Promise&lt;Pick&lt;Category, &#x27;id&#x27;&gt;[]&gt; {
     if (!ids.length) {
-      return [];
+      return Promise.resolve([]);
     }
 
-    const repository &#x3D; entityManager
-      ? entityManager.getRepository(Category)
-      : this.categoryRepository;
-
-    return repository.find({
-      where: {
-        id: In(ids),
-        isActive: true,
-      },
-      select: [&#x27;id&#x27;],
-    });
+    return this.categoryRepository.findActiveByIds(ids);
   }
 
   private normalizeSlug(slug: string) {
     return slug.trim().toLowerCase();
   }
 
-  private doesSlugExist(slug: string, excludeId?: string) {
-    return this.categoryRepository.exists({
-      where: {
-        slug,
-        isActive: true,
-        ...(excludeId &amp;&amp; { id: Not(excludeId) }),
-      },
-    });
-  }
-
-  private async fetchCategoryTree(id: string): Promise&lt;Category[]&gt; {
-    return this.categoryRepository.query&lt;Category[]&gt;(
-      &#x60;
-        WITH RECURSIVE category_tree AS (
-          SELECT
-            id, name, slug, description,
-            parent_id AS &quot;parentId&quot;,
-            is_active AS &quot;isActive&quot;,
-            created_at AS &quot;createdAt&quot;,
-            created_by AS &quot;createdBy&quot;,
-            updated_at AS &quot;updatedAt&quot;,
-            updated_by AS &quot;updatedBy&quot;
-          FROM categories
-          WHERE id &#x3D; $1 AND is_active &#x3D; TRUE
-          UNION ALL
-          SELECT
-            c.id, c.name, c.slug, c.description,
-            c.parent_id, c.is_active,
-            c.created_at, c.created_by,
-            c.updated_at, c.updated_by
-          FROM categories c
-          INNER JOIN category_tree ct ON ct.id &#x3D; c.parent_id
-          WHERE c.is_active &#x3D; TRUE
-        )
-        SELECT * FROM category_tree;
-      &#x60;,
-      [id],
-    );
-  }
-
   private buildCategoryTree(rows: Category[], rootId: string): Category {
     const map &#x3D; new Map&lt;string, Category&gt;();
 
     for (const row of rows) {
-      const category &#x3D; toEntity(Category, { ...row, children: [] });
+      const category &#x3D; { ...row, children: [] };
       map.set(category.id, category);
     }
 
@@ -1651,96 +1284,19 @@ export class CategoriesService {
       throw new BadRequestException(&#x27;Category cannot be its own parent&#x27;);
     }
 
-    const parentExists &#x3D; await this.categoryRepository.exists({
-      where: { id: newParentId, isActive: true },
-    });
+    const parentExists &#x3D;
+      await this.categoryRepository.existsActiveById(newParentId);
 
     if (!parentExists) {
       throw new BadRequestException(&#x27;Parent category not found&#x27;);
     }
 
-    const descendants &#x3D; await this.getDescendants(id);
+    const descendants &#x3D; await this.categoryRepository.getDescendants(id);
     if (descendants.some((d) &#x3D;&gt; d.id &#x3D;&#x3D;&#x3D; newParentId)) {
       throw new BadRequestException(
         &#x27;Cannot set a descendant as parent category&#x27;,
       );
     }
-  }
-
-  private async getDescendants(id: string) {
-    return this.categoryRepository.query&lt;Pick&lt;Category, &#x27;id&#x27; | &#x27;parentId&#x27;&gt;[]&gt;(
-      &#x60;
-        WITH RECURSIVE category_tree AS (
-          SELECT id, parent_id FROM categories WHERE id &#x3D; $1 AND is_active &#x3D; TRUE
-          UNION ALL
-          SELECT c.id, c.parent_id
-          FROM categories c
-          INNER JOIN category_tree ct ON ct.id &#x3D; c.parent_id
-          WHERE c.is_active &#x3D; TRUE
-        )
-        SELECT id, parent_id AS &quot;parentId&quot; 
-        FROM category_tree 
-        WHERE id !&#x3D; $1;
-      &#x60;,
-      [id],
-    );
-  }
-
-  private async attachCategoryLogos&lt;T extends { id: string }&gt;(
-    categories: T[],
-  ): Promise&lt;(T &amp; { logo: string | null })[]&gt; {
-    if (!categories.length) return [];
-
-    const ids &#x3D; categories.map((c) &#x3D;&gt; c.id);
-
-    const medias &#x3D; await this.mediaAssetService.findByRefIds(
-      MediaAssetRefType.CATEGORY,
-      ids,
-      MediaAssetUsageType.LOGO,
-    );
-
-    const mediaMap &#x3D; new Map(medias.map((m) &#x3D;&gt; [m.refId, m.url]));
-
-    return categories.map((c) &#x3D;&gt; ({
-      ...c,
-      logo: mediaMap.get(c.id) ?? null,
-    }));
-  }
-
-  private async attachLogosToTree(
-    category: Category,
-  ): Promise&lt;CategoryWithLogo&gt; {
-    const flat: Category[] &#x3D; [];
-
-    const collect &#x3D; (node: Category) &#x3D;&gt; {
-      flat.push(node);
-      node.children?.forEach(collect);
-    };
-
-    collect(category);
-
-    const withLogos &#x3D; await this.attachCategoryLogos(flat);
-    const map &#x3D; new Map&lt;string, CategoryWithLogo&gt;(
-      withLogos.map((c) &#x3D;&gt; [
-        c.id,
-        { ...c, children: [] as CategoryWithLogo[] } as CategoryWithLogo,
-      ]),
-    );
-
-    const rebuild &#x3D; (node: Category): CategoryWithLogo &#x3D;&gt; {
-      const current &#x3D; map.get(node.id);
-
-      if (!current) {
-        throw new Error(&#x60;Category ${node.id} not found in logo map&#x60;);
-      }
-
-      return {
-        ...current,
-        children: node.children?.map(rebuild) ?? [],
-      } as CategoryWithLogo;
-    };
-
-    return rebuild(category);
   }
 }
 </code></pre>

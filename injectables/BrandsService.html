@@ -171,16 +171,8 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#baseBrandQuery" >baseBrandQuery</a>
-                            </li>
-                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#create" >create</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#doesSlugExist" >doesSlugExist</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -193,10 +185,6 @@
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findOne" >findOne</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#mergeBrandExtras" >mergeBrandExtras</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -220,12 +208,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(brandRepository: <a href="../classes/Brand.html" target="_self">Repository&lt;Brand&gt;</a>, dataSource: DataSource, mediaAssetsService: <a href="../injectables/MediaAssetsService.html" target="_self">MediaAssetsService</a>, storageProvider: <a href="../interfaces/StorageProvider.html" target="_self">StorageProvider</a>)</code>
+<code>constructor(brandRepository: <a href="../interfaces/IBrandRepository.html" target="_self">IBrandRepository</a>, dataSource: DataSource, mediaAssetsService: <a href="../injectables/MediaAssetsService.html" target="_self">MediaAssetsService</a>, storageProvider: <a href="../interfaces/StorageProvider.html" target="_self">StorageProvider</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/brands/brands.service.ts:42</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/brands/brands.service.ts:37</a></div>
                             </td>
                         </tr>
 
@@ -246,7 +234,7 @@
                                                         <td>brandRepository</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../classes/Brand.html" target="_self" >Repository&lt;Brand&gt;</a></code>
+                                                                        <code><a href="../interfaces/IBrandRepository.html" target="_self" >IBrandRepository</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -308,45 +296,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="baseBrandQuery"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>baseBrandQuery</b></span>
-                        <a href="#baseBrandQuery"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>baseBrandQuery()</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="345"
-                                    class="link-to-prism">src/brands/brands.service.ts:345</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="create"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -365,8 +314,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">src/brands/brands.service.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">src/brands/brands.service.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -414,88 +363,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Brand.html" target="_self" >Promise&lt;BrandResponseDto&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="doesSlugExist"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>doesSlugExist</b></span>
-                        <a href="#doesSlugExist"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>doesSlugExist(slug: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, excludeId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="335"
-                                    class="link-to-prism">src/brands/brands.service.ts:335</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>slug</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>excludeId</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                            <b>Returns : </b>    <code>unknown</code>
 
                         </div>
                             <div class="io-description">
@@ -527,8 +395,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="326"
-                                    class="link-to-prism">src/brands/brands.service.ts:326</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="290"
+                                    class="link-to-prism">src/brands/brands.service.ts:290</a></div>
                         </td>
                     </tr>
 
@@ -596,8 +464,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="130"
-                                    class="link-to-prism">src/brands/brands.service.ts:130</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="122"
+                                    class="link-to-prism">src/brands/brands.service.ts:122</a></div>
                         </td>
                     </tr>
 
@@ -665,8 +533,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="174"
-                                    class="link-to-prism">src/brands/brands.service.ts:174</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="146"
+                                    class="link-to-prism">src/brands/brands.service.ts:146</a></div>
                         </td>
                     </tr>
 
@@ -716,87 +584,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mergeBrandExtras"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>mergeBrandExtras</b></span>
-                        <a href="#mergeBrandExtras"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mergeBrandExtras(entities: <a href="../classes/Brand.html" target="_self">Brand[]</a>, raw: <a href="../interfaces/BrandQueryRaw.html" target="_self">BrandQueryRaw[]</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="359"
-                                    class="link-to-prism">src/brands/brands.service.ts:359</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>entities</td>
-                                            <td>
-                                                            <code><a href="../classes/Brand.html" target="_self" >Brand[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>raw</td>
-                                            <td>
-                                                            <code><a href="../interfaces/BrandQueryRaw.html" target="_self" >BrandQueryRaw[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Brand.html" target="_self" >BrandWithExtras[]</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="update"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -815,8 +602,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="192"
-                                    class="link-to-prism">src/brands/brands.service.ts:192</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="159"
+                                    class="link-to-prism">src/brands/brands.service.ts:159</a></div>
                         </td>
                     </tr>
 
@@ -876,7 +663,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Brand.html" target="_self" >Promise&lt;BrandResponseDto&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -918,7 +705,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/brands/brands.service.ts:42</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/brands/brands.service.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -933,14 +720,12 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
   BadRequestException,
-  ConflictException,
   Inject,
   Injectable,
   Logger,
   NotFoundException,
 } from &#x27;@nestjs/common&#x27;;
-import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
-import { DataSource, Not, Repository } from &#x27;typeorm&#x27;;
+import { DataSource } from &#x27;typeorm&#x27;;
 import {
   BrandCreateEntityInput,
   BrandResponseDto,
@@ -948,11 +733,9 @@ import {
   CreateBrandDto,
   UpdateBrandDto,
 } from &#x27;./dto&#x27;;
-import { Brand } from &#x27;./entities&#x27;;
-import { mapToBrandResponse } from &#x27;./mappers&#x27;;
-import { BrandQueryRaw, BrandWithExtras } from &#x27;./types&#x27;;
+import { BrandMapper } from &#x27;./mappers&#x27;;
+import { type IBrandRepository, BRAND_REPOSITORY } from &#x27;./repositories&#x27;;
 import { MediaAssetsService } from &#x27;@/media/media-assets.service&#x27;;
-import { MediaAsset } from &#x27;@/media/entities&#x27;;
 import { STORAGE_PROVIDER } from &#x27;@/storage/storage.module&#x27;;
 import type {
   StorageProvider,
@@ -965,7 +748,6 @@ import { PaginatedEntity } from &#x27;@/common/types&#x27;;
 import {
   extractPaginationParams,
   getErrorStack,
-  isUniqueConstraintError,
   normalizeSlug,
   sanitizeEntityInput,
 } from &#x27;@/common/utils&#x27;;
@@ -975,23 +757,24 @@ export class BrandsService {
   private readonly logger &#x3D; new Logger(BrandsService.name);
 
   constructor(
-    @InjectRepository(Brand)
-    private readonly brandRepository: Repository&lt;Brand&gt;,
+    @Inject(BRAND_REPOSITORY)
+    private readonly brandRepository: IBrandRepository,
     private readonly dataSource: DataSource,
     private readonly mediaAssetsService: MediaAssetsService,
     @Inject(STORAGE_PROVIDER) private readonly storageProvider: StorageProvider,
   ) {}
 
-  async create(
-    createBrandDto: CreateBrandDto,
-    logo?: Express.Multer.File,
-  ): Promise&lt;BrandResponseDto&gt; {
-    this.logger.log(&#x60;Creating brand: ${createBrandDto.name}&#x60;);
+  async create(createBrandDto: CreateBrandDto, logo?: Express.Multer.File) {
+    this.logger.log(
+      &#x60;[create] Creating brand name&#x3D;${createBrandDto.name}, slug&#x3D;${createBrandDto.slug}&#x60;,
+    );
 
     createBrandDto.slug &#x3D; normalizeSlug(createBrandDto.slug);
 
-    if (await this.doesSlugExist(createBrandDto.slug)) {
-      this.logger.warn(&#x60;Brand slug already exists: ${createBrandDto.slug}&#x60;);
+    if (await this.brandRepository.existsActiveBySlug(createBrandDto.slug)) {
+      this.logger.warn(
+        &#x60;[create] Brand slug already exists name&#x3D;${createBrandDto.name}, slug&#x3D;${createBrandDto.slug}&#x60;,
+      );
       throw new BadRequestException(&#x27;Brand with this slug already exists&#x27;);
     }
 
@@ -1001,22 +784,23 @@ export class BrandsService {
         createBrandDto,
       );
 
-      const savedBrand &#x3D; await tx.save(Brand, brandEntity);
+      const savedBrand &#x3D; await this.brandRepository.create(brandEntity, tx);
 
-      this.logger.debug(&#x60;Brand saved with id&#x3D;${savedBrand.id}&#x60;);
+      this.logger.debug(&#x60;[create] Brand saved with id&#x3D;${savedBrand.id}&#x60;);
 
       let uploadResult: StorageUploadResult | null &#x3D; null;
-      let media: MediaAsset | null &#x3D; null;
 
       try {
         if (logo) {
-          this.logger.debug(&#x60;Uploading logo for brand ${savedBrand.id}&#x60;);
+          this.logger.debug(
+            &#x60;[create] Uploading logo for brand ${savedBrand.id}&#x60;,
+          );
 
           uploadResult &#x3D; await this.storageProvider.upload(logo, {
             folder: BRAND_FOLDER,
           });
 
-          [media] &#x3D; await this.mediaAssetsService.create(
+          await this.mediaAssetsService.create(
             [
               {
                 publicId: uploadResult.key,
@@ -1032,27 +816,22 @@ export class BrandsService {
           );
 
           this.logger.debug(
-            &#x60;Logo uploaded for brand ${savedBrand.id} - key&#x3D;${uploadResult.key}&#x60;,
+            &#x60;[create] Logo uploaded for brand ${savedBrand.id} - key&#x3D;${uploadResult.key}&#x60;,
           );
         }
 
-        return mapToBrandResponse({
-          ...savedBrand,
-          logo: media?.url ?? null,
-        });
+        return { id: savedBrand.id };
       } catch (error) {
         this.logger.error(
-          &#x60;Failed to create brand ${createBrandDto.name}&#x60;,
+          &#x60;[create] Failed to create brand name&#x3D;${createBrandDto.name}, slug&#x3D;${createBrandDto.slug}&#x60;,
           getErrorStack(error),
         );
 
-        if (isUniqueConstraintError(error)) {
-          throw new ConflictException(&#x27;Brand with this slug already exists&#x27;);
-        }
-
         if (uploadResult?.key) {
           await this.storageProvider.delete(uploadResult.key);
-          this.logger.warn(&#x60;Rolled back uploaded file ${uploadResult.key}&#x60;);
+          this.logger.warn(
+            &#x60;[create] Rolled back uploaded file ${uploadResult.key}&#x60;,
+          );
         }
 
         throw error;
@@ -1065,39 +844,19 @@ export class BrandsService {
   ): Promise&lt;PaginatedEntity&lt;BrandResponseDto&gt;&gt; {
     const { page, limit } &#x3D; extractPaginationParams(paginationQueryDto);
 
-    this.logger.debug(&#x60;Fetching brands page&#x3D;${page} limit&#x3D;${limit}&#x60;);
+    this.logger.debug(&#x60;[findAll] Fetching brands page&#x3D;${page} limit&#x3D;${limit}&#x60;);
 
-    const selectQueryBuilder &#x3D; this.baseBrandQuery()
-      .leftJoin(&#x27;products&#x27;, &#x27;p&#x27;, &#x27;p.brand_id &#x3D; b.id AND p.is_active &#x3D; true&#x27;)
-      .select([
-        &#x27;b.id AS id&#x27;,
-        &#x27;b.name AS name&#x27;,
-        &#x27;b.slug AS slug&#x27;,
-        &#x27;b.is_active AS &quot;isActive&quot;&#x27;,
-        &#x27;b.created_at AS &quot;createdAt&quot;&#x27;,
-        &#x27;b.created_by AS &quot;createdBy&quot;&#x27;,
-        &#x27;b.updated_at AS &quot;updatedAt&quot;&#x27;,
-        &#x27;b.updated_by AS &quot;updatedBy&quot;&#x27;,
-      ])
-      .addSelect(&#x27;m.url&#x27;, &#x27;logo&#x27;)
-      .addSelect(&#x27;COUNT(p.id)&#x27;, &#x27;productCount&#x27;)
-      .where(&#x27;b.is_active &#x3D; true&#x27;)
-      .groupBy(&#x27;b.id, m.url&#x27;)
-      .orderBy(&#x27;COALESCE(b.updated_at, b.created_at)&#x27;, &#x27;DESC&#x27;)
-      .skip((page - 1) * limit)
-      .limit(limit);
-
-    const countQueryBuilder &#x3D; selectQueryBuilder.clone();
+    const offset &#x3D; (page - 1) * limit;
 
     const [rows, totalCount] &#x3D; await Promise.all([
-      selectQueryBuilder.getRawMany(),
-      countQueryBuilder.getCount(),
+      this.brandRepository.findAllWithLogo(limit, offset),
+      this.brandRepository.countAllActive(),
     ]);
 
-    this.logger.debug(&#x60;Fetched ${rows.length} brands&#x60;);
+    this.logger.debug(&#x60;[findAll] Fetched ${rows.length} brands&#x60;);
 
     return {
-      items: rows.map(mapToBrandResponse),
+      items: rows.map((i) &#x3D;&gt; BrandMapper.mapToBrandResponse(i)),
       totalCount,
       currentPage: page,
       itemsPerPage: limit,
@@ -1105,39 +864,29 @@ export class BrandsService {
   }
 
   async findOne(id: string): Promise&lt;BrandResponseDto&gt; {
-    this.logger.debug(&#x60;Fetching brand id&#x3D;${id}&#x60;);
+    this.logger.debug(&#x60;[findOne] Fetching brand id&#x3D;${id}&#x60;);
 
-    const { entities, raw } &#x3D; await this.baseBrandQuery()
-      .select([&#x27;b&#x27;, &#x27;m.url AS logo&#x27;])
-      .where(&#x27;b.id &#x3D; :id AND b.is_active &#x3D; true&#x27;, { id })
-      .getRawAndEntities();
+    const brand &#x3D; await this.brandRepository.findOneWithLogo(id);
 
-    if (!entities.length) {
-      this.logger.warn(&#x60;Brand not found id&#x3D;${id}&#x60;);
+    if (!brand) {
+      this.logger.warn(&#x60;[findOne] Brand not found id&#x3D;${id}&#x60;);
       throw new NotFoundException(&#x27;Brand not found&#x27;);
     }
 
-    const brand &#x3D; this.mergeBrandExtras(entities, raw as BrandQueryRaw[])[0];
-
-    return mapToBrandResponse(brand);
+    return BrandMapper.mapToBrandResponse(brand);
   }
 
   async update(
     id: string,
     updateBrandDto: UpdateBrandDto,
     logo?: Express.Multer.File,
-  ): Promise&lt;BrandResponseDto&gt; {
-    this.logger.log(&#x60;Updating brand id&#x3D;${id}&#x60;);
+  ): Promise&lt;boolean&gt; {
+    this.logger.log(&#x60;[update] Updating brand id&#x3D;${id}&#x60;);
 
-    const brand &#x3D; (await this.brandRepository
-      .createQueryBuilder(&#x27;brand&#x27;)
-      .select([&#x27;brand&#x27;])
-      .where(&#x27;brand.id &#x3D; :id AND brand.isActive &#x3D; true&#x27;, { id })
-      .loadRelationCountAndMap(&#x27;brand.productCount&#x27;, &#x27;brand.products&#x27;)
-      .getOne()) as Brand &amp; { productCount: number };
+    const brand &#x3D; await this.brandRepository.findActiveByIdWithProductCount(id);
 
     if (!brand) {
-      this.logger.warn(&#x60;Brand not found id&#x3D;${id}&#x60;);
+      this.logger.warn(&#x60;[update] Brand not found id&#x3D;${id}&#x60;);
       throw new NotFoundException(&#x27;Brand not found&#x27;);
     }
 
@@ -1146,13 +895,17 @@ export class BrandsService {
     }
 
     if (updateBrandDto.slug &amp;&amp; updateBrandDto.slug !&#x3D;&#x3D; brand.slug) {
-      if (await this.doesSlugExist(updateBrandDto.slug, id)) {
-        this.logger.warn(&#x60;Slug already exists: ${updateBrandDto.slug}&#x60;);
+      if (
+        await this.brandRepository.existsActiveBySlug(updateBrandDto.slug, id)
+      ) {
+        this.logger.warn(
+          &#x60;[update] Slug already exists: ${updateBrandDto.slug}&#x60;,
+        );
         throw new BadRequestException(&#x27;Slug already exists&#x27;);
       }
     }
 
-    return this.dataSource.transaction(async (tx) &#x3D;&gt; {
+    await this.dataSource.transaction(async (tx) &#x3D;&gt; {
       const entityInput &#x3D; sanitizeEntityInput(BrandUpdateEntityInput, {
         ...brand,
         ...updateBrandDto,
@@ -1161,7 +914,7 @@ export class BrandsService {
       if (updateBrandDto.isActive &#x3D;&#x3D;&#x3D; false) {
         if (brand.productCount &gt; 0) {
           this.logger.warn(
-            &#x60;Cannot delete brand id&#x3D;${id} because it has products&#x60;,
+            &#x60;[update] Cannot delete brand id&#x3D;${id} because it has products&#x60;,
           );
           throw new BadRequestException(
             &#x27;Cannot delete brand with existing products&#x27;,
@@ -1169,22 +922,24 @@ export class BrandsService {
         }
 
         entityInput.isActive &#x3D; false;
-        this.logger.debug(&#x60;Setting brand id&#x3D;${id} as inactive&#x60;);
+        this.logger.debug(&#x60;[update] Setting brand id&#x3D;${id} as inactive&#x60;);
       }
 
       this.logger.debug(
-        &#x60;Update payload for brand ${id}: ${JSON.stringify(entityInput)}&#x60;,
+        &#x60;[update] Update payload for brand ${id}: ${JSON.stringify(entityInput)}&#x60;,
       );
 
-      const updatedBrand &#x3D; await tx.save(Brand, { id, ...entityInput });
+      const updatedBrand &#x3D; await this.brandRepository.update(
+        id,
+        entityInput,
+        tx,
+      );
 
-      this.logger.debug(&#x60;Brand updated id&#x3D;${updatedBrand.id}&#x60;);
+      this.logger.debug(&#x60;[update] Brand updated id&#x3D;${updatedBrand.id}&#x60;);
 
       let uploadResult: StorageUploadResult | null &#x3D; null;
-      let logoUrl: string | null &#x3D; null;
 
       try {
-        // important: Before uploading a logo, we need to retrieve oldMedia to identify differences with newMedia
         const oldLogo &#x3D; await this.mediaAssetsService.findByRefId({
           refType: MediaAssetRefType.BRAND,
           refId: id,
@@ -1195,13 +950,13 @@ export class BrandsService {
         const shouldRemoveOld &#x3D; updateBrandDto.removeLogo || !!logo;
 
         if (logo) {
-          this.logger.debug(&#x60;Uploading new logo for brand ${id}&#x60;);
+          this.logger.debug(&#x60;[update] Uploading new logo for brand ${id}&#x60;);
 
           uploadResult &#x3D; await this.storageProvider.upload(logo, {
             folder: BRAND_FOLDER,
           });
 
-          const [newLogo] &#x3D; await this.mediaAssetsService.create(
+          await this.mediaAssetsService.create(
             [
               {
                 publicId: uploadResult.key,
@@ -1210,13 +965,11 @@ export class BrandsService {
                 refType: MediaAssetRefType.BRAND,
                 refId: id,
                 usageType: MediaAssetUsageType.LOGO,
-                createdBy: updatedBrand.updatedBy,
+                createdBy: updateBrandDto.updatedBy,
               },
             ],
             tx,
           );
-
-          logoUrl &#x3D; newLogo.url;
         }
 
         if (shouldRemoveOld &amp;&amp; oldLogo) {
@@ -1224,80 +977,38 @@ export class BrandsService {
             await this.mediaAssetsService.deleteById(oldLogo.id, tx);
             if (oldLogo.publicId) {
               await this.storageProvider.delete(oldLogo.publicId);
-              this.logger.debug(&#x60;Deleted old logo ${oldLogo.publicId}&#x60;);
+              this.logger.debug(
+                &#x60;[update] Deleted old logo ${oldLogo.publicId}&#x60;,
+              );
             }
           } catch (err) {
             this.logger.error(
-              &#x60;Failed to delete old logo ${oldLogo.publicId}: ${getErrorStack(err)}&#x60;,
+              &#x60;[update] Failed to delete old logo ${oldLogo.publicId}: ${getErrorStack(err)}&#x60;,
             );
           }
         }
-
-        if (!logo &amp;&amp; updateBrandDto.removeLogo) {
-          logoUrl &#x3D; null;
-        } else if (!logo &amp;&amp; !updateBrandDto.removeLogo) {
-          logoUrl &#x3D; oldLogo?.url ?? null;
-        }
-
-        return mapToBrandResponse({
-          ...updatedBrand,
-          logo: logoUrl,
-        });
       } catch (error) {
-        this.logger.error(&#x60;Failed updating brand ${id}&#x60;, getErrorStack(error));
+        this.logger.error(
+          &#x60;[update] Failed updating brand ${id}&#x60;,
+          getErrorStack(error),
+        );
 
         if (uploadResult?.key) {
           await this.storageProvider.delete(uploadResult.key);
-          this.logger.warn(&#x60;Rolled back uploaded file ${uploadResult.key}&#x60;);
+          this.logger.warn(
+            &#x60;[update] Rolled back uploaded file ${uploadResult.key}&#x60;,
+          );
         }
 
         throw error;
       }
     });
+
+    return true;
   }
 
   async exists(id: string): Promise&lt;boolean&gt; {
-    return this.brandRepository.exists({
-      where: {
-        id,
-        isActive: true,
-      },
-    });
-  }
-
-  private doesSlugExist(slug: string, excludeId?: string) {
-    return this.brandRepository.exists({
-      where: {
-        slug,
-        isActive: true,
-        ...(excludeId &amp;&amp; { id: Not(excludeId) }),
-      },
-    });
-  }
-
-  private baseBrandQuery() {
-    return this.brandRepository.createQueryBuilder(&#x27;b&#x27;).leftJoin(
-      &#x27;media_assets&#x27;,
-      &#x27;m&#x27;,
-      &#x60;
-        m.ref_type &#x3D; :refType 
-        AND m.ref_id::uuid &#x3D; b.id 
-        AND m.is_active &#x3D; true
-        AND m.usage_type &#x3D; :usageType
-      &#x60;,
-      { refType: MediaAssetRefType.BRAND, usageType: MediaAssetUsageType.LOGO },
-    );
-  }
-
-  private mergeBrandExtras(
-    entities: Brand[],
-    raw: BrandQueryRaw[],
-  ): BrandWithExtras[] {
-    return entities.map((brand, idx) &#x3D;&gt; ({
-      ...brand,
-      logo: raw[idx]?.logo ?? null,
-      productCount: Number(raw[idx]?.product_count ?? 0),
-    }));
+    return this.brandRepository.existsActiveById(id);
   }
 }
 </code></pre>

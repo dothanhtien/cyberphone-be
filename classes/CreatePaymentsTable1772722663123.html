@@ -268,8 +268,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">src/database/migrations/1772722663123-CreatePaymentsTable.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">src/database/migrations/1772722663123-CreatePaymentsTable.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -420,6 +420,7 @@ export class CreatePaymentsTable1772722663123 implements MigrationInterface {
           &quot;refund_transaction_id&quot; character varying(100), 
           &quot;confirmed_by&quot; character varying(100), 
           &quot;confirmed_at&quot; TIMESTAMP WITH TIME ZONE, 
+          &quot;checkout_url&quot; character varying, 
           &quot;created_at&quot; TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
           &quot;updated_at&quot; TIMESTAMP WITH TIME ZONE DEFAULT now(), 
           CONSTRAINT &quot;pk_payments_id&quot; PRIMARY KEY (&quot;id&quot;)
@@ -439,10 +440,10 @@ export class CreatePaymentsTable1772722663123 implements MigrationInterface {
       &#x60;CREATE INDEX &quot;idx_payments_provider&quot; ON &quot;payments&quot; (&quot;provider&quot;) &#x60;,
     );
     await queryRunner.query(
-      &#x60;CREATE UNIQUE INDEX &quot;idx_payments_transaction_id&quot; ON &quot;payments&quot; (&quot;transaction_id&quot;) &#x60;,
+      &#x60;CREATE INDEX &quot;idx_payments_order_id&quot; ON &quot;payments&quot; (&quot;order_id&quot;) &#x60;,
     );
     await queryRunner.query(
-      &#x60;CREATE INDEX &quot;idx_payments_order_id&quot; ON &quot;payments&quot; (&quot;order_id&quot;) &#x60;,
+      &#x60;CREATE UNIQUE INDEX &quot;uq_payments_pending_order_id&quot; ON &quot;payments&quot; (&quot;order_id&quot;) WHERE &quot;status&quot; &#x3D; &#x27;pending&#x27;&#x60;,
     );
     await queryRunner.query(
       &#x60;ALTER TABLE &quot;payments&quot; ADD CONSTRAINT &quot;fk_payments_order_id&quot; FOREIGN KEY (&quot;order_id&quot;) REFERENCES &quot;orders&quot;(&quot;id&quot;) ON DELETE RESTRICT ON UPDATE NO ACTION&#x60;,
@@ -455,7 +456,7 @@ export class CreatePaymentsTable1772722663123 implements MigrationInterface {
     );
     await queryRunner.query(&#x60;DROP INDEX &quot;public&quot;.&quot;idx_payments_order_id&quot;&#x60;);
     await queryRunner.query(
-      &#x60;DROP INDEX &quot;public&quot;.&quot;idx_payments_transaction_id&quot;&#x60;,
+      &#x60;DROP INDEX &quot;public&quot;.&quot;uq_payments_pending_order_id&quot;&#x60;,
     );
     await queryRunner.query(&#x60;DROP INDEX &quot;public&quot;.&quot;idx_payments_provider&quot;&#x60;);
     await queryRunner.query(&#x60;DROP INDEX &quot;public&quot;.&quot;idx_payments_status&quot;&#x60;);

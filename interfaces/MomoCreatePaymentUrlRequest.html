@@ -240,7 +240,6 @@
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#storeId" 
 >
                                             storeId
@@ -730,11 +729,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -791,12 +785,13 @@
   apiEndpoint: string;
   redirectUrl?: string;
   ipnUrl: string;
+  storeId: string;
   isSandbox: boolean;
 }
 
 export interface MomoCreatePaymentUrlRequest {
   partnerCode: string;
-  storeId?: string;
+  storeId: string;
   requestId: string;
   amount: number;
   orderId: string;

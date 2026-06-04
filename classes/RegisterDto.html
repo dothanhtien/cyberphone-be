@@ -560,14 +560,14 @@
   MaxLength,
   MinLength,
 } from &#x27;class-validator&#x27;;
-import { Gender } from &#x27;@/customers/enums&#x27;;
-import { Match } from &#x27;@/common/validators/match.decorator&#x27;;
 import {
   MAX_EMAIL_LENGTH,
   MAX_FIRST_NAME_LENGTH,
   MAX_LAST_NAME_LENGTH,
   MAX_PHONE_LENGTH,
 } from &#x27;@/common/constants&#x27;;
+import { Match } from &#x27;@/common/validators&#x27;;
+import { Gender } from &#x27;@/customers/enums&#x27;;
 
 export class RegisterDto {
   @Matches(/^\+?[0-9](?:[0-9\s-]{6,30}[0-9])$/, {

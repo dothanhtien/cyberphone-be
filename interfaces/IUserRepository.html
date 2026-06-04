@@ -889,7 +889,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>update(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, updateUserDto: <a href="../classes/User.html" target="_self">Partial&lt;User&gt;</a>)</code>
+<code>update(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, updateUserDto: <a href="../classes/UserUpdateEntityDto.html" target="_self">UserUpdateEntityDto</a>)</code>
                 </td>
             </tr>
 
@@ -932,7 +932,7 @@
                                         <tr>
                                                 <td>updateUserDto</td>
                                             <td>
-                                                            <code><a href="../classes/User.html" target="_self" >Partial&lt;User&gt;</a></code>
+                                                            <code><a href="../classes/UserUpdateEntityDto.html" target="_self" >UserUpdateEntityDto</a></code>
                                             </td>
 
                                             <td>
@@ -1031,7 +1031,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
 import { Repository, FindOptionsWhere, Not } from &#x27;typeorm&#x27;;
-import { UserCreateEntityDto } from &#x27;../dto/entity-inputs&#x27;;
+import { UserCreateEntityDto, UserUpdateEntityDto } from &#x27;../dto&#x27;;
 import { User } from &#x27;../entities&#x27;;
 import { buildPaginationParams } from &#x27;@/common/utils&#x27;;
 import { PaginatedEntity } from &#x27;@/common/types&#x27;;
@@ -1054,7 +1054,7 @@ export interface IUserRepository {
   findAllActive(page: number, limit: number): Promise&lt;PaginatedEntity&lt;User&gt;&gt;;
   update(
     id: string,
-    updateUserDto: Partial&lt;User&gt;,
+    updateUserDto: UserUpdateEntityDto,
   ): Promise&lt;{ id: string } | null&gt;;
   updateLastLogin(id: string): Promise&lt;void&gt;;
 }
@@ -1101,6 +1101,7 @@ export class UserRepository implements IUserRepository {
   findOneActiveById(id: string): Promise&lt;User | null&gt; {
     return this.userRepository.findOne({
       where: { id, isActive: true },
+      relations: [&#x27;role&#x27;],
     });
   }
 
@@ -1162,7 +1163,7 @@ export class UserRepository implements IUserRepository {
 
   async update(
     id: string,
-    updateUserDto: Partial&lt;User&gt;,
+    updateUserDto: UserUpdateEntityDto,
   ): Promise&lt;{ id: string } | null&gt; {
     const result &#x3D; await this.userRepository.update(id, updateUserDto);
 

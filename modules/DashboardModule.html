@@ -234,8 +234,8 @@
 import { TypeOrmModule } from &#x27;@nestjs/typeorm&#x27;;
 import { DashboardService } from &#x27;./dashboard.service&#x27;;
 import { DashboardController } from &#x27;./dashboard.controller&#x27;;
-import { Order } from &#x27;@/orders/entities/order.entity&#x27;;
-import { ProductVariant } from &#x27;@/product-variants/entities/product-variant.entity&#x27;;
+import { Order } from &#x27;@/orders/entities&#x27;;
+import { ProductVariant } from &#x27;@/products/entities&#x27;;
 
 @Module({
   imports: [TypeOrmModule.forFeature([Order, ProductVariant])],

@@ -164,6 +164,10 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                <a href="#buyNow" >buyNow</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
                                 <a href="#decreaseCartItem" >decreaseCartItem</a>
                             </li>
                             <li>
@@ -224,8 +228,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">src/carts/storefront/storefront-carts.controller.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.controller.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -287,6 +291,82 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="buyNow"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>buyNow</b></span>
+                        <a href="#buyNow"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buyNow(buyNowDto: <a href="../classes/BuyNowDto.html" target="_self">BuyNowDto</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;buy-now&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.controller.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>buyNowDto</td>
+                                            <td>
+                                                            <code><a href="../classes/BuyNowDto.html" target="_self" >BuyNowDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="decreaseCartItem"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -312,8 +392,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">src/carts/storefront/storefront-carts.controller.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.controller.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -400,8 +480,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">src/carts/storefront/storefront-carts.controller.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.controller.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -488,8 +568,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">src/carts/storefront/storefront-carts.controller.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.controller.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -576,8 +656,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">src/carts/storefront/storefront-carts.controller.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.controller.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -628,8 +708,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Param, Patch, Post } from &#x27;@nestjs/common&#x27;;
-import { AddToCartDto, ResolveCartDto } from &#x27;./dto&#x27;;
+import { AddToCartDto, BuyNowDto, ResolveCartDto } from &#x27;./dto&#x27;;
 import { StorefrontCartsService } from &#x27;./storefront-carts.service&#x27;;
+import { CartQuantityAction } from &#x27;../enums&#x27;;
 import { Public } from &#x27;@/auth/decorators&#x27;;
 
 @Controller(&#x27;carts&#x27;)
@@ -642,6 +723,11 @@ export class StorefrontCartsController {
     return this.cartsService.resolve(resolveCartDto);
   }
 
+  @Post(&#x27;buy-now&#x27;)
+  buyNow(@Body() buyNowDto: BuyNowDto) {
+    return this.cartsService.buyNow(buyNowDto);
+  }
+
   @Post(&#x27;:id/items&#x27;)
   addToCart(@Param(&#x27;id&#x27;) id: string, @Body() addToCartDto: AddToCartDto) {
     return this.cartsService.addToCart(id, addToCartDto);
@@ -649,12 +735,20 @@ export class StorefrontCartsController {
 
   @Patch(&#x27;:id/items/:itemId/increase&#x27;)
   increaseCartItem(@Param(&#x27;id&#x27;) id: string, @Param(&#x27;itemId&#x27;) itemId: string) {
-    return this.cartsService.updateItemQuantity(id, itemId, &#x27;increase&#x27;);
+    return this.cartsService.updateItemQuantity(
+      id,
+      itemId,
+      CartQuantityAction.Increase,
+    );
   }
 
   @Patch(&#x27;:id/items/:itemId/decrease&#x27;)
   decreaseCartItem(@Param(&#x27;id&#x27;) id: string, @Param(&#x27;itemId&#x27;) itemId: string) {
-    return this.cartsService.updateItemQuantity(id, itemId, &#x27;decrease&#x27;);
+    return this.cartsService.updateItemQuantity(
+      id,
+      itemId,
+      CartQuantityAction.Decrease,
+    );
   }
 
   @Delete(&#x27;:id/items/:itemId&#x27;)

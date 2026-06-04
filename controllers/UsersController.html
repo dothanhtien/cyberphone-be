@@ -226,8 +226,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">src/users/users.controller.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">src/users/users.controller.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -314,8 +314,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">src/users/users.controller.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">src/users/users.controller.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -390,8 +390,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">src/users/users.controller.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">src/users/users.controller.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -467,8 +467,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">src/users/users.controller.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">src/users/users.controller.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -556,8 +556,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">src/users/users.controller.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">src/users/users.controller.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -644,10 +644,12 @@
 } from &#x27;@nestjs/common&#x27;;
 import { CreateUserDto, UpdateUserDto } from &#x27;./dto&#x27;;
 import { UsersService } from &#x27;./users.service&#x27;;
-import { LoggedInUser } from &#x27;@/auth/decorators&#x27;;
+import { LoggedInUser, Roles } from &#x27;@/auth/decorators&#x27;;
 import { PaginationQueryDto } from &#x27;@/common/dto&#x27;;
-import { NonEmptyBodyPipe } from &#x27;@/common/pipes/non-empty-body.pipe&#x27;;
+import { NonEmptyBodyPipe } from &#x27;@/common/pipes&#x27;;
+import { UserRole } from &#x27;@/users/enums&#x27;;
 
+@Roles(UserRole.ADMIN)
 @Controller(&#x27;admin/users&#x27;)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

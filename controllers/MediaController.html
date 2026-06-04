@@ -219,8 +219,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">src/media/media.controller.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">src/media/media.controller.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -307,8 +307,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">src/media/media.controller.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">src/media/media.controller.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -384,8 +384,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">src/media/media.controller.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">src/media/media.controller.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -474,8 +474,10 @@
 import { FilesInterceptor } from &#x27;@nestjs/platform-express&#x27;;
 import { GetMediasDto, UploadMediasDto } from &#x27;./dto&#x27;;
 import { MediaService } from &#x27;./media.service&#x27;;
-import { LoggedInUser } from &#x27;@/auth/decorators&#x27;;
+import { LoggedInUser, Roles } from &#x27;@/auth/decorators&#x27;;
+import { UserRole } from &#x27;@/users/enums&#x27;;
 
+@Roles(UserRole.ADMIN, UserRole.STAFF)
 @Controller(&#x27;media&#x27;)
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}

@@ -270,8 +270,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">src/payment/strategies/momo.strategy.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">src/payment/strategies/momo.strategy.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -337,8 +337,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="132"
-                                    class="link-to-prism">src/payment/strategies/momo.strategy.ts:132</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="133"
+                                    class="link-to-prism">src/payment/strategies/momo.strategy.ts:133</a></div>
                         </td>
                     </tr>
 
@@ -482,6 +482,7 @@ export class MomoStrategy implements PaymentStrategy {
       secretKey: this.configService.getOrThrow&lt;string&gt;(&#x27;MOMO_SECRET_KEY&#x27;),
       apiEndpoint: this.configService.getOrThrow&lt;string&gt;(&#x27;MOMO_API_ENDPOINT&#x27;),
       ipnUrl: this.configService.getOrThrow&lt;string&gt;(&#x27;MOMO_IPN_URL&#x27;),
+      storeId: this.configService.getOrThrow&lt;string&gt;(&#x27;MOMO_STORE_ID&#x27;),
       isSandbox: this.configService.get(&#x27;MOMO_SANDBOX&#x27;, &#x27;true&#x27;) &#x3D;&#x3D;&#x3D; &#x27;true&#x27;,
     };
   }
@@ -537,12 +538,12 @@ export class MomoStrategy implements PaymentStrategy {
       .update(rawSignature)
       .digest(&#x27;hex&#x27;);
 
-    this.logger.log(&#x60;signature: ${signature}&#x60;);
+    this.logger.debug(&#x60;signature: ${signature}&#x60;);
 
     // TODO: add items to show them in Momo redirect page
     const requestBody: MomoCreatePaymentUrlRequest &#x3D; {
       partnerCode: this.config.partnerCode,
-      storeId: &#x27;CyberPhone&#x27;,
+      storeId: this.config.storeId,
       requestId,
       amount,
       orderId: orderId,
@@ -556,7 +557,7 @@ export class MomoStrategy implements PaymentStrategy {
       signature,
     };
 
-    this.logger.log(&#x60;requestBody: ${JSON.stringify(requestBody)}&#x60;);
+    this.logger.debug(&#x60;requestBody: ${JSON.stringify(requestBody)}&#x60;);
 
     try {
       const response &#x3D; await axios.post&lt;MomoCreatePaymentUrlResponse&gt;(

@@ -252,7 +252,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:36</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -288,7 +288,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:61</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -327,7 +327,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:48</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -364,7 +364,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -402,7 +402,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -441,7 +441,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:58</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -480,7 +480,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:43</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/products/admin/dto/requests/create-product-image.dto.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -513,6 +513,7 @@
 } from &#x27;class-validator&#x27;;
 import { Transform } from &#x27;class-transformer&#x27;;
 import { ProductImageType } from &#x27;@/common/enums&#x27;;
+import { toOptionalBoolean } from &#x27;@/common/utils&#x27;;
 
 const MAX_TITLE_LENGTH &#x3D; 255;
 const MAX_ALT_TEXT_LENGTH &#x3D; 255;
@@ -549,12 +550,7 @@ export class CreateProductImageDto {
   displayOrder?: number;
 
   @IsBoolean({ message: &#x27;isDeleted must be a boolean&#x27; })
-  @Transform(({ value }: { value: unknown }) &#x3D;&gt; {
-    if (value &#x3D;&#x3D;&#x3D; undefined || value &#x3D;&#x3D;&#x3D; null || value &#x3D;&#x3D;&#x3D; &#x27;&#x27;) return undefined;
-    if (value &#x3D;&#x3D;&#x3D; true || value &#x3D;&#x3D;&#x3D; &#x27;true&#x27;) return true;
-    if (value &#x3D;&#x3D;&#x3D; false || value &#x3D;&#x3D;&#x3D; &#x27;false&#x27;) return false;
-    return value;
-  })
+  @Transform(({ value }) &#x3D;&gt; toOptionalBoolean(value))
   @IsOptional()
   isDeleted?: boolean;
 

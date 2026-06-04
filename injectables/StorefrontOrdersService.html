@@ -145,6 +145,23 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Static</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#PAYMENT_TTL_MS" >PAYMENT_TTL_MS</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -185,12 +202,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(dataSource: DataSource)</code>
+<code>constructor(dataSource: DataSource, orderRepository: <a href="../interfaces/IOrderRepository.html" target="_self">IOrderRepository</a>, orderItemRepository: <a href="../interfaces/IOrderItemRepository.html" target="_self">IOrderItemRepository</a>, productVariantsService: <a href="../injectables/AdminProductVariantsService.html" target="_self">AdminProductVariantsService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/orders/storefront/storefront-orders.service.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/orders/storefront/storefront-orders.service.ts:25</a></div>
                             </td>
                         </tr>
 
@@ -212,6 +229,42 @@
                                                   
                                                         <td>
                                                                     <code>DataSource</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>orderRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/IOrderRepository.html" target="_self" >IOrderRepository</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>orderItemRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/IOrderItemRepository.html" target="_self" >IOrderItemRepository</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>productVariantsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AdminProductVariantsService.html" target="_self" >AdminProductVariantsService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -255,8 +308,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="152"
-                                    class="link-to-prism">src/orders/storefront/storefront-orders.service.ts:152</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="189"
+                                    class="link-to-prism">src/orders/storefront/storefront-orders.service.ts:189</a></div>
                         </td>
                     </tr>
 
@@ -323,8 +376,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">src/orders/storefront/storefront-orders.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">src/orders/storefront/storefront-orders.service.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -360,7 +413,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
+                            <b>Returns : </b>        <code><a href="../classes/Order.html" target="_self" >Promise&lt;Order&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -393,8 +446,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="143"
-                                    class="link-to-prism">src/orders/storefront/storefront-orders.service.ts:143</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="183"
+                                    class="link-to-prism">src/orders/storefront/storefront-orders.service.ts:183</a></div>
                         </td>
                     </tr>
 
@@ -441,99 +494,159 @@
         </tbody>
     </table>
 </section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="PAYMENT_TTL_MS"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Static</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>PAYMENT_TTL_MS</b></span>
+                        <a href="#PAYMENT_TTL_MS"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>15 * 60 * 1000</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/orders/storefront/storefront-orders.service.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { DataSource, EntityManager } from &#x27;typeorm&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import Big from &#x27;big.js&#x27;;
 import dayjs from &#x27;dayjs&#x27;;
-import { OrderCreateEntityInput } from &#x27;./dto/entity-inputs/order-create-entity.dto&#x27;;
-import { CreateOrderDto } from &#x27;./dto/requests/create-order.dto&#x27;;
+import { DataSource, EntityManager } from &#x27;typeorm&#x27;;
+import {
+  CreateOrderDto,
+  OrderCreateEntityInput,
+  OrderItemCreateEntityDto,
+} from &#x27;./dto&#x27;;
 import { OrderCalculationInput, OrderCalculationResult } from &#x27;./types&#x27;;
-import { Order } from &#x27;../entities/order.entity&#x27;;
-import { OrderItem } from &#x27;../entities/order-item.entity&#x27;;
-import { Cart } from &#x27;@/carts/entities&#x27;;
-import { CartStatus } from &#x27;@/carts/enums&#x27;;
-import { sanitizeEntityInput } from &#x27;@/common/utils&#x27;;
+import { OrderUpdateEntityInput } from &#x27;../admin/dto&#x27;;
+import { Order } from &#x27;../entities&#x27;;
+import { OrderStatus } from &#x27;../enums&#x27;;
+import {
+  type IOrderItemRepository,
+  type IOrderRepository,
+  ORDER_ITEM_REPOSITORY,
+  ORDER_REPOSITORY,
+} from &#x27;../repositories&#x27;;
+import { isUniqueConstraintError, sanitizeEntityInput } from &#x27;@/common/utils&#x27;;
+import { PaymentStatus } from &#x27;@/payment/enums&#x27;;
+import { AdminProductVariantsService } from &#x27;@/products/admin/admin-product-variants.service&#x27;;
 
 @Injectable()
 export class StorefrontOrdersService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    @Inject(ORDER_REPOSITORY)
+    private readonly orderRepository: IOrderRepository,
+    @Inject(ORDER_ITEM_REPOSITORY)
+    private readonly orderItemRepository: IOrderItemRepository,
+    private readonly productVariantsService: AdminProductVariantsService,
+  ) {}
 
-  async create(createOrderDto: CreateOrderDto) {
+  private static readonly PAYMENT_TTL_MS &#x3D; 15 * 60 * 1000;
+
+  async create(createOrderDto: CreateOrderDto): Promise&lt;Order&gt; {
     return await this.dataSource.transaction(async (tx) &#x3D;&gt; {
-      const cart &#x3D; await tx
-        .getRepository(Cart)
-        .createQueryBuilder(&#x27;cart&#x27;)
-        .leftJoin(&#x27;cart.items&#x27;, &#x27;item&#x27;, &#x27;item.isActive &#x3D; :isActive&#x27;, {
-          isActive: true,
-        })
-        .leftJoin(&#x27;item.variant&#x27;, &#x27;variant&#x27;)
-        .leftJoin(&#x27;variant.product&#x27;, &#x27;product&#x27;)
-        .leftJoinAndSelect(&#x27;variant.attributes&#x27;, &#x27;attributes&#x27;)
-        .leftJoinAndSelect(&#x27;attributes.productAttribute&#x27;, &#x27;productAttribute&#x27;)
-        .where(&#x27;cart.id &#x3D; :cartId&#x27;, { cartId: createOrderDto.cartId })
-        .andWhere(&#x27;cart.status &#x3D; :status&#x27;, { status: CartStatus.ACTIVE })
-        .select([
-          &#x27;cart.id&#x27;,
-          &#x27;cart.userId&#x27;,
-          &#x27;cart.sessionId&#x27;,
-
-          &#x27;item.id&#x27;,
-          &#x27;item.quantity&#x27;,
-          &#x27;item.variantId&#x27;,
-
-          &#x27;variant.id&#x27;,
-          &#x27;variant.sku&#x27;,
-          &#x27;variant.name&#x27;,
-          &#x27;variant.price&#x27;,
-          &#x27;variant.salePrice&#x27;,
-
-          &#x27;product.id&#x27;,
-          &#x27;product.name&#x27;,
-
-          &#x27;attributes.id&#x27;,
-          &#x27;attributes.attributeValue&#x27;,
-          &#x27;attributes.attributeValueDisplay&#x27;,
-
-          &#x27;productAttribute.id&#x27;,
-          &#x27;productAttribute.attributeKey&#x27;,
-          &#x27;productAttribute.attributeKeyDisplay&#x27;,
-        ])
-        .getOne();
+      const cart &#x3D; await this.orderRepository.findCartForOrderCreation(
+        createOrderDto.cartId,
+        tx,
+      );
 
       if (!cart) {
-        throw new NotFoundException(&#x27;Cart not found&#x27;);
+        throw new NotFoundException(&#x27;Cart not found or expired&#x27;);
       }
 
       if (!cart.items.length) {
         throw new NotFoundException(&#x27;Cart is empty&#x27;);
       }
 
-      const shippingFee &#x3D; 0;
-      const discountTotal &#x3D; 0;
-      const taxTotal &#x3D; 0;
+      const existingPending &#x3D; await this.orderRepository.findPendingByCartId(
+        cart.id,
+        tx,
+      );
 
-      const { orderTotal, itemsTotal, shippingTotal } &#x3D; this.calculateOrder({
-        cart,
-        shippingFee,
-        discountTotal,
-        taxTotal,
-      });
+      if (existingPending) {
+        const pendingPayment &#x3D; existingPending.payments?.find(
+          (p) &#x3D;&gt; p.status &#x3D;&#x3D;&#x3D; PaymentStatus.PENDING,
+        );
 
-      const orderCode &#x3D; await this.generateOrderCode(tx);
+        const referenceTime &#x3D;
+          pendingPayment?.createdAt ?? existingPending.createdAt;
 
-      const lastOrder: Pick&lt;Order, &#x27;revision&#x27;&gt; | null &#x3D; await tx
-        .getRepository(Order)
-        .findOne({
-          where: { cartId: cart.id },
-          order: { revision: &#x27;DESC&#x27; },
-          select: [&#x27;revision&#x27;],
+        if (
+          Date.now() - referenceTime.getTime() &lt;
+          StorefrontOrdersService.PAYMENT_TTL_MS
+        ) {
+          return existingPending;
+        }
+
+        const cancelled &#x3D; await this.orderRepository.cancelPendingById(
+          existingPending.id,
+          sanitizeEntityInput(OrderUpdateEntityInput, {
+            orderStatus: OrderStatus.CANCELLED,
+            updatedBy: &#x27;system&#x27;,
+          }),
+          tx,
+        );
+
+        if (cancelled) {
+          await this.productVariantsService.restoreStock(
+            existingPending.items.map((item) &#x3D;&gt; ({
+              variantId: item.variantId,
+              quantity: item.quantity,
+            })),
+            tx,
+          );
+        }
+      }
+
+      const shippingFee &#x3D; new Big(0);
+
+      const { orderTotal, itemsTotal, shippingTotal, discountTotal, taxTotal } &#x3D;
+        this.calculateOrder({
+          cart,
+          shippingFee,
+          discountTotal: new Big(0),
+          taxTotal: new Big(0),
         });
 
-      const nextRevision &#x3D; (lastOrder?.revision ?? 0) + 1;
+      const lastRevision &#x3D; await this.orderRepository.findLastRevisionByCartId(
+        cart.id,
+        tx,
+      );
+      const nextRevision &#x3D; (lastRevision?.revision ?? 0) + 1;
+      const orderCode &#x3D;
+        lastRevision?.code ?? (await this.generateOrderCode(tx));
 
       const order &#x3D; sanitizeEntityInput(OrderCreateEntityInput, {
         ...createOrderDto,
@@ -551,16 +664,28 @@ export class StorefrontOrdersService {
         createdBy: cart.customerId ?? cart.sessionId ?? &#x27;guest&#x27;,
       });
 
-      const savedOrder &#x3D; await tx.save(Order, order);
+      let savedOrder: Order;
+      try {
+        savedOrder &#x3D; await this.orderRepository.save(order, tx);
+      } catch (error) {
+        if (isUniqueConstraintError(error)) {
+          const concurrent &#x3D; await this.orderRepository.findPendingByCartId(
+            cart.id,
+          );
+          if (concurrent) return concurrent;
+        }
+        throw error;
+      }
 
       const orderItems &#x3D; cart.items.map((item) &#x3D;&gt; {
-        const price &#x3D; parseFloat(item.variant.price);
+        const price &#x3D; new Big(item.variant.price);
         const salePrice &#x3D; item.variant.salePrice
-          ? parseFloat(item.variant.salePrice)
+          ? new Big(item.variant.salePrice)
           : null;
-        const itemTotal &#x3D; item.quantity * (salePrice ?? price);
+        const effectivePrice &#x3D; salePrice ?? price;
+        const itemTotal &#x3D; effectivePrice.times(item.quantity);
 
-        return tx.create(OrderItem, {
+        return sanitizeEntityInput(OrderItemCreateEntityDto, {
           orderId: savedOrder.id,
           productId: item.variant.product.id,
           productName: item.variant.product.name,
@@ -580,7 +705,15 @@ export class StorefrontOrdersService {
         });
       });
 
-      const savedItems &#x3D; await tx.save(orderItems);
+      const savedItems &#x3D; await this.orderItemRepository.save(orderItems, tx);
+
+      await this.productVariantsService.reserveStock(
+        cart.items.map((item) &#x3D;&gt; ({
+          variantId: item.variant.id,
+          quantity: item.quantity,
+        })),
+        tx,
+      );
 
       savedOrder.items &#x3D; savedItems;
 
@@ -589,33 +722,32 @@ export class StorefrontOrdersService {
   }
 
   private async generateOrderCode(tx: EntityManager): Promise&lt;string&gt; {
-    const [{ nextval }] &#x3D; await tx.query&lt;{ nextval: string }[]&gt;(
-      &#x60;SELECT nextval(&#x27;order_sequence&#x27;)&#x60;,
-    );
+    const seq &#x3D; await this.orderRepository.getNextSequence(tx);
 
-    const seq &#x3D; Number(nextval);
-    return &#x60;CP-ODR${dayjs().format(&#x27;YYYYMMDD&#x27;)}${seq}&#x60;;
+    return &#x60;ODR${dayjs().format(&#x27;YYYYMMDD&#x27;)}${String(seq).padStart(6, &#x27;0&#x27;)}&#x60;;
   }
 
   private calculateOrder({
     cart,
-    shippingFee &#x3D; 0,
-    discountTotal &#x3D; 0,
-    taxTotal &#x3D; 0,
+    shippingFee &#x3D; new Big(0),
+    discountTotal &#x3D; new Big(0),
+    taxTotal &#x3D; new Big(0),
   }: OrderCalculationInput): OrderCalculationResult {
-    let itemsTotal &#x3D; 0;
+    let itemsTotal &#x3D; new Big(0);
 
     for (const item of cart.items) {
-      const price &#x3D; parseFloat(item.variant.price);
+      const price &#x3D; new Big(item.variant.price);
       const salePrice &#x3D; item.variant.salePrice
-        ? parseFloat(item.variant.salePrice)
+        ? new Big(item.variant.salePrice)
         : null;
-      itemsTotal +&#x3D; (salePrice ?? price) * item.quantity;
+      itemsTotal &#x3D; itemsTotal.plus((salePrice ?? price).times(item.quantity));
     }
 
     const shippingTotal &#x3D; shippingFee;
-
-    const orderTotal &#x3D; itemsTotal - discountTotal + taxTotal + shippingTotal;
+    const orderTotal &#x3D; itemsTotal
+      .minus(discountTotal)
+      .plus(taxTotal)
+      .plus(shippingTotal);
 
     return {
       itemsTotal,

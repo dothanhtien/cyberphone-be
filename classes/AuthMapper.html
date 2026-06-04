@@ -224,8 +224,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">src/auth/mappers/auth.mapper.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">src/auth/mappers/auth.mapper.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -294,8 +294,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">src/auth/mappers/auth.mapper.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">src/auth/mappers/auth.mapper.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -363,8 +363,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">src/auth/mappers/auth.mapper.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">src/auth/mappers/auth.mapper.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -432,8 +432,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="9"
-                                    class="link-to-prism">src/auth/mappers/auth.mapper.ts:9</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">src/auth/mappers/auth.mapper.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -502,8 +502,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">src/auth/mappers/auth.mapper.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/auth/mappers/auth.mapper.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -564,6 +564,7 @@ import { AuthUserType } from &#x27;../enums&#x27;;
 import { AuthUser } from &#x27;../types&#x27;;
 import { toDto } from &#x27;@/common/utils&#x27;;
 import { Customer } from &#x27;@/customers/entities&#x27;;
+import { UserRole } from &#x27;@/users/enums&#x27;;
 import { User } from &#x27;@/users/entities&#x27;;
 
 export class AuthMapper {
@@ -595,6 +596,7 @@ export class AuthMapper {
       lastName: user.lastName,
       isActive: user.isActive,
       roleId: user.roleId,
+      roleName: user.role?.name as UserRole | undefined,
       identityId: user.identityId,
     };
   }

@@ -140,7 +140,13 @@
                             <a href="#bootstrap" title="src/seeds/cli.ts" ><b>bootstrap</b>&nbsp;&nbsp;&nbsp;(src/.../cli.ts)</a>
                         </li>
                         <li>
+                            <a href="#comparePassword" title="src/common/utils/password.util.ts" ><b>comparePassword</b>&nbsp;&nbsp;&nbsp;(src/.../password.util.ts)</a>
+                        </li>
+                        <li>
                             <a href="#getErrorStack" title="src/common/utils/get-error-stack.util.ts" ><b>getErrorStack</b>&nbsp;&nbsp;&nbsp;(src/.../get-error-stack.util.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#hashPassword" title="src/common/utils/password.util.ts" ><b>hashPassword</b>&nbsp;&nbsp;&nbsp;(src/.../password.util.ts)</a>
                         </li>
                         <li>
                             <a href="#isUniqueConstraintError" title="src/common/utils/database-error.util.ts" ><b>isUniqueConstraintError</b>&nbsp;&nbsp;&nbsp;(src/.../database-error.util.ts)</a>
@@ -149,16 +155,10 @@
                             <a href="#mapProductImageTypeToMediaUsage" title="src/products/admin/mappers/product-image-type.mapper.ts" ><b>mapProductImageTypeToMediaUsage</b>&nbsp;&nbsp;&nbsp;(src/.../product-image-type.mapper.ts)</a>
                         </li>
                         <li>
-                            <a href="#mapToBrandResponse" title="src/brands/mappers/brand.mapper.ts" ><b>mapToBrandResponse</b>&nbsp;&nbsp;&nbsp;(src/.../brand.mapper.ts)</a>
-                        </li>
-                        <li>
                             <a href="#mapToMediaAssetResponse" title="src/media/mappers/media-asset.mapper.ts" ><b>mapToMediaAssetResponse</b>&nbsp;&nbsp;&nbsp;(src/.../media-asset.mapper.ts)</a>
                         </li>
                         <li>
                             <a href="#mapToProductResponseFromProductRaw" title="src/products/admin/mappers/product.mapper.ts" ><b>mapToProductResponseFromProductRaw</b>&nbsp;&nbsp;&nbsp;(src/.../product.mapper.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#mapToStorefrontProductResponse" title="src/products/storefront/mappers/product.mapper.ts" ><b>mapToStorefrontProductResponse</b>&nbsp;&nbsp;&nbsp;(src/.../product.mapper.ts)</a>
                         </li>
                         <li>
                             <a href="#maskIdentifier" title="src/common/utils/mask-identifier.util.ts" ><b>maskIdentifier</b>&nbsp;&nbsp;&nbsp;(src/.../mask-identifier.util.ts)</a>
@@ -180,6 +180,9 @@
                         </li>
                         <li>
                             <a href="#toEntity" title="src/common/utils/entities.util.ts" class="deprecated-name"><b>toEntity</b>&nbsp;&nbsp;&nbsp;(src/.../entities.util.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#toOptionalBoolean" title="src/common/utils/parsers.util.ts" ><b>toOptionalBoolean</b>&nbsp;&nbsp;&nbsp;(src/.../parsers.util.ts)</a>
                         </li>
                         <li>
                             <a href="#ValidateDateRange" title="src/common/validators/validate-date-range.decorator.ts" ><b>ValidateDateRange</b>&nbsp;&nbsp;&nbsp;(src/.../validate-date-range.decorator.ts)</a>
@@ -304,6 +307,146 @@
 
 
 
+        </tbody>
+    </table>
+</section>    <h3>src/common/utils/password.util.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="comparePassword"></a>
+                    <span class="name">
+                        <span ><b>comparePassword</b></span>
+                        <a href="#comparePassword"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>comparePassword(plainPassword: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, hashedPassword: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>plainPassword</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>hashedPassword</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hashPassword"></a>
+                    <span class="name">
+                        <span ><b>hashPassword</b></span>
+                        <a href="#hashPassword"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>hashPassword(plainPassword: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, saltRounds: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>plainPassword</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>saltRounds</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>10</code>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
         </tbody>
     </table>
 </section>    <h3>src/common/utils/get-error-stack.util.ts</h3>
@@ -487,69 +630,6 @@
             </tr>
         </tbody>
     </table>
-</section>    <h3>src/brands/mappers/brand.mapper.ts</h3>
-    <section data-compodoc="block-methods">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapToBrandResponse"></a>
-                    <span class="name">
-                        <span ><b>mapToBrandResponse</b></span>
-                        <a href="#mapToBrandResponse"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>mapToBrandResponse(brand: <a href="../miscellaneous/typealiases.html#BrandWithExtras" target="_self">BrandWithExtras</a>)</code>
-                </td>
-            </tr>
-
-
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>brand</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#BrandWithExtras" target="_self" >BrandWithExtras</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/BrandResponseDto.html" target="_self" >BrandResponseDto</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </section>    <h3>src/media/mappers/media-asset.mapper.ts</h3>
     <section data-compodoc="block-methods">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -667,69 +747,6 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../classes/ProductResponseDto.html" target="_self" >ProductResponseDto</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>    <h3>src/products/storefront/mappers/product.mapper.ts</h3>
-    <section data-compodoc="block-methods">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapToStorefrontProductResponse"></a>
-                    <span class="name">
-                        <span ><b>mapToStorefrontProductResponse</b></span>
-                        <a href="#mapToStorefrontProductResponse"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>mapToStorefrontProductResponse(product: <a href="../interfaces/RawProductRow.html" target="_self">RawProductRow</a>)</code>
-                </td>
-            </tr>
-
-
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>product</td>
-                                            <td>
-                                                            <code><a href="../interfaces/RawProductRow.html" target="_self" >RawProductRow</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/StorefrontProductResponseDto.html" target="_self" >StorefrontProductResponseDto</a></code>
 
                         </div>
                             <div class="io-description">
@@ -980,6 +997,63 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>T</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="toOptionalBoolean"></a>
+                    <span class="name">
+                        <span ><b>toOptionalBoolean</b></span>
+                        <a href="#toOptionalBoolean"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>toOptionalBoolean(value)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>value</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
 
                         </div>
                             <div class="io-description">

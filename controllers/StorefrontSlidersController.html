@@ -94,7 +94,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content controller">
                    <div class="content-data">
 
 
@@ -105,12 +105,9 @@
 
 
 
-
-
-
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >VariantAttributesService</li>
+  <li class="breadcrumb-item">Controllers</li>
+  <li class="breadcrumb-item" >StorefrontSlidersController</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -134,8 +131,15 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/product-variants/variant-attributes.service.ts</code>
+            <code>src/storefront-configurations/storefront-sliders.controller.ts</code>
         </p>
+            <p class="comment">
+                <h3>Prefix</h3>
+            </p>
+            <p class="comment">
+                <code>storefront-configurations/sliders</code>
+            </p>
+
 
 
 
@@ -145,21 +149,6 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#logger" >logger</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -170,13 +159,14 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#sync" >sync</a>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#getStorefrontSliders" >getStorefrontSliders</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#validate" >validate</a>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#syncStorefrontSliders" >syncStorefrontSliders</a>
                             </li>
                         </ul>
                     </td>
@@ -188,25 +178,6 @@
 
         </tbody>
     </table>
-</section>
-
-            <section data-compodoc="block-constructor">
-    <h3 id="constructor">Constructor</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor()</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/product-variants/variant-attributes.service.ts:9</a></div>
-                            </td>
-                        </tr>
-
-            </tbody>
-        </table>
 </section>
 
             <section data-compodoc="block-methods">
@@ -218,26 +189,34 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="sync"></a>
+                    <a name="getStorefrontSliders"></a>
                     <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>sync</b></span>
-                        <a href="#sync"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>getStorefrontSliders</b></span>
+                        <a href="#getStorefrontSliders"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>sync(: literal type)</code>
+                    <code>getStorefrontSliders()</code>
                 </td>
             </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Public()<br />@Get()<br /></code>
+                </td>
+            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">src/product-variants/variant-attributes.service.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">src/storefront-configurations/storefront-sliders.controller.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -245,39 +224,10 @@
             <tr>
                 <td class="col-md-4">
 
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                        <code>literal type</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
@@ -286,27 +236,34 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="validate"></a>
+                    <a name="syncStorefrontSliders"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>validate</b></span>
-                        <a href="#validate"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>syncStorefrontSliders</b></span>
+                        <a href="#syncStorefrontSliders"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validate(tx: EntityManager, productId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, productAttributeIds: string[])</code>
+                    <code>syncStorefrontSliders(images: Express.Multer.File[], dto: <a href="../classes/SyncStorefrontSlidersDto.html" target="_self">SyncStorefrontSlidersDto</a>, loggedInUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post()<br />@UseInterceptors(undefined)<br /></code>
+                </td>
+            </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="69"
-                                    class="link-to-prism">src/product-variants/variant-attributes.service.ts:69</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">src/storefront-configurations/storefront-sliders.controller.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -327,9 +284,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>tx</td>
+                                                <td>images</td>
                                             <td>
-                                                        <code>EntityManager</code>
+                                                        <code>Express.Multer.File[]</code>
                                             </td>
 
                                             <td>
@@ -339,7 +296,19 @@
 
                                         </tr>
                                         <tr>
-                                                <td>productId</td>
+                                                <td>dto</td>
+                                            <td>
+                                                            <code><a href="../classes/SyncStorefrontSlidersDto.html" target="_self" >SyncStorefrontSlidersDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>loggedInUserId</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
@@ -350,18 +319,6 @@
 
 
                                         </tr>
-                                        <tr>
-                                                <td>productAttributeIds</td>
-                                            <td>
-                                                        <code>string[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -376,145 +333,59 @@
             </tr>
         </tbody>
     </table>
-</section>
-            <section data-compodoc="block-properties">
-    
-    <h3 id="inputs">
-        Properties
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="logger"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>logger</b></span>
-                        <a href="#logger"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>unknown</code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>new Logger(VariantAttributesService.name)</code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">src/product-variants/variant-attributes.service.ts:9</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-</section>
-
-    </div>
+</section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, Injectable, Logger } from &#x27;@nestjs/common&#x27;;
-import { EntityManager, In, InsertResult, UpdateResult } from &#x27;typeorm&#x27;;
-import { SyncVariantAttributeDto } from &#x27;./dto/requests/sync-variant-attribute.dto&#x27;;
-import { VariantAttribute } from &#x27;./entities/variant-attribute.entity&#x27;;
-import { ProductAttribute } from &#x27;@/products/entities&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UploadedFiles,
+  UseInterceptors,
+} from &#x27;@nestjs/common&#x27;;
+import { FilesInterceptor } from &#x27;@nestjs/platform-express&#x27;;
+import { SyncStorefrontSlidersDto } from &#x27;./dto&#x27;;
+import { StorefrontSlidersService } from &#x27;./storefront-sliders.service&#x27;;
+import { LoggedInUser, Public, Roles } from &#x27;@/auth/decorators&#x27;;
+import { UserRole } from &#x27;@/users/enums&#x27;;
 
-@Injectable()
-export class VariantAttributesService {
-  private logger &#x3D; new Logger(VariantAttributesService.name);
+@Roles(UserRole.ADMIN, UserRole.STAFF)
+@Controller(&#x27;storefront-configurations/sliders&#x27;)
+export class StorefrontSlidersController {
+  constructor(
+    private readonly storefrontSlidersService: StorefrontSlidersService,
+  ) {}
 
-  constructor() {}
-
-  async sync({
-    productId,
-    variantId,
-    attributes &#x3D; [],
-    actor,
-    tx,
-  }: {
-    productId: string;
-    variantId: string;
-    attributes?: SyncVariantAttributeDto[];
-    actor: string;
-    tx: EntityManager;
-  }) {
-    if (!attributes?.length) return;
-
-    this.logger.debug(
-      &#x60;Sync attributes for variant&#x3D;${variantId}, incoming&#x3D;${attributes.length}&#x60;,
-    );
-
-    const productAttributeIds &#x3D; attributes.map((a) &#x3D;&gt; a.productAttributeId);
-
-    await this.validate(tx, productId, productAttributeIds);
-
-    const existing &#x3D; await tx.find(VariantAttribute, {
-      where: { variantId, isActive: true },
-    });
-
-    const existingMap &#x3D; new Map(existing.map((e) &#x3D;&gt; [e.id, e]));
-
-    const upsertQueries: Promise&lt;InsertResult | UpdateResult&gt;[] &#x3D; [];
-
-    for (const attr of attributes) {
-      if (attr.id &amp;&amp; existingMap.has(attr.id)) {
-        upsertQueries.push(
-          tx.update(VariantAttribute, attr.id, {
-            attributeValue: attr.attributeValue,
-            attributeValueDisplay: attr.attributeValueDisplay,
-            updatedBy: actor,
-          }),
-        );
-      } else {
-        upsertQueries.push(
-          tx.insert(VariantAttribute, {
-            variantId: variantId,
-            productAttributeId: attr.productAttributeId,
-            attributeValue: attr.attributeValue,
-            attributeValueDisplay: attr.attributeValueDisplay,
-            createdBy: actor,
-          }),
-        );
-      }
-    }
-
-    await Promise.all(upsertQueries);
+  @Public()
+  @Get()
+  getStorefrontSliders() {
+    return this.storefrontSlidersService.findAllStorefrontSliders();
   }
 
-  private async validate(
-    tx: EntityManager,
-    productId: string,
-    productAttributeIds: string[],
+  @Post()
+  @UseInterceptors(
+    FilesInterceptor(&#x27;images&#x27;, 20, { limits: { fileSize: 5 * 1024 * 1024 } }),
+  )
+  syncStorefrontSliders(
+    @UploadedFiles() images: Express.Multer.File[],
+    @Body() dto: SyncStorefrontSlidersDto,
+    @LoggedInUser(&#x27;id&#x27;) loggedInUserId: string,
   ) {
-    const uniqueProductAttributeIds &#x3D; new Set(productAttributeIds);
-
-    const productAttributes &#x3D; await tx.getRepository(ProductAttribute).find({
-      where: {
-        id: In([...uniqueProductAttributeIds]),
-        productId,
-        isActive: true,
-      },
-      select: [&#x27;id&#x27;],
-    });
-
-    if (productAttributes.length !&#x3D;&#x3D; uniqueProductAttributeIds.size) {
-      throw new BadRequestException(
-        &#x27;Some attributes do not belong to this product&#x27;,
-      );
-    }
+    return this.storefrontSlidersService.syncStorefrontSliders(
+      dto.items,
+      images ?? [],
+      loggedInUserId,
+    );
   }
 }
 </code></pre>
     </div>
-
 </div>
+
+
+
 
 
 
@@ -553,8 +424,8 @@ export class VariantAttributesService {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'VariantAttributesService.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
+            var COMPODOC_CURRENT_PAGE_URL = 'StorefrontSlidersController.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

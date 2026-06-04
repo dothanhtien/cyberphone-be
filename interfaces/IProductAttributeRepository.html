@@ -141,7 +141,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/products/admin/repositories/product-attribute.repository.ts</code>
+            <code>src/products/repositories/product-attribute.repository.ts</code>
         </p>
 
 
@@ -228,7 +228,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">src/products/admin/repositories/product-attribute.repository.ts:28</a></div>
+                                    class="link-to-prism">src/products/repositories/product-attribute.repository.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -319,7 +319,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">src/products/admin/repositories/product-attribute.repository.ts:19</a></div>
+                                    class="link-to-prism">src/products/repositories/product-attribute.repository.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -398,7 +398,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">src/products/admin/repositories/product-attribute.repository.ts:33</a></div>
+                                    class="link-to-prism">src/products/repositories/product-attribute.repository.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -477,7 +477,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">src/products/admin/repositories/product-attribute.repository.ts:11</a></div>
+                                    class="link-to-prism">src/products/repositories/product-attribute.repository.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -556,7 +556,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">src/products/admin/repositories/product-attribute.repository.ts:15</a></div>
+                                    class="link-to-prism">src/products/repositories/product-attribute.repository.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -635,7 +635,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">src/products/admin/repositories/product-attribute.repository.ts:23</a></div>
+                                    class="link-to-prism">src/products/repositories/product-attribute.repository.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -714,11 +714,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
 import { EntityManager, In, Repository } from &#x27;typeorm&#x27;;
-import { ProductAttribute } from &#x27;@/products/entities&#x27;;
 import {
   ProductAttributeCreateEntityDto,
   ProductAttributeUpdateEntityDto,
-} from &#x27;../dto&#x27;;
+} from &#x27;../admin/dto&#x27;;
+import { ProductAttribute } from &#x27;@/products/entities&#x27;;
 
 export interface IProductAttributeRepository {
   findActiveByProductId(

@@ -229,7 +229,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/media/dto/requests/get-medias.dto.ts:31</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/media/dto/requests/get-medias.dto.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -265,7 +265,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/media/dto/requests/get-medias.dto.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/media/dto/requests/get-medias.dto.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -303,7 +303,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">src/media/dto/requests/get-medias.dto.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/media/dto/requests/get-medias.dto.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -332,6 +332,7 @@
 } from &#x27;class-validator&#x27;;
 import { Transform } from &#x27;class-transformer&#x27;;
 import { MediaAssetRefType } from &#x27;@/common/enums&#x27;;
+import { toOptionalBoolean } from &#x27;@/common/utils&#x27;;
 
 export class GetMediasDto {
   @IsUUID(&#x27;4&#x27;, { message: &#x27;Ref Id must be a valid UUID (v4)&#x27; })
@@ -345,12 +346,7 @@ export class GetMediasDto {
   refType: MediaAssetRefType;
 
   @IsBoolean({ message: &#x27;Is temporary must be a boolean&#x27; })
-  @Transform(({ value }: { value: unknown }) &#x3D;&gt; {
-    if (value &#x3D;&#x3D;&#x3D; undefined || value &#x3D;&#x3D;&#x3D; null || value &#x3D;&#x3D;&#x3D; &#x27;&#x27;) return undefined;
-    if (value &#x3D;&#x3D;&#x3D; true || value &#x3D;&#x3D;&#x3D; &#x27;true&#x27;) return true;
-    if (value &#x3D;&#x3D;&#x3D; false || value &#x3D;&#x3D;&#x3D; &#x27;false&#x27;) return false;
-    return value;
-  })
+  @Transform(({ value }) &#x3D;&gt; toOptionalBoolean(value))
   @IsOptional()
   isTemporary &#x3D; false;
 }

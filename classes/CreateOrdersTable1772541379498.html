@@ -268,8 +268,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="79"
-                                    class="link-to-prism">src/database/migrations/1772541379498-CreateOrdersTable.ts:79</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">src/database/migrations/1772541379498-CreateOrdersTable.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -448,7 +448,6 @@ export class CreateOrdersTable1772541379498 implements MigrationInterface {
           &quot;created_by&quot; character varying(100) NOT NULL, 
           &quot;updated_at&quot; TIMESTAMP WITH TIME ZONE DEFAULT now(), 
           &quot;updated_by&quot; character varying(100), 
-          CONSTRAINT &quot;idx_orders_code&quot; UNIQUE (&quot;code&quot;), 
           CONSTRAINT &quot;pk_orders_id&quot; PRIMARY KEY (&quot;id&quot;)
         )
       &#x60;,
@@ -466,10 +465,13 @@ export class CreateOrdersTable1772541379498 implements MigrationInterface {
       &#x60;CREATE INDEX &quot;idx_orders_customer_id&quot; ON &quot;orders&quot; (&quot;customer_id&quot;) &#x60;,
     );
     await queryRunner.query(
+      &#x60;CREATE UNIQUE INDEX &quot;uq_orders_pending_cart_id&quot; ON &quot;orders&quot; (&quot;cart_id&quot;) WHERE &quot;order_status&quot; &#x3D; &#x27;pending&#x27;&#x60;,
+    );
+    await queryRunner.query(
       &#x60;ALTER TABLE &quot;orders&quot; ADD CONSTRAINT &quot;fk_orders_cart_id&quot; FOREIGN KEY (&quot;cart_id&quot;) REFERENCES &quot;carts&quot;(&quot;id&quot;) ON DELETE NO ACTION ON UPDATE NO ACTION&#x60;,
     );
     await queryRunner.query(
-      &#x60;ALTER TABLE &quot;orders&quot; ADD CONSTRAINT &quot;fk_orders_customer_id&quot; FOREIGN KEY (&quot;customer_id&quot;) REFERENCES &quot;users&quot;(&quot;id&quot;) ON DELETE NO ACTION ON UPDATE NO ACTION&#x60;,
+      &#x60;ALTER TABLE &quot;orders&quot; ADD CONSTRAINT &quot;fk_orders_customer_id&quot; FOREIGN KEY (&quot;customer_id&quot;) REFERENCES &quot;customers&quot;(&quot;id&quot;) ON DELETE NO ACTION ON UPDATE NO ACTION&#x60;,
     );
   }
 
@@ -481,6 +483,7 @@ export class CreateOrdersTable1772541379498 implements MigrationInterface {
       &#x60;ALTER TABLE &quot;orders&quot; DROP CONSTRAINT &quot;fk_orders_cart_id&quot;&#x60;,
     );
     await queryRunner.query(&#x60;DROP INDEX &quot;public&quot;.&quot;idx_orders_customer_id&quot;&#x60;);
+    await queryRunner.query(&#x60;DROP INDEX &quot;public&quot;.&quot;uq_orders_pending_cart_id&quot;&#x60;);
     await queryRunner.query(&#x60;DROP INDEX &quot;public&quot;.&quot;idx_orders_order_status&quot;&#x60;);
     await queryRunner.query(&#x60;DROP INDEX &quot;public&quot;.&quot;idx_orders_payment_status&quot;&#x60;);
     await queryRunner.query(&#x60;DROP INDEX &quot;public&quot;.&quot;idx_orders_cart_revision&quot;&#x60;);

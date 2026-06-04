@@ -322,9 +322,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CreatePaymentDto } from &#x27;../dto/requests/create-payment.dto&#x27;;
-import { Payment } from &#x27;../entities/payment.entity&#x27;;
-import { Order } from &#x27;@/orders/entities/order.entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CreatePaymentDto } from &#x27;../dto&#x27;;
+import { Payment } from &#x27;../entities&#x27;;
+import { Order } from &#x27;@/orders/entities&#x27;;
 
 export * from &#x27;./momo&#x27;;
 
@@ -340,7 +340,7 @@ export interface PaymentStrategy {
 export interface CreatePaymentUrlParams {
   createPaymentDto: CreatePaymentDto;
   order: Order;
-  payment: Payment;
+  payment: Pick&lt;Payment, &#x27;id&#x27; | &#x27;amount&#x27; | &#x27;orderInfo&#x27;&gt;;
 }
 
 export interface PaymentResult {

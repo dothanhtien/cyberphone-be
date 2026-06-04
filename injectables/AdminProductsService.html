@@ -175,6 +175,9 @@
                                 <a href="#create" >create</a>
                             </li>
                             <li>
+                                <a href="#exists" >exists</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findAll" >findAll</a>
                             </li>
@@ -414,6 +417,73 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="exists"></a>
+                    <span class="name">
+                        <span ><b>exists</b></span>
+                        <a href="#exists"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>exists(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="291"
+                                    class="link-to-prism">src/products/admin/admin-products.service.ts:291</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -709,29 +779,29 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, Logger, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { DataSource } from &#x27;typeorm&#x27;;
-import { AdminProductImagesService } from &#x27;./admin-product-images.service&#x27;;
 import { AdminProductAttributesService } from &#x27;./admin-product-attributes.service&#x27;;
 import { AdminProductCategoriesService } from &#x27;./admin-product-categories.service&#x27;;
-import { AdminProductValidatorsService } from &#x27;./admin-product-validators.service&#x27;;
+import { AdminProductImagesService } from &#x27;./admin-product-images.service&#x27;;
 import { AdminProductImageUploadService } from &#x27;./admin-product-image-upload.service&#x27;;
+import { AdminProductValidatorsService } from &#x27;./admin-product-validators.service&#x27;;
 import {
   CreateProductDto,
-  UpdateProductDto,
-  ProductUpdateEntityDto,
-  ProductResponseDto,
   ProductCreateEntityDto,
+  ProductResponseDto,
+  ProductUpdateEntityDto,
+  UpdateProductDto,
 } from &#x27;./dto&#x27;;
-import { Product } from &#x27;../entities&#x27;;
 import { mapToProductResponseFromProductRaw } from &#x27;./mappers&#x27;;
-import { type IProductRepository, PRODUCT_REPOSITORY } from &#x27;./repositories&#x27;;
+import { Product } from &#x27;../entities&#x27;;
+import { type IProductRepository, PRODUCT_REPOSITORY } from &#x27;../repositories&#x27;;
 import { PaginationQueryDto } from &#x27;@/common/dto&#x27;;
-import { MediaAssetsService } from &#x27;@/media/media-assets.service&#x27;;
 import { PaginatedEntity } from &#x27;@/common/types&#x27;;
 import {
   extractPaginationParams,
   getErrorStack,
   sanitizeEntityInput,
 } from &#x27;@/common/utils&#x27;;
+import { MediaAssetsService } from &#x27;@/media/media-assets.service&#x27;;
 
 @Injectable()
 export class AdminProductsService {
@@ -758,7 +828,7 @@ export class AdminProductsService {
     const imageMetas &#x3D; createProductDto.imageMetas ?? [];
 
     this.logger.debug(
-      &#x60;[create] Validate images metadata count&#x3D;${imageMetas.length}&#x60;,
+      &#x60;[create] Validating images metadata count&#x3D;${imageMetas.length}&#x60;,
     );
 
     this.productValidatorsService.validateImagesMetadata({
@@ -773,7 +843,7 @@ export class AdminProductsService {
     await Promise.all([
       this.productValidatorsService.ensureSlugNotTaken(createProductDto.slug),
       this.productValidatorsService.ensureBrandExists(createProductDto.brandId),
-      this.productValidatorsService.ensureCategoriesExistAndActive(
+      this.productValidatorsService.ensureCategoriesExist(
         createProductDto.categoryIds,
       ),
     ]);
@@ -995,6 +1065,10 @@ export class AdminProductsService {
     this.logger.log(&#x60;[update] Product updated successfully productId&#x3D;${id}&#x60;);
 
     return { id };
+  }
+
+  exists(id: string): Promise&lt;boolean&gt; {
+    return this.productRepository.existsActiveById(id);
   }
 }
 </code></pre>

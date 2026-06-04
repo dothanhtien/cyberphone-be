@@ -220,7 +220,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/users/users.service.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/users/users.service.ts:36</a></div>
                             </td>
                         </tr>
 
@@ -297,8 +297,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">src/users/users.service.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">src/users/users.service.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -366,8 +366,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="98"
-                                    class="link-to-prism">src/users/users.service.ts:98</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="99"
+                                    class="link-to-prism">src/users/users.service.ts:99</a></div>
                         </td>
                     </tr>
 
@@ -435,8 +435,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="122"
-                                    class="link-to-prism">src/users/users.service.ts:122</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="123"
+                                    class="link-to-prism">src/users/users.service.ts:123</a></div>
                         </td>
                     </tr>
 
@@ -502,8 +502,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="204"
-                                    class="link-to-prism">src/users/users.service.ts:204</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="208"
+                                    class="link-to-prism">src/users/users.service.ts:208</a></div>
                         </td>
                     </tr>
 
@@ -571,8 +571,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="135"
-                                    class="link-to-prism">src/users/users.service.ts:135</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">src/users/users.service.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -640,8 +640,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="142"
-                                    class="link-to-prism">src/users/users.service.ts:142</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="143"
+                                    class="link-to-prism">src/users/users.service.ts:143</a></div>
                         </td>
                     </tr>
 
@@ -721,8 +721,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="209"
-                                    class="link-to-prism">src/users/users.service.ts:209</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="213"
+                                    class="link-to-prism">src/users/users.service.ts:213</a></div>
                         </td>
                     </tr>
 
@@ -800,7 +800,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/users/users.service.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/users/users.service.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -826,6 +826,7 @@ import {
   UserCreateEntityDto,
   UpdateUserDto,
   UserResponseDto,
+  UserUpdateEntityDto,
 } from &#x27;./dto&#x27;;
 import { User } from &#x27;./entities&#x27;;
 import { UserMapper } from &#x27;./mappers&#x27;;
@@ -835,7 +836,7 @@ import {
   ROLE_REPOSITORY,
   USER_REPOSITORY,
 } from &#x27;./repositories&#x27;;
-import { PaginationQueryDto } from &#x27;@/common/dto/paginations.dto&#x27;;
+import { PaginationQueryDto } from &#x27;@/common/dto&#x27;;
 import { PaginatedEntity } from &#x27;@/common/types&#x27;;
 import {
   extractPaginationParams,
@@ -999,7 +1000,10 @@ export class UsersService {
     try {
       // TODO: update password via identities table
 
-      const result &#x3D; await this.userRepository.update(id, updateUserDto);
+      const result &#x3D; await this.userRepository.update(
+        id,
+        sanitizeEntityInput(UserUpdateEntityDto, updateUserDto),
+      );
       this.logger.log(&#x60;[update] User updated successfully id&#x3D;${id}&#x60;);
       return result;
     } catch (error) {

@@ -676,8 +676,8 @@
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from &#x27;typeorm&#x27;;
-import { Product } from &#x27;.&#x27;;
-import { VariantAttribute } from &#x27;../../product-variants/entities/variant-attribute.entity&#x27;;
+import { Product } from &#x27;./product.entity&#x27;;
+import { VariantAttribute } from &#x27;./variant-attribute.entity&#x27;;
 
 @Entity(&#x27;product_attributes&#x27;)
 @Index(&#x27;idx_product_attributes_product_id&#x27;, [&#x27;productId&#x27;])

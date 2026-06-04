@@ -110,7 +110,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >StorefrontProductRepository</li>
+  <li class="breadcrumb-item" >AdminOrdersService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -134,7 +134,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/products/storefront/repositories/storefront-product.repository.ts</code>
+            <code>src/orders/admin/admin-orders.service.ts</code>
         </p>
 
 
@@ -145,6 +145,22 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#logger" >logger</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -161,6 +177,12 @@
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findOne" >findOne</a>
+                            </li>
+                            <li>
+                                <a href="#findOneById" >findOneById</a>
+                            </li>
+                            <li>
+                                <a href="#update" >update</a>
                             </li>
                         </ul>
                     </td>
@@ -180,12 +202,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(dataSource: DataSource)</code>
+<code>constructor(orderRepository: <a href="../interfaces/IOrderRepository.html" target="_self">IOrderRepository</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/products/storefront/repositories/storefront-product.repository.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/orders/admin/admin-orders.service.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -203,10 +225,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>dataSource</td>
+                                                        <td>orderRepository</td>
                                                   
                                                         <td>
-                                                                    <code>DataSource</code>
+                                                                        <code><a href="../interfaces/IOrderRepository.html" target="_self" >IOrderRepository</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -243,15 +265,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAll(params: <a href="../classes/FilterProductsDto.html" target="_self">FilterProductsDto</a>)</code>
+                    <code>findAll(findAllOrdersDto: <a href="../classes/PaginationQueryDto.html" target="_self">PaginationQueryDto</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">src/products/storefront/repositories/storefront-product.repository.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">src/orders/admin/admin-orders.service.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -272,9 +294,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>params</td>
+                                                <td>findAllOrdersDto</td>
                                             <td>
-                                                            <code><a href="../classes/FilterProductsDto.html" target="_self" >FilterProductsDto</a></code>
+                                                            <code><a href="../classes/PaginationQueryDto.html" target="_self" >PaginationQueryDto</a></code>
                                             </td>
 
                                             <td>
@@ -287,7 +309,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+                            <b>Returns : </b>        <code><a href="../interfaces/PaginatedEntity.html" target="_self" >Promise&lt;PaginatedEntity&lt;OrderResponseDto&gt;&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -312,15 +334,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findOne(slug: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>findOne(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="134"
-                                    class="link-to-prism">src/products/storefront/repositories/storefront-product.repository.ts:134</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">src/orders/admin/admin-orders.service.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -341,7 +363,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>slug</td>
+                                                <td>id</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
@@ -356,7 +378,177 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/ProductDetailsRaw.html" target="_self" >Promise&lt;ProductDetailsRaw | null&gt;</a></code>
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findOneById"></a>
+                    <span class="name">
+                        <span ><b>findOneById</b></span>
+                        <a href="#findOneById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findOneById(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, tx?: EntityManager)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">src/orders/admin/admin-orders.service.ts:58</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>tx</td>
+                                            <td>
+                                                        <code>EntityManager</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Order.html" target="_self" >Promise&lt;Order | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="update"></a>
+                    <span class="name">
+                        <span ><b>update</b></span>
+                        <a href="#update"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>update(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data: <a href="../classes/OrderUpdateEntityInput.html" target="_self">OrderUpdateEntityInput</a>, tx: EntityManager)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">src/orders/admin/admin-orders.service.ts:63</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/OrderUpdateEntityInput.html" target="_self" >OrderUpdateEntityInput</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>tx</td>
+                                            <td>
+                                                        <code>EntityManager</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -367,230 +559,114 @@
         </tbody>
     </table>
 </section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logger"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>logger</b></span>
+                        <a href="#logger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>unknown</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Logger(AdminOrdersService.name)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">src/orders/admin/admin-orders.service.ts:13</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { DataSource } from &#x27;typeorm&#x27;;
-
-import { FilterProductsDto } from &#x27;../dto&#x27;;
-import { ProductSortEnum } from &#x27;../enums&#x27;;
-import { ProductDetailsRaw, RawProductRow } from &#x27;../types&#x27;;
-import { MediaAssetRefType, ProductImageType } from &#x27;@/common/enums&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, Logger, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { EntityManager } from &#x27;typeorm&#x27;;
+import { OrderResponseDto, OrderUpdateEntityInput } from &#x27;./dto&#x27;;
+import { Order } from &#x27;../entities&#x27;;
+import { OrderMapper } from &#x27;./mappers&#x27;;
+import { type IOrderRepository, ORDER_REPOSITORY } from &#x27;../repositories&#x27;;
+import { PaginationQueryDto } from &#x27;@/common/dto&#x27;;
+import { PaginatedEntity } from &#x27;@/common/types&#x27;;
 import { extractPaginationParams } from &#x27;@/common/utils&#x27;;
 
-export interface IStorefrontProductRepository {
-  findAll(
-    params: FilterProductsDto,
-  ): Promise&lt;{ items: RawProductRow[]; total: number }&gt;;
-
-  findOne(slug: string): Promise&lt;ProductDetailsRaw | null&gt;;
-}
-
-export const STOREFRONT_PRODUCT_REPOSITORY &#x3D; Symbol(
-  &#x27;IStorefrontProductRepository&#x27;,
-);
-
 @Injectable()
-export class StorefrontProductRepository implements IStorefrontProductRepository {
-  constructor(private readonly dataSource: DataSource) {}
+export class AdminOrdersService {
+  private readonly logger &#x3D; new Logger(AdminOrdersService.name);
+
+  constructor(
+    @Inject(ORDER_REPOSITORY)
+    private readonly orderRepository: IOrderRepository,
+  ) {}
 
   async findAll(
-    params: FilterProductsDto,
-  ): Promise&lt;{ items: RawProductRow[]; total: number }&gt; {
-    const { page, limit } &#x3D; extractPaginationParams(params);
+    findAllOrdersDto: PaginationQueryDto,
+  ): Promise&lt;PaginatedEntity&lt;OrderResponseDto&gt;&gt; {
+    const { page, limit } &#x3D; extractPaginationParams(findAllOrdersDto);
     const offset &#x3D; (page - 1) * limit;
 
-    const values: unknown[] &#x3D; [];
+    this.logger.debug(&#x60;[findAll] Fetching orders page&#x3D;${page}, limit&#x3D;${limit}&#x60;);
 
-    let whereClause &#x3D; &#x60;
-      WHERE p.is_active &#x3D; true
-        AND p.status &#x3D; &#x27;active&#x27;
-    &#x60;;
+    const [orders, totalCount] &#x3D; await Promise.all([
+      this.orderRepository.findAllRaw(limit, offset),
+      this.orderRepository.countActive(),
+    ]);
 
-    if (params.search) {
-      values.push(&#x60;%${params.search}%&#x60;);
-      whereClause +&#x3D; &#x60; AND p.name ILIKE $${values.length}&#x60;;
-    }
-
-    let orderClause &#x3D; &#x60;ORDER BY p.created_at DESC, p.id DESC&#x60;;
-
-    if (params.sort &#x3D;&#x3D;&#x3D; ProductSortEnum.PRICE_ASC) {
-      orderClause &#x3D; &#x60;ORDER BY COALESCE(v.sale_price, v.price) ASC, p.created_at DESC, p.id DESC&#x60;;
-    }
-
-    if (params.sort &#x3D;&#x3D;&#x3D; ProductSortEnum.PRICE_DESC) {
-      orderClause &#x3D; &#x60;ORDER BY COALESCE(v.sale_price, v.price) DESC, p.created_at DESC, p.id DESC&#x60;;
-    }
-
-    values.push(MediaAssetRefType.PRODUCT);
-    const mediaAssetRefTypeParamIndex &#x3D; values.length;
-
-    values.push(ProductImageType.MAIN);
-    const mainImageTypeParamIndex &#x3D; values.length;
-
-    values.push(limit);
-    const limitParamIndex &#x3D; values.length;
-
-    values.push(offset);
-    const offsetParamIndex &#x3D; values.length;
-
-    const query &#x3D; &#x60;
-      SELECT 
-        p.id,
-        p.name,
-        p.slug,
-        p.short_description,
-        p.is_featured,
-        p.is_bestseller,
-        v.id as variant_id,
-        v.price,
-        v.sale_price,
-        CASE WHEN v.stock_quantity &gt; 0 THEN 1 ELSE 0 END AS in_stock,
-        (
-          SELECT ma.url 
-          FROM product_images pi
-          JOIN media_assets ma ON ma.ref_type &#x3D; $${mediaAssetRefTypeParamIndex} 
-            AND ma.ref_id &#x3D; pi.id::text
-            AND ma.is_active &#x3D; true
-          WHERE pi.product_id &#x3D; p.id 
-            AND pi.is_active &#x3D; true 
-          ORDER BY pi.image_type &#x3D; $${mainImageTypeParamIndex} DESC, pi.display_order ASC
-          LIMIT 1
-        ) AS main_image
-      FROM products p
-      JOIN LATERAL (
-        SELECT pv.*
-        FROM product_variants pv
-        WHERE 
-          pv.product_id &#x3D; p.id 
-          AND pv.is_active &#x3D; true
-          AND pv.is_default &#x3D; true
-        ORDER BY COALESCE(pv.sale_price, pv.price) ASC
-        LIMIT 1
-      ) v ON true
-
-      ${whereClause}
-      ${orderClause}
-
-      LIMIT $${limitParamIndex}
-      OFFSET $${offsetParamIndex}
-    &#x60;;
-
-    const items &#x3D; await this.dataSource.query&lt;RawProductRow[]&gt;(query, values);
-
-    const countQuery &#x3D; &#x60;
-      SELECT COUNT(*) 
-      FROM products p 
-      JOIN LATERAL (
-        SELECT 1
-        FROM product_variants pv
-        WHERE pv.product_id &#x3D; p.id 
-          AND pv.is_active &#x3D; true
-          AND pv.is_default &#x3D; true
-        LIMIT 1
-      ) v ON true
-      ${whereClause}
-    &#x60;;
-
-    const totalResult &#x3D; await this.dataSource.query&lt;{ count: string }[]&gt;(
-      countQuery,
-      values.slice(0, values.length - 4),
+    this.logger.log(
+      &#x60;[findAll] Fetched orders successful page&#x3D;${page}, count&#x3D;${orders.length}, total&#x3D;${totalCount}&#x60;,
     );
 
-    const total &#x3D; Number(totalResult[0].count);
-
-    return { items, total };
+    return {
+      items: orders.map((order) &#x3D;&gt; OrderMapper.mapToOrderResponse(order)),
+      totalCount,
+      currentPage: page,
+      itemsPerPage: limit,
+    };
   }
 
-  async findOne(slug: string): Promise&lt;ProductDetailsRaw | null&gt; {
-    const result &#x3D; await this.dataSource.query&lt;ProductDetailsRaw[]&gt;(
-      &#x60;
-        SELECT 
-          p.id,
-          p.name,
-          p.slug,
-          p.short_description AS &quot;shortDescription&quot;,
-          p.long_description AS &quot;longDescription&quot;,
+  async findOne(id: string) {
+    this.logger.debug(&#x60;[findOne] Fetching order id&#x3D;${id}&#x60;);
 
-          COALESCE(
-            json_agg(
-              DISTINCT jsonb_build_object(
-                &#x27;id&#x27;, pv.id, 
-                &#x27;name&#x27;, pv.name,
-                &#x27;price&#x27;, pv.price,
-                &#x27;salePrice&#x27;, pv.sale_price,
-                &#x27;stockQuantity&#x27;, pv.stock_quantity,
-                &#x27;isDefault&#x27;, pv.is_default,
+    const order &#x3D; await this.orderRepository.findOneActiveWithRelations(id);
 
-                &#x27;attributes&#x27;, (
-                  SELECT COALESCE(
-                    json_agg(
-                      jsonb_build_object(
-                        &#x27;id&#x27;, va.id,
-                        &#x27;productAttributeId&#x27;, va.product_attribute_id,
-                        &#x27;attributeValue&#x27;, va.attribute_value,
-                        &#x27;attributeValueDisplay&#x27;, va.attribute_value_display
-                      )
-                    ), &#x27;[]&#x27;
-                  )
-                  FROM variant_attributes va
-                  WHERE va.variant_id &#x3D; pv.id AND va.is_active &#x3D; true
-                )
-              )
-            ) FILTER (WHERE pv.id IS NOT NULL), &#x27;[]&#x27;
-          ) AS variants,
+    if (!order) throw new NotFoundException(&#x27;Order not found&#x27;);
 
-          COALESCE(
-            json_agg(
-              DISTINCT jsonb_build_object(
-                &#x27;id&#x27;, pa.id, 
-                &#x27;attributeKey&#x27;, pa.attribute_key,
-                &#x27;attributeKeyDisplay&#x27;, pa.attribute_key_display,
-                &#x27;displayOrder&#x27;, pa.display_order
-              )
-            ) FILTER (WHERE pa.id IS NOT NULL), &#x27;[]&#x27;
-          ) AS attributes,
+    this.logger.log(&#x60;[findOne] Fetched order successful id&#x3D;${id}&#x60;);
 
-          COALESCE(
-            json_agg(
-              DISTINCT jsonb_build_object(
-                &#x27;id&#x27;, ma.id, 
-                &#x27;url&#x27;, ma.url,
-                &#x27;imageType&#x27;, pi.image_type,
-                &#x27;displayOrder&#x27;, pi.display_order
-              )
-            ) FILTER (WHERE ma.id IS NOT NULL), &#x27;[]&#x27;
-          ) AS images
+    return OrderMapper.mapToOrderDetailsResponse(order);
+  }
 
-        FROM products p
-        LEFT JOIN product_variants pv 
-          ON p.id &#x3D; pv.product_id AND pv.is_active &#x3D; true
+  /** @internal */
+  findOneById(id: string, tx?: EntityManager): Promise&lt;Order | null&gt; {
+    return this.orderRepository.findOneActive(id, tx);
+  }
 
-        LEFT JOIN product_images pi 
-          ON p.id &#x3D; pi.product_id AND pi.is_active &#x3D; true
-
-        LEFT JOIN media_assets ma 
-          ON ma.ref_type &#x3D; $1 
-          AND ma.ref_id &#x3D; pi.id::text 
-          AND ma.is_active &#x3D; true
-
-        LEFT JOIN product_attributes pa 
-          ON p.id &#x3D; pa.product_id AND pa.is_active &#x3D; true
-
-        WHERE 
-          p.slug &#x3D; $2
-          AND p.is_active &#x3D; true
-
-        GROUP BY p.id
-        LIMIT 1
-      &#x60;,
-      [MediaAssetRefType.PRODUCT, slug],
-    );
-
-    return result[0] ?? null;
+  /** @internal */
+  update(id: string, data: OrderUpdateEntityInput, tx: EntityManager) {
+    return this.orderRepository.update(id, data, tx);
   }
 }
 </code></pre>
@@ -636,7 +712,7 @@ export class StorefrontProductRepository implements IStorefrontProductRepository
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'StorefrontProductRepository.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'AdminOrdersService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

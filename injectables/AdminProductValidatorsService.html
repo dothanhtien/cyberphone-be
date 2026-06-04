@@ -176,7 +176,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#ensureCategoriesExistAndActive" >ensureCategoriesExistAndActive</a>
+                                <a href="#ensureCategoriesExist" >ensureCategoriesExist</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#ensureProductExists" >ensureProductExists</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -352,18 +356,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="ensureCategoriesExistAndActive"></a>
+                    <a name="ensureCategoriesExist"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
-                        <span ><b>ensureCategoriesExistAndActive</b></span>
-                        <a href="#ensureCategoriesExistAndActive"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>ensureCategoriesExist</b></span>
+                        <a href="#ensureCategoriesExist"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>ensureCategoriesExistAndActive(categoryIds: string[])</code>
+                    <code>ensureCategoriesExist(categoryIds: string[])</code>
                 </td>
             </tr>
 
@@ -408,6 +412,75 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ensureProductExists"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>ensureProductExists</b></span>
+                        <a href="#ensureProductExists"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ensureProductExists(productId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">src/products/admin/admin-product-validators.service.ts:86</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>productId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -518,8 +591,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="88"
-                                    class="link-to-prism">src/products/admin/admin-product-validators.service.ts:88</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="101"
+                                    class="link-to-prism">src/products/admin/admin-product-validators.service.ts:101</a></div>
                         </td>
                     </tr>
 
@@ -586,8 +659,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="137"
-                                    class="link-to-prism">src/products/admin/admin-product-validators.service.ts:137</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="150"
+                                    class="link-to-prism">src/products/admin/admin-product-validators.service.ts:150</a></div>
                         </td>
                     </tr>
 
@@ -712,7 +785,7 @@
 } from &#x27;@nestjs/common&#x27;;
 import { CreateProductImageDto, UpdateProductDto } from &#x27;./dto&#x27;;
 import { Product } from &#x27;../entities&#x27;;
-import { PRODUCT_REPOSITORY, type IProductRepository } from &#x27;./repositories&#x27;;
+import { PRODUCT_REPOSITORY, type IProductRepository } from &#x27;../repositories&#x27;;
 import { BrandsService } from &#x27;@/brands/brands.service&#x27;;
 import { CategoriesService } from &#x27;@/categories/categories.service&#x27;;
 import { getFilename } from &#x27;@/common/utils&#x27;;
@@ -755,18 +828,16 @@ export class AdminProductValidatorsService {
     }
   }
 
-  async ensureCategoriesExistAndActive(categoryIds: string[]): Promise&lt;void&gt; {
+  async ensureCategoriesExist(categoryIds: string[]): Promise&lt;void&gt; {
     if (!categoryIds.length) {
-      this.logger.debug(
-        &#x60;[ensureCategoriesExistAndActive] No categories provided&#x60;,
-      );
+      this.logger.debug(&#x60;[ensureCategoriesExist] No categories provided&#x60;);
       return;
     }
 
     const uniqueCategoryIds &#x3D; [...new Set(categoryIds)];
     if (uniqueCategoryIds.length !&#x3D;&#x3D; categoryIds.length) {
       this.logger.debug(
-        &#x60;[ensureCategoriesExistAndActive] categoryIds must be unique uniuniqueCategoryIds&#x3D;${uniqueCategoryIds.length}, categoryIds&#x3D;${categoryIds.length}&#x60;,
+        &#x60;[ensureCategoriesExist] categoryIds must be unique uniqueCategoryIds&#x3D;${uniqueCategoryIds.length}, categoryIds&#x3D;${categoryIds.length}&#x60;,
       );
 
       throw new BadRequestException(&#x27;categoryIds must be unique&#x27;);
@@ -780,12 +851,27 @@ export class AdminProductValidatorsService {
       const invalidIds &#x3D; uniqueCategoryIds.filter((id) &#x3D;&gt; !foundIds.has(id));
 
       this.logger.warn(
-        &#x60;[ensureCategoriesExistAndActive] Invalid or inactive categories ids&#x3D;[${invalidIds.join(&#x27;, &#x27;)}]&#x60;,
+        &#x60;[ensureCategoriesExist] Invalid or inactive categories ids&#x3D;[${invalidIds.join(&#x27;, &#x27;)}]&#x60;,
       );
 
       throw new BadRequestException(
         &#x27;One or more categories are invalid or inactive&#x27;,
       );
+    }
+  }
+
+  async ensureProductExists(productId: string) {
+    this.logger.debug(
+      &#x60;[ensureProductExists] Validating product productId&#x3D;${productId}&#x60;,
+    );
+
+    const exists &#x3D; await this.productRepository.existsActiveById(productId);
+
+    if (!exists) {
+      this.logger.warn(
+        &#x60;[ensureProductExists] Product not found productId&#x3D;${productId}&#x60;,
+      );
+      throw new NotFoundException(&#x27;Product not found&#x27;);
     }
   }
 
@@ -852,7 +938,7 @@ export class AdminProductValidatorsService {
     }
 
     if (updateProductDto.categoryIds?.length) {
-      await this.ensureCategoriesExistAndActive(updateProductDto.categoryIds);
+      await this.ensureCategoriesExist(updateProductDto.categoryIds);
     }
 
     if (updateProductDto.slug &amp;&amp; updateProductDto.slug !&#x3D;&#x3D; product.slug) {

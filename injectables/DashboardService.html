@@ -290,8 +290,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="231"
-                                    class="link-to-prism">src/dashboard/dashboard.service.ts:231</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="237"
+                                    class="link-to-prism">src/dashboard/dashboard.service.ts:237</a></div>
                         </td>
                     </tr>
 
@@ -359,8 +359,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="200"
-                                    class="link-to-prism">src/dashboard/dashboard.service.ts:200</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="206"
+                                    class="link-to-prism">src/dashboard/dashboard.service.ts:206</a></div>
                         </td>
                     </tr>
 
@@ -428,8 +428,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">src/dashboard/dashboard.service.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">src/dashboard/dashboard.service.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -566,8 +566,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="101"
-                                    class="link-to-prism">src/dashboard/dashboard.service.ts:101</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="107"
+                                    class="link-to-prism">src/dashboard/dashboard.service.ts:107</a></div>
                         </td>
                     </tr>
 
@@ -635,8 +635,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="130"
-                                    class="link-to-prism">src/dashboard/dashboard.service.ts:130</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">src/dashboard/dashboard.service.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -692,10 +692,7 @@
 import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
 import { DataSource, Repository } from &#x27;typeorm&#x27;;
 import dayjs from &#x27;dayjs&#x27;;
-import { Order } from &#x27;@/orders/entities/order.entity&#x27;;
-import { ProductVariant } from &#x27;@/product-variants/entities/product-variant.entity&#x27;;
-import { OrderStatus } from &#x27;@/orders/enums&#x27;;
-import { PaymentStatus } from &#x27;@/payment/enums&#x27;;
+import { DateRangeFilterDto, LimitFilterDto } from &#x27;./dto&#x27;;
 import {
   CategorySalesRaw,
   RecentOrderRaw,
@@ -704,7 +701,10 @@ import {
   TopProductRaw,
 } from &#x27;./types&#x27;;
 import { MediaAssetRefType, ProductImageType } from &#x27;@/common/enums&#x27;;
-import { DateRangeFilterDto, LimitFilterDto } from &#x27;./dto/requests/filter.dto&#x27;;
+import { Order } from &#x27;@/orders/entities&#x27;;
+import { OrderStatus } from &#x27;@/orders/enums&#x27;;
+import { PaymentStatus } from &#x27;@/payment/enums&#x27;;
+import { ProductVariant } from &#x27;@/products/entities&#x27;;
 
 @Injectable()
 export class DashboardService {
@@ -725,8 +725,8 @@ export class DashboardService {
         .leftJoin(&#x27;payments&#x27;, &#x27;p&#x27;, &#x27;p.orderId &#x3D; o.id&#x27;)
         .select([
           &#x60;
-            COUNT(*) FILTER (
-              WHERE o.orderStatus &#x3D; :orderStatus
+            COUNT(DISTINCT o.id) FILTER (
+              WHERE o.orderStatus IN (:...orderStatuses)
               AND GREATEST(o.createdAt, o.updatedAt) BETWEEN :startDate AND :endDate
             ) as total_orders
           &#x60;,
@@ -734,6 +734,7 @@ export class DashboardService {
             COALESCE(
               SUM(p.amount) FILTER (
                 WHERE p.status &#x3D; :paymentStatus
+                AND o.orderStatus IN (:...orderStatuses)
                 AND GREATEST(o.createdAt, o.updatedAt) BETWEEN :startDate AND :endDate
               ), 0
             ) as total_revenue
@@ -742,7 +743,7 @@ export class DashboardService {
         .setParameters({
           startDate,
           endDate,
-          orderStatus: OrderStatus.COMPLETED,
+          orderStatuses: [OrderStatus.COMPLETED, OrderStatus.CONFIRMED],
           paymentStatus: PaymentStatus.SUCCESS,
         })
         .getRawOne&lt;SummaryRaw&gt;(),
@@ -770,16 +771,21 @@ export class DashboardService {
           COALESCE(SUM(p.amount),0) as revenue
         FROM generate_series($1::date, $2::date, interval &#x27;1 day&#x27;) d
         LEFT JOIN orders o
-          ON o.created_at &gt;&#x3D; d
-            AND o.created_at &lt; d + interval &#x27;1 day&#x27;
-            AND o.&quot;order_status&quot; &#x3D; $3
+          ON GREATEST(o.created_at, o.updated_at) &gt;&#x3D; d
+            AND GREATEST(o.created_at, o.updated_at) &lt; d + interval &#x27;1 day&#x27;
+            AND o.&quot;order_status&quot; &#x3D; ANY($3)
         LEFT JOIN payments p
           ON p.order_id &#x3D; o.id
           AND p.status &#x3D; $4
         GROUP BY d
         ORDER BY d
       &#x60;,
-      [startDate, endDate, OrderStatus.COMPLETED, PaymentStatus.SUCCESS],
+      [
+        startDate,
+        endDate,
+        [OrderStatus.COMPLETED, OrderStatus.CONFIRMED],
+        PaymentStatus.SUCCESS,
+      ],
     );
 
     return raw.map((r) &#x3D;&gt; ({
@@ -802,13 +808,13 @@ export class DashboardService {
         JOIN products p ON p.id &#x3D; v.product_id AND p.is_active &#x3D; true
         JOIN product_categories pc ON pc.product_id &#x3D; p.id
         JOIN categories c ON c.id &#x3D; pc.category_id AND c.is_active &#x3D; true
-        WHERE o.order_status &#x3D; $1
+        WHERE o.order_status &#x3D; ANY($1)
           AND o.created_at BETWEEN $2 AND $3
         GROUP BY c.id, c.name
         ORDER BY total DESC
         LIMIT 3
       &#x60;,
-      [OrderStatus.COMPLETED, startDate, endDate],
+      [[OrderStatus.CONFIRMED, OrderStatus.COMPLETED], startDate, endDate],
     );
 
     return raw.map((r) &#x3D;&gt; ({
@@ -837,7 +843,7 @@ export class DashboardService {
           FROM order_items oi
           JOIN orders o ON o.id &#x3D; oi.order_id
           JOIN product_variants v ON v.id &#x3D; oi.variant_id AND v.is_active &#x3D; true
-          WHERE o.order_status &#x3D; $1 AND o.created_at BETWEEN $2 AND $3
+          WHERE o.order_status &#x3D; ANY($1) AND o.created_at BETWEEN $2 AND $3
           GROUP BY v.id, v.name, v.product_id
           ORDER BY total_sales DESC
           LIMIT $4
@@ -870,7 +876,7 @@ export class DashboardService {
         ORDER BY s.total_sales DESC
       &#x60;,
       [
-        OrderStatus.COMPLETED,
+        [OrderStatus.CONFIRMED, OrderStatus.COMPLETED],
         startDate,
         endDate,
         limit,

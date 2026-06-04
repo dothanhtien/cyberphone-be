@@ -295,11 +295,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
 import { DataSource, EntityManager, Repository } from &#x27;typeorm&#x27;;
+import { CartItem } from &#x27;../entities&#x27;;
 import {
   CartItemCreateEntityInput,
   CartItemUpdateEntityInput,
 } from &#x27;../storefront/dto&#x27;;
-import { CartItem } from &#x27;../entities&#x27;;
 import { CartItemRaw } from &#x27;../storefront/types&#x27;;
 import { MediaAssetRefType, MediaAssetUsageType } from &#x27;@/common/enums&#x27;;
 
@@ -318,6 +318,10 @@ export interface ICartItemRepository {
     params: FindOneActiveByCartIdAndVariantIdParams,
   ): Promise&lt;CartItem | null&gt;;
   findOneActiveById(id: string): Promise&lt;CartItem | null&gt;;
+  findOneActiveByIdWithLock(
+    id: string,
+    tx: EntityManager,
+  ): Promise&lt;CartItem | null&gt;;
   findStorefrontCartItemById(id: string): Promise&lt;CartItemRaw | null&gt;;
   update(
     id: string,
@@ -363,6 +367,16 @@ export class CartItemRepository implements ICartItemRepository {
 
   findOneActiveById(id: string): Promise&lt;CartItem | null&gt; {
     return this.cartItemRepository.findOne({ where: { id, isActive: true } });
+  }
+
+  findOneActiveByIdWithLock(
+    id: string,
+    tx: EntityManager,
+  ): Promise&lt;CartItem | null&gt; {
+    return tx.getRepository(CartItem).findOne({
+      where: { id, isActive: true },
+      lock: { mode: &#x27;pessimistic_write&#x27; },
+    });
   }
 
   async findStorefrontCartItemById(id: string): Promise&lt;CartItemRaw | null&gt; {

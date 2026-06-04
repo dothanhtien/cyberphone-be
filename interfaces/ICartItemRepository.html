@@ -178,6 +178,12 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="#findOneActiveByIdWithLock" 
+>
+                                        findOneActiveByIdWithLock
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="#findStorefrontCartItemById" 
 >
                                         findStorefrontCartItemById
@@ -418,6 +424,85 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findOneActiveByIdWithLock"></a>
+                    <span class="name">
+                        <span ><b>findOneActiveByIdWithLock</b></span>
+                        <a href="#findOneActiveByIdWithLock"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findOneActiveByIdWithLock(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, tx: EntityManager)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">src/carts/repositories/cart-item.repository.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>tx</td>
+                                            <td>
+                                                        <code>EntityManager</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Item.html" target="_self" >Promise&lt;CartItem | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findStorefrontCartItemById"></a>
                     <span class="name">
                         <span ><b>findStorefrontCartItemById</b></span>
@@ -434,8 +519,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">src/carts/repositories/cart-item.repository.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">src/carts/repositories/cart-item.repository.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -501,8 +586,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">src/carts/repositories/cart-item.repository.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">src/carts/repositories/cart-item.repository.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -581,11 +666,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
 import { DataSource, EntityManager, Repository } from &#x27;typeorm&#x27;;
+import { CartItem } from &#x27;../entities&#x27;;
 import {
   CartItemCreateEntityInput,
   CartItemUpdateEntityInput,
 } from &#x27;../storefront/dto&#x27;;
-import { CartItem } from &#x27;../entities&#x27;;
 import { CartItemRaw } from &#x27;../storefront/types&#x27;;
 import { MediaAssetRefType, MediaAssetUsageType } from &#x27;@/common/enums&#x27;;
 
@@ -604,6 +689,10 @@ export interface ICartItemRepository {
     params: FindOneActiveByCartIdAndVariantIdParams,
   ): Promise&lt;CartItem | null&gt;;
   findOneActiveById(id: string): Promise&lt;CartItem | null&gt;;
+  findOneActiveByIdWithLock(
+    id: string,
+    tx: EntityManager,
+  ): Promise&lt;CartItem | null&gt;;
   findStorefrontCartItemById(id: string): Promise&lt;CartItemRaw | null&gt;;
   update(
     id: string,
@@ -649,6 +738,16 @@ export class CartItemRepository implements ICartItemRepository {
 
   findOneActiveById(id: string): Promise&lt;CartItem | null&gt; {
     return this.cartItemRepository.findOne({ where: { id, isActive: true } });
+  }
+
+  findOneActiveByIdWithLock(
+    id: string,
+    tx: EntityManager,
+  ): Promise&lt;CartItem | null&gt; {
+    return tx.getRepository(CartItem).findOne({
+      where: { id, isActive: true },
+      lock: { mode: &#x27;pessimistic_write&#x27; },
+    });
   }
 
   async findStorefrontCartItemById(id: string): Promise&lt;CartItemRaw | null&gt; {

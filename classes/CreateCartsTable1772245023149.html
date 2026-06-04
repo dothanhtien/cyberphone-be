@@ -268,8 +268,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">src/database/migrations/1772245023149-CreateCartsTable.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">src/database/migrations/1772245023149-CreateCartsTable.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -408,7 +408,8 @@ export class CreateCartsTable1772245023149 implements MigrationInterface {
           &quot;customer_id&quot; uuid, 
           &quot;session_id&quot; character varying(100) NOT NULL, 
           &quot;expires_at&quot; TIMESTAMP WITH TIME ZONE NOT NULL, 
-          &quot;status&quot; character varying(50) NOT NULL DEFAULT &#x27;active&#x27;,  
+          &quot;status&quot; character varying(50) NOT NULL DEFAULT &#x27;active&#x27;, 
+          &quot;type&quot; character varying(50) NOT NULL DEFAULT &#x27;regular&#x27;, 
           &quot;created_at&quot; TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
           &quot;updated_at&quot; TIMESTAMP WITH TIME ZONE DEFAULT now(), 
           CONSTRAINT &quot;pk_carts_id&quot; PRIMARY KEY (&quot;id&quot;)
@@ -419,7 +420,7 @@ export class CreateCartsTable1772245023149 implements MigrationInterface {
       &#x60;CREATE INDEX &quot;idx_carts_customer_id&quot; ON &quot;carts&quot; (&quot;customer_id&quot;)&#x60;,
     );
     await queryRunner.query(
-      &#x60;CREATE UNIQUE INDEX &quot;uq_active_cart_per_customer&quot; ON &quot;carts&quot; (&quot;customer_id&quot;) WHERE &quot;status&quot; &#x3D; &#x27;active&#x27; AND &quot;customer_id&quot; IS NOT NULL&#x60;,
+      &#x60;CREATE UNIQUE INDEX &quot;uq_active_cart_per_customer&quot; ON &quot;carts&quot; (&quot;customer_id&quot;) WHERE &quot;status&quot; &#x3D; &#x27;active&#x27; AND &quot;customer_id&quot; IS NOT NULL AND &quot;type&quot; &#x3D; &#x27;regular&#x27;&#x60;,
     );
     await queryRunner.query(
       &#x60;ALTER TABLE &quot;carts&quot; ADD CONSTRAINT &quot;fk_carts_customer_id&quot; FOREIGN KEY (&quot;customer_id&quot;) REFERENCES &quot;customers&quot;(&quot;id&quot;) ON DELETE NO ACTION ON UPDATE NO ACTION&#x60;,

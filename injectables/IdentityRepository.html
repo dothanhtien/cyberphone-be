@@ -612,7 +612,7 @@ export class IdentityRepository implements IIdentityRepository {
 
     return repository.findOne({
       where: { type, value, provider },
-      relations: [&#x27;user&#x27;, &#x27;customer&#x27;],
+      relations: [&#x27;user&#x27;, &#x27;user.role&#x27;, &#x27;customer&#x27;],
     });
   }
 

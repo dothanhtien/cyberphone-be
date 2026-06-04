@@ -192,7 +192,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(dataSource: DataSource, passwordService: <a href="../injectables/PasswordService.html" target="_self">PasswordService</a>)</code>
+<code>constructor(dataSource: DataSource)</code>
                     </td>
                 </tr>
                         <tr>
@@ -219,18 +219,6 @@
                                                   
                                                         <td>
                                                                     <code>DataSource</code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>passwordService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/PasswordService.html" target="_self" >PasswordService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -274,8 +262,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">src/seeds/runners/seed-super-admin.runner.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">src/seeds/runners/seed-super-admin.runner.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -340,17 +328,14 @@
 import { Injectable, Logger } from &#x27;@nestjs/common&#x27;;
 import { Identity } from &#x27;@/identities/entities&#x27;;
 import { AuthProvider, IdentityType } from &#x27;@/identities/enums&#x27;;
-import { PasswordService } from &#x27;@/password/password.service&#x27;;
+import { hashPassword } from &#x27;@/common/utils&#x27;;
 import { Role, User } from &#x27;@/users/entities&#x27;;
 
 @Injectable()
 export class SeedSuperAdminRunner {
   private readonly logger &#x3D; new Logger(SeedSuperAdminRunner.name);
 
-  constructor(
-    private readonly dataSource: DataSource,
-    private readonly passwordService: PasswordService,
-  ) {}
+  constructor(private readonly dataSource: DataSource) {}
 
   async run(): Promise&lt;void&gt; {
     const phone &#x3D; process.env.SUPER_ADMIN_PHONE;
@@ -415,7 +400,7 @@ export class SeedSuperAdminRunner {
 
       await userRepository.save(user);
 
-      const passwordHash &#x3D; await this.passwordService.hashPassword(password);
+      const passwordHash &#x3D; await hashPassword(password);
 
       const identitiesToCreate &#x3D; [
         {

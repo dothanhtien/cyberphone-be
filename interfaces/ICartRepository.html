@@ -160,9 +160,21 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
+                                    <a href="#adminUpdate" 
+>
+                                        adminUpdate
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="#create" 
 >
                                         create
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#findOne" 
+>
+                                        findOne
                                     </a>
                                 </li>
                                 <li>
@@ -205,6 +217,97 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="adminUpdate"></a>
+                    <span class="name">
+                        <span ><b>adminUpdate</b></span>
+                        <a href="#adminUpdate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>adminUpdate(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data: <a href="../entitys/Cart.html" target="_self">AdminCartUpdateEntityDto</a>, tx?: EntityManager)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">src/carts/repositories/cart.repository.ts:34</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../entitys/Cart.html" target="_self" >AdminCartUpdateEntityDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>tx</td>
+                                            <td>
+                                                        <code>EntityManager</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="create"></a>
                     <span class="name">
                         <span ><b>create</b></span>
@@ -214,15 +317,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>create(data: <a href="../classes/CartCreateEntityInput.html" target="_self">CartCreateEntityInput</a>)</code>
+<code>create(data: <a href="../classes/CartCreateEntityInput.html" target="_self">CartCreateEntityInput</a>, tx?: EntityManager)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">src/carts/repositories/cart.repository.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">src/carts/repositories/cart.repository.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -254,11 +357,102 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>tx</td>
+                                            <td>
+                                                        <code>EntityManager</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../classes/Cart.html" target="_self" >Promise&lt;Cart&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findOne"></a>
+                    <span class="name">
+                        <span ><b>findOne</b></span>
+                        <a href="#findOne"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findOne(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, tx: EntityManager)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">src/carts/repositories/cart.repository.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>tx</td>
+                                            <td>
+                                                        <code>EntityManager</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Cart.html" target="_self" >Promise&lt;Cart | null&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -288,8 +482,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">src/carts/repositories/cart.repository.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">src/carts/repositories/cart.repository.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -355,8 +549,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">src/carts/repositories/cart.repository.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">src/carts/repositories/cart.repository.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -434,8 +628,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">src/carts/repositories/cart.repository.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/carts/repositories/cart.repository.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -501,8 +695,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">src/carts/repositories/cart.repository.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">src/carts/repositories/cart.repository.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -586,8 +780,9 @@ import {
   FindOptionsWhere,
   Repository,
 } from &#x27;typeorm&#x27;;
+import { CartUpdateEntityDto as AdminCartUpdateEntityDto } from &#x27;../admin/dto&#x27;;
+import { CartStatus, CartType } from &#x27;../enums&#x27;;
 import { Cart } from &#x27;../entities&#x27;;
-import { CartStatus } from &#x27;../enums&#x27;;
 import { CartCreateEntityInput, CartUpdateEntityDto } from &#x27;../storefront/dto&#x27;;
 import { FindOneCartRaw } from &#x27;../storefront/types&#x27;;
 import { MediaAssetRefType, MediaAssetUsageType } from &#x27;@/common/enums&#x27;;
@@ -598,7 +793,8 @@ interface FindOneActiveByCustomerIdOrSessionIdParams {
 }
 
 export interface ICartRepository {
-  create(data: CartCreateEntityInput): Promise&lt;Cart&gt;;
+  create(data: CartCreateEntityInput, tx?: EntityManager): Promise&lt;Cart&gt;;
+  findOne(id: string, tx: EntityManager): Promise&lt;Cart | null&gt;;
   findOneActiveByCustomerIdOrSessionId(
     params: FindOneActiveByCustomerIdOrSessionIdParams,
   ): Promise&lt;Cart | null&gt;;
@@ -607,6 +803,11 @@ export interface ICartRepository {
   update(
     id: string,
     data: CartUpdateEntityDto,
+    tx?: EntityManager,
+  ): Promise&lt;void&gt;;
+  adminUpdate(
+    id: string,
+    data: AdminCartUpdateEntityDto,
     tx?: EntityManager,
   ): Promise&lt;void&gt;;
 }
@@ -620,8 +821,13 @@ export class CartRepository implements ICartRepository {
     @InjectRepository(Cart) private readonly cartRepository: Repository&lt;Cart&gt;,
   ) {}
 
-  create(data: CartCreateEntityInput): Promise&lt;Cart&gt; {
-    return this.cartRepository.save(data);
+  create(data: CartCreateEntityInput, tx?: EntityManager): Promise&lt;Cart&gt; {
+    const repo &#x3D; tx ? tx.getRepository(Cart) : this.cartRepository;
+    return repo.save(data);
+  }
+
+  findOne(id: string, tx: EntityManager): Promise&lt;Cart | null&gt; {
+    return tx.getRepository(Cart).findOne({ where: { id } });
   }
 
   findOneActiveByCustomerIdOrSessionId({
@@ -629,8 +835,20 @@ export class CartRepository implements ICartRepository {
     sessionId,
   }: FindOneActiveByCustomerIdOrSessionIdParams): Promise&lt;Cart | null&gt; {
     const conditions: FindOptionsWhere&lt;Cart&gt;[] &#x3D; [];
-    if (customerId) conditions.push({ customerId, status: CartStatus.ACTIVE });
-    if (sessionId) conditions.push({ sessionId, status: CartStatus.ACTIVE });
+    if (customerId)
+      conditions.push({
+        customerId,
+        status: CartStatus.ACTIVE,
+        type: CartType.REGULAR,
+      });
+
+    if (sessionId)
+      conditions.push({
+        sessionId,
+        status: CartStatus.ACTIVE,
+        type: CartType.REGULAR,
+      });
+
     if (!conditions.length) return Promise.resolve(null);
 
     return this.cartRepository.findOne({ where: conditions });
@@ -704,7 +922,15 @@ export class CartRepository implements ICartRepository {
     tx?: EntityManager,
   ): Promise&lt;void&gt; {
     const repository &#x3D; tx ? tx.getRepository(Cart) : this.cartRepository;
+    await repository.update(id, data);
+  }
 
+  async adminUpdate(
+    id: string,
+    data: AdminCartUpdateEntityDto,
+    tx?: EntityManager,
+  ): Promise&lt;void&gt; {
+    const repository &#x3D; tx ? tx.getRepository(Cart) : this.cartRepository;
     await repository.update(id, data);
   }
 }

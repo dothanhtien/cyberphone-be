@@ -209,6 +209,13 @@
                                         </a>
                                 </li>
                                 <li>
+                                            <span class="modifier">Optional</span>
+                                        <a href="#roleName" 
+>
+                                            roleName
+                                        </a>
+                                </li>
+                                <li>
                                         <a href="#type" 
 >
                                             type
@@ -498,6 +505,44 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
+                                        <a name="roleName"></a>
+                                        <span class="name "><b>roleName</b>
+                                            <a href="#roleName">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>roleName:         <code><a href="../miscellaneous/enumerations.html#UserRole" target="_self" >UserRole</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#UserRole" target="_self" >UserRole</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
                                         <a name="type"></a>
                                         <span class="name "><b>type</b>
                                             <a href="#type">
@@ -534,6 +579,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Request } from &#x27;express&#x27;;
 import { AuthUserType } from &#x27;../enums&#x27;;
+import { UserRole } from &#x27;@/users/enums&#x27;;
 
 export interface AuthUser {
   id: string;
@@ -544,6 +590,7 @@ export interface AuthUser {
   isActive: boolean;
 
   roleId?: string;
+  roleName?: UserRole;
 
   identityId: string;
   type: AuthUserType;
@@ -555,6 +602,7 @@ export type JwtPayload &#x3D; {
   sub: string;
   type: AuthUserType;
   roleId?: string;
+  roleName?: string;
   identityId: string;
 };
 

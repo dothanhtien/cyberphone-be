@@ -232,7 +232,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/media/dto/requests/upload-medias.dto.ts:42</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/media/dto/requests/upload-medias.dto.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -275,7 +275,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/media/dto/requests/upload-medias.dto.ts:39</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/media/dto/requests/upload-medias.dto.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -311,7 +311,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/media/dto/requests/upload-medias.dto.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/media/dto/requests/upload-medias.dto.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -349,7 +349,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/media/dto/requests/upload-medias.dto.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/media/dto/requests/upload-medias.dto.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -387,7 +387,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/media/dto/requests/upload-medias.dto.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/media/dto/requests/upload-medias.dto.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -415,8 +415,9 @@
   IsString,
   IsUUID,
 } from &#x27;class-validator&#x27;;
-import { MediaAssetRefType, MediaAssetUsageType } from &#x27;@/common/enums&#x27;;
 import { Transform } from &#x27;class-transformer&#x27;;
+import { MediaAssetRefType, MediaAssetUsageType } from &#x27;@/common/enums&#x27;;
+import { toOptionalBoolean } from &#x27;@/common/utils&#x27;;
 
 export class UploadMediasDto {
   @IsUUID(&#x27;4&#x27;, { message: &#x27;Ref Id must be a valid UUID (v4)&#x27; })
@@ -437,12 +438,7 @@ export class UploadMediasDto {
   usageType: MediaAssetUsageType;
 
   @IsBoolean({ message: &#x27;Is temporary must be a boolean&#x27; })
-  @Transform(({ value }: { value: unknown }) &#x3D;&gt; {
-    if (value &#x3D;&#x3D;&#x3D; undefined || value &#x3D;&#x3D;&#x3D; null || value &#x3D;&#x3D;&#x3D; &#x27;&#x27;) return undefined;
-    if (value &#x3D;&#x3D;&#x3D; true || value &#x3D;&#x3D;&#x3D; &#x27;true&#x27;) return true;
-    if (value &#x3D;&#x3D;&#x3D; false || value &#x3D;&#x3D;&#x3D; &#x27;false&#x27;) return false;
-    return value;
-  })
+  @Transform(({ value }) &#x3D;&gt; toOptionalBoolean(value))
   @IsOptional()
   isTemporary &#x3D; false;
 

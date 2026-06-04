@@ -210,8 +210,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">src/products/admin/admin-product-attributes.controller.ts:11</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">src/products/admin/admin-product-attributes.controller.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -263,7 +263,10 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Param, ParseUUIDPipe } from &#x27;@nestjs/common&#x27;;
 import { AdminProductAttributesService } from &#x27;./admin-product-attributes.service&#x27;;
+import { Roles } from &#x27;@/auth/decorators&#x27;;
+import { UserRole } from &#x27;@/users/enums&#x27;;
 
+@Roles(UserRole.ADMIN)
 @Controller(&#x27;admin/products&#x27;)
 export class AdminProductAttributesController {
   constructor(

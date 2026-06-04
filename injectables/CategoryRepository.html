@@ -110,7 +110,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >ProductVariantsService</li>
+  <li class="breadcrumb-item" >CategoryRepository</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -134,7 +134,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/product-variants/product-variants.service.ts</code>
+            <code>src/categories/repositories/category.repository.ts</code>
         </p>
 
 
@@ -155,38 +155,33 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#calculateStockStatus" >calculateStockStatus</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
                                 <a href="#create" >create</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#ensureProductExists" >ensureProductExists</a>
+                                <a href="#existsActiveById" >existsActiveById</a>
+                            </li>
+                            <li>
+                                <a href="#existsActiveBySlug" >existsActiveBySlug</a>
+                            </li>
+                            <li>
+                                <a href="#fetchCategoryTree" >fetchCategoryTree</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#findAllByProductId" >findAllByProductId</a>
+                                <a href="#findActiveById" >findActiveById</a>
                             </li>
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#findOneActiveById" >findOneActiveById</a>
+                                <a href="#findActiveByIds" >findActiveByIds</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#unsetDefaultVariant" >unsetDefaultVariant</a>
+                                <a href="#findAllAndCount" >findAllAndCount</a>
+                            </li>
+                            <li>
+                                <a href="#getDescendants" >getDescendants</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#update" >update</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#validatePrices" >validatePrices</a>
                             </li>
                         </ul>
                     </td>
@@ -206,12 +201,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(dataSource: DataSource, productRepository: <a href="../classes/Product.html" target="_self">Repository&lt;Product&gt;</a>, productVariantRepository: Repository<ProductVariant>, variantAttributesService: <a href="../injectables/VariantAttributesService.html" target="_self">VariantAttributesService</a>)</code>
+<code>constructor(repository: <a href="../classes/Category.html" target="_self">Repository&lt;Category&gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">src/product-variants/product-variants.service.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/categories/repositories/category.repository.ts:33</a></div>
                             </td>
                         </tr>
 
@@ -229,46 +224,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>dataSource</td>
+                                                        <td>repository</td>
                                                   
                                                         <td>
-                                                                    <code>DataSource</code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>productRepository</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../classes/Product.html" target="_self" >Repository&lt;Product&gt;</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>productVariantRepository</td>
-                                                  
-                                                        <td>
-                                                                    <code>Repository&lt;ProductVariant&gt;</code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>variantAttributesService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/VariantAttributesService.html" target="_self" >VariantAttributesService</a></code>
+                                                                        <code><a href="../classes/Category.html" target="_self" >Repository&lt;Category&gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -294,90 +253,8 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="calculateStockStatus"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>calculateStockStatus</b></span>
-                        <a href="#calculateStockStatus"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>calculateStockStatus(stockQuantity?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, lowStockThreshold?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="240"
-                                    class="link-to-prism">src/product-variants/product-variants.service.ts:240</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>stockQuantity</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>lowStockThreshold</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="create"></a>
                     <span class="name">
-                            <span class="modifier">Async</span>
                         <span ><b>create</b></span>
                         <a href="#create"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -385,16 +262,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(productId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, createProductVariantDto: <a href="../classes/CreateProductVariantDto.html" target="_self">CreateProductVariantDto</a>)</code>
+<code>create(data: <a href="../classes/CategoryCreateEntityDto.html" target="_self">CategoryCreateEntityDto</a>, tx: EntityManager)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">src/product-variants/product-variants.service.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">src/categories/repositories/category.repository.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -415,9 +291,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>productId</td>
+                                                <td>data</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                            <code><a href="../classes/CategoryCreateEntityDto.html" target="_self" >CategoryCreateEntityDto</a></code>
                                             </td>
 
                                             <td>
@@ -427,9 +303,9 @@
 
                                         </tr>
                                         <tr>
-                                                <td>createProductVariantDto</td>
+                                                <td>tx</td>
                                             <td>
-                                                            <code><a href="../classes/CreateProductVariantDto.html" target="_self" >CreateProductVariantDto</a></code>
+                                                        <code>EntityManager</code>
                                             </td>
 
                                             <td>
@@ -442,7 +318,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
+                            <b>Returns : </b>        <code><a href="../classes/Category.html" target="_self" >Promise&lt;Category&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -456,165 +332,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="ensureProductExists"></a>
+                    <a name="existsActiveById"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>ensureProductExists</b></span>
-                        <a href="#ensureProductExists"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>existsActiveById</b></span>
+                        <a href="#existsActiveById"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>ensureProductExists(productId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>existsActiveById(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="212"
-                                    class="link-to-prism">src/product-variants/product-variants.service.ts:212</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>productId</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findAllByProductId"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>findAllByProductId</b></span>
-                        <a href="#findAllByProductId"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAllByProductId(productId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="100"
-                                    class="link-to-prism">src/product-variants/product-variants.service.ts:100</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>productId</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ProductVariant[]&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findOneActiveById"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>findOneActiveById</b></span>
-                        <a href="#findOneActiveById"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findOneActiveById(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, tx?: EntityManager)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="119"
-                                    class="link-to-prism">src/product-variants/product-variants.service.ts:119</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="166"
+                                    class="link-to-prism">src/categories/repositories/category.repository.ts:166</a></div>
                         </td>
                     </tr>
 
@@ -646,23 +381,11 @@
 
 
                                         </tr>
-                                        <tr>
-                                                <td>tx</td>
-                                            <td>
-                                                        <code>EntityManager</code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -676,27 +399,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="unsetDefaultVariant"></a>
+                    <a name="existsActiveBySlug"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>unsetDefaultVariant</b></span>
-                        <a href="#unsetDefaultVariant"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>existsActiveBySlug</b></span>
+                        <a href="#existsActiveBySlug"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>unsetDefaultVariant(tx: EntityManager, productId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>existsActiveBySlug(slug: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, excludeId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="222"
-                                    class="link-to-prism">src/product-variants/product-variants.service.ts:222</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="170"
+                                    class="link-to-prism">src/categories/repositories/category.repository.ts:170</a></div>
                         </td>
                     </tr>
 
@@ -717,9 +437,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>tx</td>
+                                                <td>slug</td>
                                             <td>
-                                                        <code>EntityManager</code>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
 
                                             <td>
@@ -729,7 +449,74 @@
 
                                         </tr>
                                         <tr>
-                                                <td>productId</td>
+                                                <td>excludeId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fetchCategoryTree"></a>
+                    <span class="name">
+                        <span ><b>fetchCategoryTree</b></span>
+                        <a href="#fetchCategoryTree"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>fetchCategoryTree(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="130"
+                                    class="link-to-prism">src/categories/repositories/category.repository.ts:130</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
@@ -744,7 +531,289 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Category.html" target="_self" >Promise&lt;Category[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findActiveById"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findActiveById</b></span>
+                        <a href="#findActiveById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findActiveById(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">src/categories/repositories/category.repository.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;unknown | null&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findActiveByIds"></a>
+                    <span class="name">
+                        <span ><b>findActiveByIds</b></span>
+                        <a href="#findActiveByIds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findActiveByIds(ids: string[])</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="180"
+                                    class="link-to-prism">src/categories/repositories/category.repository.ts:180</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ids</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Pick[]&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAllAndCount"></a>
+                    <span class="name">
+                        <span ><b>findAllAndCount</b></span>
+                        <a href="#findAllAndCount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findAllAndCount(limit: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, offset: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">src/categories/repositories/category.repository.ts:88</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>limit</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>offset</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;unknown&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getDescendants"></a>
+                    <span class="name">
+                        <span ><b>getDescendants</b></span>
+                        <a href="#getDescendants"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getDescendants(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="187"
+                                    class="link-to-prism">src/categories/repositories/category.repository.ts:187</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Pick[]&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -769,15 +838,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>update(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, updateProductVariantDto: <a href="../classes/UpdateProductVariantDto.html" target="_self">UpdateProductVariantDto</a>)</code>
+                    <code>update(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data: <a href="../classes/CategoryUpdateEntityDto.html" target="_self">CategoryUpdateEntityDto</a>, tx: EntityManager)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="127"
-                                    class="link-to-prism">src/product-variants/product-variants.service.ts:127</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">src/categories/repositories/category.repository.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -810,9 +879,21 @@
 
                                         </tr>
                                         <tr>
-                                                <td>updateProductVariantDto</td>
+                                                <td>data</td>
                                             <td>
-                                                            <code><a href="../classes/UpdateProductVariantDto.html" target="_self" >UpdateProductVariantDto</a></code>
+                                                            <code><a href="../classes/CategoryUpdateEntityDto.html" target="_self" >CategoryUpdateEntityDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>tx</td>
+                                            <td>
+                                                        <code>EntityManager</code>
                                             </td>
 
                                             <td>
@@ -825,88 +906,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="validatePrices"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>validatePrices</b></span>
-                        <a href="#validatePrices"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validatePrices(price: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, salePrice?: number | null)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="234"
-                                    class="link-to-prism">src/product-variants/product-variants.service.ts:234</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>price</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>salePrice</td>
-                                            <td>
-                                                        <code>number | null</code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -922,261 +922,209 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
-import { DataSource, EntityManager, Repository } from &#x27;typeorm&#x27;;
-import { ProductVariant } from &#x27;./entities/product-variant.entity&#x27;;
-import { CreateProductVariantDto } from &#x27;./dto/requests/create-product-variant.dto&#x27;;
-import { ProductVariantCreateEntityDto } from &#x27;./dto/entity-inputs/product-variant-create-entity.dto&#x27;;
-import { Product } from &#x27;@/products/entities&#x27;;
-import { ProductVariantStockStatus } from &#x27;@/common/enums&#x27;;
-import { isUniqueConstraintError, sanitizeEntityInput } from &#x27;@/common/utils&#x27;;
-import { UpdateProductVariantDto } from &#x27;./dto/requests/update-product-variant.dto&#x27;;
-import { ProductVariantUpdateEntityDto } from &#x27;./dto/entity-inputs/product-variant-update-entity.dto&#x27;;
-import { VariantAttributesService } from &#x27;./variant-attributes.service&#x27;;
+import { EntityManager, In, Not, Repository } from &#x27;typeorm&#x27;;
+import { CategoryCreateEntityDto, CategoryUpdateEntityDto } from &#x27;../dto&#x27;;
+import { Category } from &#x27;../entities&#x27;;
+import { CategoryRaw } from &#x27;../types&#x27;;
+import { MediaAssetRefType, MediaAssetUsageType } from &#x27;@/common/enums&#x27;;
+
+export interface ICategoryRepository {
+  create(data: CategoryCreateEntityDto, tx: EntityManager): Promise&lt;Category&gt;;
+  update(
+    id: string,
+    data: CategoryUpdateEntityDto,
+    tx: EntityManager,
+  ): Promise&lt;void&gt;;
+  findActiveById(
+    id: string,
+  ): Promise&lt;(Category &amp; { logo: string | null }) | null&gt;;
+  findAllAndCount(
+    limit: number,
+    offset: number,
+  ): Promise&lt;[CategoryRaw[], number]&gt;;
+  fetchCategoryTree(id: string): Promise&lt;Category[]&gt;;
+  existsActiveById(id: string): Promise&lt;boolean&gt;;
+  existsActiveBySlug(slug: string, excludeId?: string): Promise&lt;boolean&gt;;
+  findActiveByIds(ids: string[]): Promise&lt;Pick&lt;Category, &#x27;id&#x27;&gt;[]&gt;;
+  getDescendants(id: string): Promise&lt;Pick&lt;Category, &#x27;id&#x27; | &#x27;parentId&#x27;&gt;[]&gt;;
+}
+
+export const CATEGORY_REPOSITORY &#x3D; Symbol(&#x27;ICategoryRepository&#x27;);
 
 @Injectable()
-export class ProductVariantsService {
+export class CategoryRepository implements ICategoryRepository {
   constructor(
-    private readonly dataSource: DataSource,
-    @InjectRepository(Product)
-    private readonly productRepository: Repository&lt;Product&gt;,
-    @InjectRepository(ProductVariant)
-    private readonly productVariantRepository: Repository&lt;ProductVariant&gt;,
-    private readonly variantAttributesService: VariantAttributesService,
+    @InjectRepository(Category)
+    private readonly repository: Repository&lt;Category&gt;,
   ) {}
 
-  async create(
-    productId: string,
-    createProductVariantDto: CreateProductVariantDto,
-  ) {
-    this.validatePrices(
-      createProductVariantDto.price,
-      createProductVariantDto.salePrice,
-    );
+  create(data: CategoryCreateEntityDto, tx: EntityManager): Promise&lt;Category&gt; {
+    return tx.getRepository(Category).save(data);
+  }
 
-    await this.ensureProductExists(productId);
+  async update(
+    id: string,
+    data: CategoryUpdateEntityDto,
+    tx: EntityManager,
+  ): Promise&lt;void&gt; {
+    await tx.getRepository(Category).update(id, data);
+  }
 
-    return this.dataSource.transaction(async (tx) &#x3D;&gt; {
-      const variantRepository &#x3D; tx.getRepository(ProductVariant);
-
-      const hasActiveVariants &#x3D; await variantRepository.exists({
-        where: {
-          productId,
-          isActive: true,
+  async findActiveById(
+    id: string,
+  ): Promise&lt;(Category &amp; { logo: string | null }) | null&gt; {
+    const result &#x3D; await this.repository
+      .createQueryBuilder(&#x27;c&#x27;)
+      .leftJoin(
+        &#x27;media_assets&#x27;,
+        &#x27;m&#x27;,
+        &#x60;
+          m.ref_type &#x3D; :refType
+          AND m.ref_id &#x3D; c.id::text
+          AND m.is_active &#x3D; true
+          AND m.usage_type &#x3D; :usageType
+        &#x60;,
+        {
+          refType: MediaAssetRefType.CATEGORY,
+          usageType: MediaAssetUsageType.LOGO,
         },
-      });
-
-      let isDefault &#x3D; createProductVariantDto.isDefault ?? false;
-
-      if (!hasActiveVariants) {
-        isDefault &#x3D; true;
-      }
-
-      if (isDefault) {
-        await this.unsetDefaultVariant(tx, productId);
-      }
-
-      const stockStatus &#x3D; this.calculateStockStatus(
-        createProductVariantDto.stockQuantity,
-        createProductVariantDto.lowStockThreshold,
-      );
-
-      const entityInput &#x3D; sanitizeEntityInput(ProductVariantCreateEntityDto, {
-        ...createProductVariantDto,
-        productId,
-        stockStatus,
-      });
-
-      const variant &#x3D; variantRepository.create({
-        ...entityInput,
-        isDefault,
-      });
-
-      let savedVariant: ProductVariant;
-
-      try {
-        savedVariant &#x3D; await variantRepository.save(variant);
-      } catch (error) {
-        if (isUniqueConstraintError(error)) {
-          throw new ConflictException(&#x27;SKU already exists&#x27;);
-        }
-        throw error;
-      }
-
-      await this.variantAttributesService.sync({
-        productId,
-        variantId: savedVariant.id,
-        attributes: createProductVariantDto.attributes,
-        actor: createProductVariantDto.createdBy,
-        tx,
-      });
-
-      return savedVariant;
-    });
+      )
+      .select([
+        &#x27;c.id AS id&#x27;,
+        &#x27;c.name AS name&#x27;,
+        &#x27;c.slug AS slug&#x27;,
+        &#x27;c.description AS description&#x27;,
+        &#x27;c.parent_id AS &quot;parentId&quot;&#x27;,
+        &#x27;c.is_active AS &quot;isActive&quot;&#x27;,
+        &#x27;c.created_at AS &quot;createdAt&quot;&#x27;,
+        &#x27;c.created_by AS &quot;createdBy&quot;&#x27;,
+        &#x27;c.updated_at AS &quot;updatedAt&quot;&#x27;,
+        &#x27;c.updated_by AS &quot;updatedBy&quot;&#x27;,
+        &#x27;m.url AS logo&#x27;,
+      ])
+      .where(&#x27;c.id &#x3D; :id AND c.is_active &#x3D; true&#x27;, { id })
+      .getRawOne&lt;Category &amp; { logo: string | null }&gt;();
+    return result ?? null;
   }
 
-  async findAllByProductId(productId: string): Promise&lt;ProductVariant[]&gt; {
-    await this.ensureProductExists(productId);
+  findAllAndCount(
+    limit: number,
+    offset: number,
+  ): Promise&lt;[CategoryRaw[], number]&gt; {
+    const findAllQuery &#x3D; this.repository
+      .createQueryBuilder(&#x27;c&#x27;)
+      .leftJoin(
+        &#x27;media_assets&#x27;,
+        &#x27;m&#x27;,
+        &#x60;
+        m.ref_type &#x3D; :refType
+        AND m.ref_id &#x3D; c.id::text
+        AND m.is_active &#x3D; true
+        AND m.usage_type &#x3D; :usageType
+        &#x60;,
+        {
+          refType: MediaAssetRefType.CATEGORY,
+          usageType: MediaAssetUsageType.LOGO,
+        },
+      )
+      .leftJoin(&#x27;product_categories&#x27;, &#x27;pc&#x27;, &#x27;pc.category_id &#x3D; c.id&#x27;)
+      .select([
+        &#x27;c.id AS id&#x27;,
+        &#x27;c.name AS name&#x27;,
+        &#x27;c.slug AS slug&#x27;,
+        &#x27;c.description AS description&#x27;,
+        &#x27;c.parent_id AS &quot;parentId&quot;&#x27;,
+      ])
+      .addSelect(&#x27;m.url&#x27;, &#x27;logo&#x27;)
+      .addSelect(&#x27;COUNT(pc.id)&#x27;, &#x27;productCount&#x27;)
+      .where(&#x27;c.is_active &#x3D; true&#x27;)
+      .groupBy(&#x27;c.id, m.url&#x27;)
+      .orderBy(&#x27;COALESCE(c.updated_at, c.created_at)&#x27;, &#x27;DESC&#x27;)
+      .offset(offset)
+      .limit(limit)
+      .getRawMany&lt;CategoryRaw&gt;();
 
-    return this.productVariantRepository.find({
-      where: {
-        productId,
-        isActive: true,
-      },
-      order: {
-        isDefault: &#x27;DESC&#x27;,
-        updatedAt: { direction: &#x27;DESC&#x27;, nulls: &#x27;LAST&#x27; },
-        createdAt: &#x27;DESC&#x27;,
-      },
-      relations: {
-        attributes: true,
-      },
-    });
+    const countQuery &#x3D; this.repository.count({ where: { isActive: true } });
+
+    return Promise.all([findAllQuery, countQuery]);
   }
 
-  async findOneActiveById(id: string, tx?: EntityManager) {
-    const repository &#x3D; tx
-      ? tx.getRepository(ProductVariant)
-      : this.productVariantRepository;
-
-    return repository.findOne({ where: { id, isActive: true } });
-  }
-
-  async update(id: string, updateProductVariantDto: UpdateProductVariantDto) {
-    return this.dataSource.transaction(async (tx) &#x3D;&gt; {
-      const variantRepository &#x3D; tx.getRepository(ProductVariant);
-
-      const existing &#x3D; await variantRepository.findOne({
-        where: { id, isActive: true },
-      });
-
-      if (!existing) {
-        throw new NotFoundException(&#x27;Variant not found&#x27;);
-      }
-
-      if (
-        updateProductVariantDto.price !&#x3D;&#x3D; undefined ||
-        updateProductVariantDto.salePrice !&#x3D;&#x3D; undefined
-      ) {
-        const nextPrice &#x3D;
-          updateProductVariantDto.price ?? Number(existing.price);
-        const nextSalePrice &#x3D;
-          updateProductVariantDto.salePrice &#x3D;&#x3D;&#x3D; undefined
-            ? existing.salePrice &#x3D;&#x3D;&#x3D; null
-              ? null
-              : Number(existing.salePrice)
-            : updateProductVariantDto.salePrice;
-
-        this.validatePrices(nextPrice, nextSalePrice);
-      }
-
-      let isDefault &#x3D; existing.isDefault;
-
-      if (updateProductVariantDto.isDefault &#x3D;&#x3D;&#x3D; true &amp;&amp; !existing.isDefault) {
-        await this.unsetDefaultVariant(tx, existing.productId);
-        isDefault &#x3D; true;
-      }
-
-      if (updateProductVariantDto.isDefault &#x3D;&#x3D;&#x3D; false &amp;&amp; existing.isDefault) {
-        throw new ConflictException(
-          &#x27;Cannot unset default variant without assigning another one. Please set another variant as default first&#x27;,
-        );
-      }
-
-      let stockStatus: ProductVariantStockStatus | undefined;
-
-      if (
-        updateProductVariantDto.stockQuantity !&#x3D;&#x3D; undefined ||
-        updateProductVariantDto.lowStockThreshold !&#x3D;&#x3D; undefined
-      ) {
-        stockStatus &#x3D; this.calculateStockStatus(
-          updateProductVariantDto.stockQuantity ?? existing.stockQuantity,
-          updateProductVariantDto.lowStockThreshold ??
-            existing.lowStockThreshold,
-        );
-      }
-
-      const updatePayload &#x3D; sanitizeEntityInput(ProductVariantUpdateEntityDto, {
-        ...updateProductVariantDto,
-        ...(stockStatus &amp;&amp; { stockStatus }),
-        isDefault,
-      });
-
-      const merged &#x3D; variantRepository.merge(existing, updatePayload);
-
-      let savedVariant: ProductVariant;
-
-      try {
-        savedVariant &#x3D; await variantRepository.save(merged);
-      } catch (error) {
-        if (isUniqueConstraintError(error)) {
-          throw new ConflictException(&#x27;SKU already exists&#x27;);
-        }
-        throw error;
-      }
-
-      await this.variantAttributesService.sync({
-        productId: existing.productId,
-        variantId: id,
-        attributes: updateProductVariantDto.attributes,
-        actor: updateProductVariantDto.updatedBy,
-        tx,
-      });
-
-      return savedVariant;
-    });
-  }
-
-  private async ensureProductExists(productId: string) {
-    const exists &#x3D; await this.productRepository.exists({
-      where: { id: productId, isActive: true },
-    });
-
-    if (!exists) {
-      throw new NotFoundException(&#x27;Product not found&#x27;);
-    }
-  }
-
-  private async unsetDefaultVariant(tx: EntityManager, productId: string) {
-    await tx.update(
-      ProductVariant,
-      {
-        productId,
-        isDefault: true,
-        isActive: true,
-      },
-      { isDefault: false },
+  fetchCategoryTree(id: string): Promise&lt;Category[]&gt; {
+    return this.repository.query&lt;Category[]&gt;(
+      &#x60;
+        WITH RECURSIVE category_tree AS (
+          SELECT
+            id, name, slug, description,
+            parent_id AS &quot;parentId&quot;,
+            is_active AS &quot;isActive&quot;,
+            created_at AS &quot;createdAt&quot;,
+            created_by AS &quot;createdBy&quot;,
+            updated_at AS &quot;updatedAt&quot;,
+            updated_by AS &quot;updatedBy&quot;
+          FROM categories
+          WHERE id &#x3D; $1 AND is_active &#x3D; TRUE
+          UNION ALL
+          SELECT
+            c.id, c.name, c.slug, c.description,
+            c.parent_id, c.is_active,
+            c.created_at, c.created_by,
+            c.updated_at, c.updated_by
+          FROM categories c
+          INNER JOIN category_tree ct ON ct.id &#x3D; c.parent_id
+          WHERE c.is_active &#x3D; TRUE
+        )
+        SELECT ct.*, m.url AS logo
+        FROM category_tree ct
+        LEFT JOIN media_assets m
+          ON m.ref_type &#x3D; &#x27;category&#x27;
+          AND m.ref_id &#x3D; ct.id::text
+          AND m.is_active &#x3D; true
+          AND m.usage_type &#x3D; &#x27;logo&#x27;;
+      &#x60;,
+      [id],
     );
   }
 
-  private validatePrices(price: number, salePrice?: number | null) {
-    if (salePrice &amp;&amp; salePrice !&#x3D;&#x3D; null &amp;&amp; salePrice &gt; price) {
-      throw new BadRequestException(&#x27;Sale price cannot be greater than price&#x27;);
-    }
+  existsActiveById(id: string): Promise&lt;boolean&gt; {
+    return this.repository.exists({ where: { id, isActive: true } });
   }
 
-  private calculateStockStatus(
-    stockQuantity?: number,
-    lowStockThreshold?: number,
-  ) {
-    const quantity &#x3D; stockQuantity ?? 0;
-    const threshold &#x3D; lowStockThreshold ?? 5;
+  existsActiveBySlug(slug: string, excludeId?: string): Promise&lt;boolean&gt; {
+    return this.repository.exists({
+      where: {
+        slug,
+        isActive: true,
+        ...(excludeId &amp;&amp; { id: Not(excludeId) }),
+      },
+    });
+  }
 
-    if (quantity &lt;&#x3D; 0) {
-      return ProductVariantStockStatus.OUT_OF_STOCK;
-    }
+  findActiveByIds(ids: string[]): Promise&lt;Pick&lt;Category, &#x27;id&#x27;&gt;[]&gt; {
+    return this.repository.find({
+      where: { id: In(ids), isActive: true },
+      select: [&#x27;id&#x27;],
+    });
+  }
 
-    if (quantity &lt;&#x3D; threshold) {
-      return ProductVariantStockStatus.LOW_STOCK;
-    }
-
-    return ProductVariantStockStatus.IN_STOCK;
+  getDescendants(id: string): Promise&lt;Pick&lt;Category, &#x27;id&#x27; | &#x27;parentId&#x27;&gt;[]&gt; {
+    return this.repository.query&lt;Pick&lt;Category, &#x27;id&#x27; | &#x27;parentId&#x27;&gt;[]&gt;(
+      &#x60;
+        WITH RECURSIVE category_tree AS (
+          SELECT id, parent_id FROM categories WHERE id &#x3D; $1 AND is_active &#x3D; TRUE
+          UNION ALL
+          SELECT c.id, c.parent_id
+          FROM categories c
+          INNER JOIN category_tree ct ON ct.id &#x3D; c.parent_id
+          WHERE c.is_active &#x3D; TRUE
+        )
+        SELECT id, parent_id AS &quot;parentId&quot;
+        FROM category_tree
+        WHERE id !&#x3D; $1;
+      &#x60;,
+      [id],
+    );
   }
 }
 </code></pre>
@@ -1222,7 +1170,7 @@ export class ProductVariantsService {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'ProductVariantsService.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'CategoryRepository.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -553,7 +553,7 @@
   UpdateDateColumn,
 } from &#x27;typeorm&#x27;;
 import { Cart } from &#x27;./cart.entity&#x27;;
-import { ProductVariant } from &#x27;../../product-variants/entities/product-variant.entity&#x27;;
+import { ProductVariant } from &#x27;../../products/entities&#x27;;
 
 @Entity(&#x27;cart_items&#x27;)
 @Index(&#x27;uq_cart_items_cart_variant_active&#x27;, [&#x27;cartId&#x27;, &#x27;variantId&#x27;], {

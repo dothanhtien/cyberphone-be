@@ -158,15 +158,12 @@
                                 <a href="#create" >create</a>
                             </li>
                             <li>
-                                    <span class="modifier">Async</span>
                                 <a href="#deleteById" >deleteById</a>
                             </li>
                             <li>
-                                    <span class="modifier">Async</span>
                                 <a href="#findByRefId" >findByRefId</a>
                             </li>
                             <li>
-                                    <span class="modifier">Async</span>
                                 <a href="#findByRefIds" >findByRefIds</a>
                             </li>
                         </ul>
@@ -187,12 +184,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(mediaAssetRepository: <a href="../classes/MediaAsset.html" target="_self">Repository&lt;MediaAsset&gt;</a>)</code>
+<code>constructor(mediaAssetRepository: <a href="../interfaces/IMediaAssetRepository.html" target="_self">IMediaAssetRepository</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/media/media-assets.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/media/media-assets.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -213,7 +210,7 @@
                                                         <td>mediaAssetRepository</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../classes/MediaAsset.html" target="_self" >Repository&lt;MediaAsset&gt;</a></code>
+                                                                        <code><a href="../interfaces/IMediaAssetRepository.html" target="_self" >IMediaAssetRepository</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -255,8 +252,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">src/media/media-assets.service.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">src/media/media-assets.service.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -320,7 +317,6 @@
                 <td class="col-md-4">
                     <a name="deleteById"></a>
                     <span class="name">
-                            <span class="modifier">Async</span>
                         <span ><b>deleteById</b></span>
                         <a href="#deleteById"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -328,16 +324,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteById(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, entityManager?: EntityManager)</code>
+<code>deleteById(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, entityManager?: EntityManager)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">src/media/media-assets.service.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">src/media/media-assets.service.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -385,7 +380,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -401,7 +396,6 @@
                 <td class="col-md-4">
                     <a name="findByRefId"></a>
                     <span class="name">
-                            <span class="modifier">Async</span>
                         <span ><b>findByRefId</b></span>
                         <a href="#findByRefId"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -409,16 +403,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findByRefId(: literal type)</code>
+<code>findByRefId(: literal type)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">src/media/media-assets.service.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">src/media/media-assets.service.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -453,7 +446,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -469,7 +462,6 @@
                 <td class="col-md-4">
                     <a name="findByRefIds"></a>
                     <span class="name">
-                            <span class="modifier">Async</span>
                         <span ><b>findByRefIds</b></span>
                         <a href="#findByRefIds"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -477,16 +469,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findByRefIds(refType: <a href="../miscellaneous/enumerations.html#MediaAssetRefType" target="_self">MediaAssetRefType</a>, refIds: string[], usageType: <a href="../miscellaneous/enumerations.html#MediaAssetUsageType" target="_self">MediaAssetUsageType</a>)</code>
+<code>findByRefIds(refType: <a href="../miscellaneous/enumerations.html#MediaAssetRefType" target="_self">MediaAssetRefType</a>, refIds: string[], usageType: <a href="../miscellaneous/enumerations.html#MediaAssetUsageType" target="_self">MediaAssetUsageType</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">src/media/media-assets.service.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">src/media/media-assets.service.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -546,7 +537,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -562,34 +553,31 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
-import { EntityManager, In, Repository } from &#x27;typeorm&#x27;;
-import { MediaAsset } from &#x27;./entities&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityManager } from &#x27;typeorm&#x27;;
 import { CreateMediaAssetDto, MediaAssetCreateEntityDto } from &#x27;./dto&#x27;;
-import { sanitizeEntityInput } from &#x27;@/common/utils&#x27;;
+import {
+  type IMediaAssetRepository,
+  MEDIA_ASSET_REPOSITORY,
+} from &#x27;./repositories&#x27;;
 import { MediaAssetRefType, MediaAssetUsageType } from &#x27;@/common/enums&#x27;;
+import { sanitizeEntityInput } from &#x27;@/common/utils&#x27;;
 
 @Injectable()
 export class MediaAssetsService {
   constructor(
-    @InjectRepository(MediaAsset)
-    private readonly mediaAssetRepository: Repository&lt;MediaAsset&gt;,
+    @Inject(MEDIA_ASSET_REPOSITORY)
+    private readonly mediaAssetRepository: IMediaAssetRepository,
   ) {}
 
   create(createMediaAssetDtos: CreateMediaAssetDto[], tx?: EntityManager) {
-    const repository &#x3D; tx
-      ? tx.getRepository(MediaAsset)
-      : this.mediaAssetRepository;
-
     const entities &#x3D; createMediaAssetDtos.map((dto) &#x3D;&gt;
       sanitizeEntityInput(MediaAssetCreateEntityDto, dto),
     );
-
-    return repository.save(entities);
+    return this.mediaAssetRepository.create(entities, tx);
   }
 
-  async findByRefId({
+  findByRefId({
     refType,
     refId,
     usageType,
@@ -600,41 +588,19 @@ export class MediaAssetsService {
     usageType: MediaAssetUsageType;
     tx?: EntityManager;
   }) {
-    const repository &#x3D; tx
-      ? tx.getRepository(MediaAsset)
-      : this.mediaAssetRepository;
-
-    return repository.findOne({
-      where: {
-        refType,
-        refId,
-        usageType,
-        isActive: true,
-      },
-    });
+    return this.mediaAssetRepository.findByRefId(refType, refId, usageType, tx);
   }
 
-  async findByRefIds(
+  findByRefIds(
     refType: MediaAssetRefType,
     refIds: string[],
     usageType: MediaAssetUsageType,
   ) {
-    return this.mediaAssetRepository.find({
-      where: {
-        refType,
-        refId: In(refIds),
-        usageType,
-        isActive: true,
-      },
-    });
+    return this.mediaAssetRepository.findByRefIds(refType, refIds, usageType);
   }
 
-  async deleteById(id: string, entityManager?: EntityManager) {
-    const repository &#x3D; entityManager
-      ? entityManager.getRepository(MediaAsset)
-      : this.mediaAssetRepository;
-
-    return repository.delete(id);
+  deleteById(id: string, entityManager?: EntityManager) {
+    return this.mediaAssetRepository.deleteById(id, entityManager);
   }
 }
 </code></pre>

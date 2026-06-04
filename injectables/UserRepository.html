@@ -354,8 +354,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="109"
-                                    class="link-to-prism">src/users/repositories/user.repository.ts:109</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="110"
+                                    class="link-to-prism">src/users/repositories/user.repository.ts:110</a></div>
                         </td>
                     </tr>
 
@@ -783,8 +783,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="118"
-                                    class="link-to-prism">src/users/repositories/user.repository.ts:118</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">src/users/repositories/user.repository.ts:119</a></div>
                         </td>
                     </tr>
 
@@ -864,8 +864,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="87"
-                                    class="link-to-prism">src/users/repositories/user.repository.ts:87</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">src/users/repositories/user.repository.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -1010,8 +1010,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="77"
-                                    class="link-to-prism">src/users/repositories/user.repository.ts:77</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">src/users/repositories/user.repository.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -1072,15 +1072,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>update(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, updateUserDto: <a href="../classes/User.html" target="_self">Partial&lt;User&gt;</a>)</code>
+                    <code>update(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, updateUserDto: <a href="../classes/UserUpdateEntityDto.html" target="_self">UserUpdateEntityDto</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="133"
-                                    class="link-to-prism">src/users/repositories/user.repository.ts:133</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="134"
+                                    class="link-to-prism">src/users/repositories/user.repository.ts:134</a></div>
                         </td>
                     </tr>
 
@@ -1115,7 +1115,7 @@
                                         <tr>
                                                 <td>updateUserDto</td>
                                             <td>
-                                                            <code><a href="../classes/User.html" target="_self" >Partial&lt;User&gt;</a></code>
+                                                            <code><a href="../classes/UserUpdateEntityDto.html" target="_self" >UserUpdateEntityDto</a></code>
                                             </td>
 
                                             <td>
@@ -1160,8 +1160,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="105"
-                                    class="link-to-prism">src/users/repositories/user.repository.ts:105</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="106"
+                                    class="link-to-prism">src/users/repositories/user.repository.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -1216,7 +1216,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
 import { Repository, FindOptionsWhere, Not } from &#x27;typeorm&#x27;;
-import { UserCreateEntityDto } from &#x27;../dto/entity-inputs&#x27;;
+import { UserCreateEntityDto, UserUpdateEntityDto } from &#x27;../dto&#x27;;
 import { User } from &#x27;../entities&#x27;;
 import { buildPaginationParams } from &#x27;@/common/utils&#x27;;
 import { PaginatedEntity } from &#x27;@/common/types&#x27;;
@@ -1239,7 +1239,7 @@ export interface IUserRepository {
   findAllActive(page: number, limit: number): Promise&lt;PaginatedEntity&lt;User&gt;&gt;;
   update(
     id: string,
-    updateUserDto: Partial&lt;User&gt;,
+    updateUserDto: UserUpdateEntityDto,
   ): Promise&lt;{ id: string } | null&gt;;
   updateLastLogin(id: string): Promise&lt;void&gt;;
 }
@@ -1286,6 +1286,7 @@ export class UserRepository implements IUserRepository {
   findOneActiveById(id: string): Promise&lt;User | null&gt; {
     return this.userRepository.findOne({
       where: { id, isActive: true },
+      relations: [&#x27;role&#x27;],
     });
   }
 
@@ -1347,7 +1348,7 @@ export class UserRepository implements IUserRepository {
 
   async update(
     id: string,
-    updateUserDto: Partial&lt;User&gt;,
+    updateUserDto: UserUpdateEntityDto,
   ): Promise&lt;{ id: string } | null&gt; {
     const result &#x3D; await this.userRepository.update(id, updateUserDto);
 

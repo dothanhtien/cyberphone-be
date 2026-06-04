@@ -224,8 +224,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">src/dashboard/dashboard.controller.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">src/dashboard/dashboard.controller.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -300,8 +300,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">src/dashboard/dashboard.controller.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">src/dashboard/dashboard.controller.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -376,8 +376,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">src/dashboard/dashboard.controller.ts:11</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">src/dashboard/dashboard.controller.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -452,8 +452,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">src/dashboard/dashboard.controller.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">src/dashboard/dashboard.controller.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -528,8 +528,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">src/dashboard/dashboard.controller.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">src/dashboard/dashboard.controller.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -581,9 +581,15 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Query } from &#x27;@nestjs/common&#x27;;
 import { DashboardService } from &#x27;./dashboard.service&#x27;;
-import { DateRangeFilterDto, LimitFilterDto } from &#x27;./dto/requests/filter.dto&#x27;;
-import { TopProductsFilterDto } from &#x27;./dto/requests/top-products-filter.dto&#x27;;
+import {
+  DateRangeFilterDto,
+  LimitFilterDto,
+  TopProductsFilterDto,
+} from &#x27;./dto&#x27;;
+import { Roles } from &#x27;@/auth/decorators&#x27;;
+import { UserRole } from &#x27;@/users/enums&#x27;;
 
+@Roles(UserRole.ADMIN, UserRole.STAFF)
 @Controller(&#x27;dashboard&#x27;)
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}

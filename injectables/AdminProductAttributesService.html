@@ -413,8 +413,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="176"
-                                    class="link-to-prism">src/products/admin/admin-product-attributes.service.ts:176</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="187"
+                                    class="link-to-prism">src/products/admin/admin-product-attributes.service.ts:187</a></div>
                         </td>
                     </tr>
 
@@ -607,7 +607,7 @@ import { ProductAttribute } from &#x27;../entities&#x27;;
 import {
   type IProductAttributeRepository,
   PRODUCT_ATTRIBUTE_REPOSITORY,
-} from &#x27;./repositories&#x27;;
+} from &#x27;../repositories&#x27;;
 import { getErrorStack, sanitizeEntityInput } from &#x27;@/common/utils&#x27;;
 
 @Injectable()
@@ -721,6 +721,17 @@ export class AdminProductAttributesService {
       );
 
       if (toUpdate.length) {
+        const TEMP_OFFSET &#x3D; 1_000_000;
+        await Promise.all(
+          toUpdate.map((attr, index) &#x3D;&gt;
+            this.productAttributeRepository.update(
+              attr.id!,
+              { displayOrder: TEMP_OFFSET + index, updatedBy: actor },
+              tx,
+            ),
+          ),
+        );
+
         await Promise.all(
           toUpdate.map((attr) &#x3D;&gt;
             this.productAttributeRepository.update(

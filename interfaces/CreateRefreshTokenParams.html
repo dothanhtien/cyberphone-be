@@ -294,6 +294,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Request } from &#x27;express&#x27;;
 import { AuthUserType } from &#x27;../enums&#x27;;
+import { UserRole } from &#x27;@/users/enums&#x27;;
 
 export interface AuthUser {
   id: string;
@@ -304,6 +305,7 @@ export interface AuthUser {
   isActive: boolean;
 
   roleId?: string;
+  roleName?: UserRole;
 
   identityId: string;
   type: AuthUserType;
@@ -315,6 +317,7 @@ export type JwtPayload &#x3D; {
   sub: string;
   type: AuthUserType;
   roleId?: string;
+  roleName?: string;
   identityId: string;
 };
 

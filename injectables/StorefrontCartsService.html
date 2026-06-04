@@ -175,6 +175,10 @@
                                 <a href="#addToCart" >addToCart</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#buyNow" >buyNow</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findCartItemById" >findCartItemById</a>
@@ -222,12 +226,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(dataSource: DataSource, cartRepository: <a href="../interfaces/ICartRepository.html" target="_self">ICartRepository</a>, cartItemRepository: <a href="../interfaces/ICartItemRepository.html" target="_self">ICartItemRepository</a>, productVariantsService: <a href="../injectables/ProductVariantsService.html" target="_self">ProductVariantsService</a>)</code>
+<code>constructor(dataSource: DataSource, cartRepository: <a href="../interfaces/ICartRepository.html" target="_self">ICartRepository</a>, cartItemRepository: <a href="../interfaces/ICartItemRepository.html" target="_self">ICartItemRepository</a>, productVariantsService: <a href="../injectables/AdminProductVariantsService.html" target="_self">AdminProductVariantsService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:41</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:43</a></div>
                             </td>
                         </tr>
 
@@ -284,7 +288,7 @@
                                                         <td>productVariantsService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ProductVariantsService.html" target="_self" >ProductVariantsService</a></code>
+                                                                        <code><a href="../injectables/AdminProductVariantsService.html" target="_self" >AdminProductVariantsService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -328,8 +332,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="113"
-                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:113</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="157"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:157</a></div>
                         </td>
                     </tr>
 
@@ -391,6 +395,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="buyNow"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>buyNow</b></span>
+                        <a href="#buyNow"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buyNow(buyNowDto: <a href="../classes/BuyNowDto.html" target="_self">BuyNowDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:115</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>buyNowDto</td>
+                                            <td>
+                                                            <code><a href="../classes/BuyNowDto.html" target="_self" >BuyNowDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findCartItemById"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -410,8 +483,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="269"
-                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:269</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="313"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:313</a></div>
                         </td>
                     </tr>
 
@@ -480,8 +553,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="259"
-                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:259</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="303"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:303</a></div>
                         </td>
                     </tr>
 
@@ -549,8 +622,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="277"
-                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:277</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="321"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:321</a></div>
                         </td>
                     </tr>
 
@@ -588,8 +661,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="234"
-                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:234</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="277"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:277</a></div>
                         </td>
                     </tr>
 
@@ -669,8 +742,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -731,15 +804,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateItemQuantity(cartId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, itemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, type: "increase" | "decrease")</code>
+                    <code>updateItemQuantity(cartId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, itemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, type: <a href="../miscellaneous/enumerations.html#CartQuantityAction" target="_self">CartQuantityAction</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="187"
-                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:187</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="225"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:225</a></div>
                         </td>
                     </tr>
 
@@ -786,7 +859,7 @@
                                         <tr>
                                                 <td>type</td>
                                             <td>
-                                                        <code>&quot;increase&quot; | &quot;decrease&quot;</code>
+                                                            <code><a href="../miscellaneous/enumerations.html#CartQuantityAction" target="_self" >CartQuantityAction</a></code>
                                             </td>
 
                                             <td>
@@ -831,8 +904,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="281"
-                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:281</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="325"
+                                    class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:325</a></div>
                         </td>
                     </tr>
 
@@ -922,7 +995,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:41</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/carts/storefront/storefront-carts.service.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -949,6 +1022,7 @@ import { DataSource } from &#x27;typeorm&#x27;;
 import { v4 as uuid } from &#x27;uuid&#x27;;
 import {
   AddToCartDto,
+  BuyNowDto,
   CartCreateEntityInput,
   CartItemCreateEntityInput,
   CartItemUpdateEntityInput,
@@ -956,6 +1030,7 @@ import {
   ResolveCartDto,
 } from &#x27;./dto&#x27;;
 import { CartItemMapper, CartMapper } from &#x27;./mappers&#x27;;
+import { CartQuantityAction, CartType } from &#x27;../enums&#x27;;
 import {
   CART_REPOSITORY,
   type ICartRepository,
@@ -968,8 +1043,8 @@ import {
   isUniqueConstraintError,
   sanitizeEntityInput,
 } from &#x27;@/common/utils&#x27;;
-import { ProductVariant } from &#x27;@/product-variants/entities/product-variant.entity&#x27;;
-import { ProductVariantsService } from &#x27;@/product-variants/product-variants.service&#x27;;
+import { ProductVariant } from &#x27;@/products/entities&#x27;;
+import { AdminProductVariantsService } from &#x27;@/products/admin/admin-product-variants.service&#x27;;
 
 dayjs.extend(utc);
 
@@ -983,7 +1058,7 @@ export class StorefrontCartsService {
     private readonly cartRepository: ICartRepository,
     @Inject(CART_ITEM_REPOSITORY)
     private readonly cartItemRepository: ICartItemRepository,
-    private readonly productVariantsService: ProductVariantsService,
+    private readonly productVariantsService: AdminProductVariantsService,
   ) {}
 
   async resolve(resolveCartDto: ResolveCartDto) {
@@ -1047,6 +1122,48 @@ export class StorefrontCartsService {
     }
   }
 
+  async buyNow(buyNowDto: BuyNowDto) {
+    const { variantId, customerId } &#x3D; buyNowDto;
+
+    this.logger.debug(
+      &#x60;[buyNow] Creating buy-now cart variantId&#x3D;${variantId}, customerId&#x3D;${customerId}&#x60;,
+    );
+
+    const cartId &#x3D; await this.dataSource.transaction(async (tx) &#x3D;&gt; {
+      const variant &#x3D; await this.productVariantsService.findOneActiveById(
+        variantId,
+        tx,
+      );
+
+      if (!variant) throw new NotFoundException(&#x27;Product variant not found&#x27;);
+
+      this.validateStock(variant, 1);
+
+      const cart &#x3D; await this.cartRepository.create(
+        sanitizeEntityInput(CartCreateEntityInput, {
+          customerId,
+          sessionId: uuid(),
+          expiresAt: dayjs().utc().add(30, &#x27;minute&#x27;).toDate(),
+          type: CartType.BUY_NOW,
+        }),
+        tx,
+      );
+
+      await this.cartItemRepository.create(
+        sanitizeEntityInput(CartItemCreateEntityInput, {
+          cartId: cart.id,
+          variantId,
+          quantity: 1,
+        }),
+        tx,
+      );
+
+      return cart.id;
+    });
+
+    return this.findOne(cartId);
+  }
+
   async addToCart(cartId: string, addToCartDto: AddToCartDto) {
     const { quantity, variantId } &#x3D; addToCartDto;
 
@@ -1105,12 +1222,6 @@ export class StorefrontCartsService {
         cartItemId &#x3D; cartItem.id;
       }
 
-      await this.cartRepository.update(
-        cartId,
-        sanitizeEntityInput(CartUpdateEntityDto, cart),
-        tx,
-      );
-
       this.logger.debug(
         &#x60;[addToCart] Added item to cart success cartId&#x3D;${cartId}, variantId&#x3D;${variantId}, quantity&#x3D;${quantity}&#x60;,
       );
@@ -1124,46 +1235,51 @@ export class StorefrontCartsService {
   async updateItemQuantity(
     cartId: string,
     itemId: string,
-    type: &#x27;increase&#x27; | &#x27;decrease&#x27;,
+    type: CartQuantityAction,
   ) {
     this.logger.debug(
       &#x60;[updateItemQuantity] Updating cart item quantity cartId&#x3D;${cartId}, itemId&#x3D;${itemId}, type&#x3D;${type}&#x60;,
     );
 
-    const cartItem &#x3D; await this.cartItemRepository.findOneActiveById(itemId);
+    await this.dataSource.transaction(async (tx) &#x3D;&gt; {
+      const cartItem &#x3D; await this.cartItemRepository.findOneActiveByIdWithLock(
+        itemId,
+        tx,
+      );
 
-    if (!cartItem || cartItem.cartId !&#x3D;&#x3D; cartId) {
-      throw new NotFoundException(&#x27;Cart item not found&#x27;);
-    }
-
-    const [cart, variant] &#x3D; await Promise.all([
-      this.cartRepository.findOneActiveById(cartId),
-      this.productVariantsService.findOneActiveById(cartItem.variantId),
-    ]);
-
-    if (!cart) throw new NotFoundException(&#x27;Cart not found&#x27;);
-
-    if (!variant) throw new NotFoundException(&#x27;Variant not found&#x27;);
-
-    if (type &#x3D;&#x3D;&#x3D; &#x27;increase&#x27;) {
-      this.validateStock(variant, cartItem.quantity + 1);
-      cartItem.quantity +&#x3D; 1;
-    } else {
-      cartItem.quantity -&#x3D; 1;
-
-      if (cartItem.quantity &lt;&#x3D; 0) {
-        this.logger.debug(
-          &#x60;[updateItemQuantity] Removing item itemId&#x3D;${itemId}&#x60;,
-        );
-        cartItem.isActive &#x3D; false;
-        cartItem.quantity &#x3D; 0;
+      if (!cartItem || cartItem.cartId !&#x3D;&#x3D; cartId) {
+        throw new NotFoundException(&#x27;Cart item not found&#x27;);
       }
-    }
 
-    await this.cartItemRepository.update(
-      itemId,
-      sanitizeEntityInput(CartItemUpdateEntityInput, cartItem),
-    );
+      const [cart, variant] &#x3D; await Promise.all([
+        this.cartRepository.findOneActiveById(cartId, tx),
+        this.productVariantsService.findOneActiveById(cartItem.variantId, tx),
+      ]);
+
+      if (!cart) throw new NotFoundException(&#x27;Cart not found&#x27;);
+      if (!variant) throw new NotFoundException(&#x27;Variant not found&#x27;);
+
+      if (type &#x3D;&#x3D;&#x3D; CartQuantityAction.Increase) {
+        this.validateStock(variant, cartItem.quantity + 1);
+        cartItem.quantity +&#x3D; 1;
+      } else {
+        cartItem.quantity -&#x3D; 1;
+
+        if (cartItem.quantity &lt;&#x3D; 0) {
+          this.logger.debug(
+            &#x60;[updateItemQuantity] Removing item itemId&#x3D;${itemId}&#x60;,
+          );
+          cartItem.isActive &#x3D; false;
+          cartItem.quantity &#x3D; 0;
+        }
+      }
+
+      await this.cartItemRepository.update(
+        itemId,
+        sanitizeEntityInput(CartItemUpdateEntityInput, cartItem),
+        tx,
+      );
+    });
 
     return true;
   }
@@ -1178,9 +1294,10 @@ export class StorefrontCartsService {
       throw new NotFoundException(&#x27;Cart item not found&#x27;);
     }
 
-    const updated &#x3D; await this.cartItemRepository.update(itemId, {
-      isActive: false,
-    } as CartItemUpdateEntityInput);
+    const updated &#x3D; await this.cartItemRepository.update(
+      itemId,
+      sanitizeEntityInput(CartItemUpdateEntityInput, { isActive: false }),
+    );
 
     if (!updated) {
       throw new NotFoundException(&#x27;Cart item not found&#x27;);

@@ -134,7 +134,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/products/admin/repositories/product.repository.ts</code>
+            <code>src/products/repositories/product.repository.ts</code>
         </p>
 
 
@@ -189,7 +189,15 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findAllForStorefront" >findAllForStorefront</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findAllRaw" >findAllRaw</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findOneForStorefront" >findOneForStorefront</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -217,12 +225,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(productRepository: <a href="../classes/Product.html" target="_self">Repository&lt;Product&gt;</a>)</code>
+<code>constructor(dataSource: DataSource, productRepository: <a href="../classes/Product.html" target="_self">Repository&lt;Product&gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/products/admin/repositories/product.repository.ts:32</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/products/repositories/product.repository.ts:44</a></div>
                             </td>
                         </tr>
 
@@ -239,6 +247,18 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                                <tr>
+                                                        <td>dataSource</td>
+                                                  
+                                                        <td>
+                                                                    <code>DataSource</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                                 <tr>
                                                         <td>productRepository</td>
                                                   
@@ -285,8 +305,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="85"
-                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:85</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="98"
+                                    class="link-to-prism">src/products/repositories/product.repository.ts:98</a></div>
                         </td>
                     </tr>
 
@@ -324,8 +344,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">src/products/repositories/product.repository.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -403,8 +423,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="66"
-                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:66</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">src/products/repositories/product.repository.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -472,8 +492,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="70"
-                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:70</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">src/products/repositories/product.repository.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -551,8 +571,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">src/products/repositories/product.repository.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -602,6 +622,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findAllForStorefront"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findAllForStorefront</b></span>
+                        <a href="#findAllForStorefront"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAllForStorefront(params: <a href="../classes/FilterProductsDto.html" target="_self">FilterProductsDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="201"
+                                    class="link-to-prism">src/products/repositories/product.repository.ts:201</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>params</td>
+                                            <td>
+                                                            <code><a href="../classes/FilterProductsDto.html" target="_self" >FilterProductsDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findAllRaw"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -620,8 +709,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">src/products/repositories/product.repository.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -683,6 +772,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findOneForStorefront"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findOneForStorefront</b></span>
+                        <a href="#findOneForStorefront"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findOneForStorefront(slug: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="324"
+                                    class="link-to-prism">src/products/repositories/product.repository.ts:324</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>slug</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/ProductDetailsRaw.html" target="_self" >Promise&lt;ProductDetailsRaw | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findOneRaw"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -701,8 +859,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="129"
-                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:129</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="142"
+                                    class="link-to-prism">src/products/repositories/product.repository.ts:142</a></div>
                         </td>
                     </tr>
 
@@ -770,8 +928,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="180"
-                                    class="link-to-prism">src/products/admin/repositories/product.repository.ts:180</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="193"
+                                    class="link-to-prism">src/products/repositories/product.repository.ts:193</a></div>
                         </td>
                     </tr>
 
@@ -873,7 +1031,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/products/admin/repositories/product.repository.ts:32</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/products/repositories/product.repository.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -888,11 +1046,18 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ConflictException, Injectable, Logger } from &#x27;@nestjs/common&#x27;;
 import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
-import { EntityManager, Not, Repository } from &#x27;typeorm&#x27;;
-import { ProductCreateEntityDto, ProductUpdateEntityDto } from &#x27;../dto&#x27;;
-import { ProductRaw } from &#x27;../types&#x27;;
+import { DataSource, EntityManager, Not, Repository } from &#x27;typeorm&#x27;;
+import { ProductCreateEntityDto, ProductUpdateEntityDto } from &#x27;../admin/dto&#x27;;
+import { ProductRaw } from &#x27;../admin/types&#x27;;
+import { FilterProductsDto } from &#x27;../storefront/dto&#x27;;
+import { ProductSortEnum } from &#x27;../storefront/enums&#x27;;
+import { ProductDetailsRaw, RawProductRow } from &#x27;../storefront/types&#x27;;
 import { MediaAssetRefType, ProductImageType } from &#x27;@/common/enums&#x27;;
-import { getErrorStack, isUniqueConstraintError } from &#x27;@/common/utils&#x27;;
+import {
+  extractPaginationParams,
+  getErrorStack,
+  isUniqueConstraintError,
+} from &#x27;@/common/utils&#x27;;
 import { Product } from &#x27;@/products/entities&#x27;;
 
 export interface IProductRepository {
@@ -911,6 +1076,11 @@ export interface IProductRepository {
     data: ProductUpdateEntityDto,
     tx: EntityManager,
   ): Promise&lt;void&gt;;
+
+  findAllForStorefront(
+    params: FilterProductsDto,
+  ): Promise&lt;{ items: RawProductRow[]; total: number }&gt;;
+  findOneForStorefront(slug: string): Promise&lt;ProductDetailsRaw | null&gt;;
 }
 
 export const PRODUCT_REPOSITORY &#x3D; Symbol(&#x27;IProductRepository&#x27;);
@@ -920,6 +1090,7 @@ export class ProductRepository implements IProductRepository {
   private readonly logger &#x3D; new Logger(ProductRepository.name);
 
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(Product)
     private readonly productRepository: Repository&lt;Product&gt;,
   ) {}
@@ -1071,6 +1242,217 @@ export class ProductRepository implements IProductRepository {
     tx: EntityManager,
   ): Promise&lt;void&gt; {
     await tx.update(Product, id, data);
+  }
+
+  async findAllForStorefront(
+    params: FilterProductsDto,
+  ): Promise&lt;{ items: RawProductRow[]; total: number }&gt; {
+    const { page, limit } &#x3D; extractPaginationParams(params);
+    const offset &#x3D; (page - 1) * limit;
+
+    const values: unknown[] &#x3D; [];
+
+    let whereClause &#x3D; &#x60;
+      WHERE p.is_active &#x3D; true
+        AND p.status &#x3D; &#x27;active&#x27;
+    &#x60;;
+
+    if (params.search) {
+      values.push(&#x60;%${params.search}%&#x60;);
+      whereClause +&#x3D; &#x60; AND p.name ILIKE $${values.length}&#x60;;
+    }
+
+    if (params.isFeatured !&#x3D;&#x3D; undefined) {
+      values.push(params.isFeatured);
+      whereClause +&#x3D; &#x60; AND p.is_featured &#x3D; $${values.length}&#x60;;
+    }
+
+    if (params.categorySlug) {
+      values.push(params.categorySlug);
+      whereClause +&#x3D; &#x60;
+        AND EXISTS (
+          SELECT 1 FROM product_categories pc
+          JOIN categories cat ON cat.id &#x3D; pc.category_id AND cat.is_active &#x3D; true
+          WHERE pc.product_id &#x3D; p.id AND cat.slug &#x3D; $${values.length}
+        )&#x60;;
+    }
+
+    let orderClause &#x3D; &#x60;ORDER BY p.created_at DESC, p.id DESC&#x60;;
+
+    if (params.sort &#x3D;&#x3D;&#x3D; ProductSortEnum.PRICE_ASC) {
+      orderClause &#x3D; &#x60;ORDER BY COALESCE(v.sale_price, v.price) ASC, p.created_at DESC, p.id DESC&#x60;;
+    }
+
+    if (params.sort &#x3D;&#x3D;&#x3D; ProductSortEnum.PRICE_DESC) {
+      orderClause &#x3D; &#x60;ORDER BY COALESCE(v.sale_price, v.price) DESC, p.created_at DESC, p.id DESC&#x60;;
+    }
+
+    values.push(MediaAssetRefType.PRODUCT);
+    const mediaAssetRefTypeParamIndex &#x3D; values.length;
+
+    values.push(ProductImageType.MAIN);
+    const mainImageTypeParamIndex &#x3D; values.length;
+
+    values.push(limit);
+    const limitParamIndex &#x3D; values.length;
+
+    values.push(offset);
+    const offsetParamIndex &#x3D; values.length;
+
+    const query &#x3D; &#x60;
+      SELECT 
+        p.id,
+        p.name,
+        p.slug,
+        p.short_description,
+        p.is_featured,
+        p.is_bestseller,
+        v.id as variant_id,
+        v.price,
+        v.sale_price,
+        CASE WHEN v.stock_quantity &gt; 0 THEN 1 ELSE 0 END AS in_stock,
+        (
+          SELECT ma.url 
+          FROM product_images pi
+          JOIN media_assets ma ON ma.ref_type &#x3D; $${mediaAssetRefTypeParamIndex} 
+            AND ma.ref_id &#x3D; pi.id::text
+            AND ma.is_active &#x3D; true
+          WHERE pi.product_id &#x3D; p.id 
+            AND pi.is_active &#x3D; true 
+          ORDER BY pi.image_type &#x3D; $${mainImageTypeParamIndex} DESC, pi.display_order ASC
+          LIMIT 1
+        ) AS main_image
+      FROM products p
+      JOIN LATERAL (
+        SELECT pv.*
+        FROM product_variants pv
+        WHERE 
+          pv.product_id &#x3D; p.id 
+          AND pv.is_active &#x3D; true
+          AND pv.is_default &#x3D; true
+        ORDER BY COALESCE(pv.sale_price, pv.price) ASC
+        LIMIT 1
+      ) v ON true
+
+      ${whereClause}
+      ${orderClause}
+
+      LIMIT $${limitParamIndex}
+      OFFSET $${offsetParamIndex}
+    &#x60;;
+
+    const items &#x3D; await this.dataSource.query&lt;RawProductRow[]&gt;(query, values);
+
+    const countQuery &#x3D; &#x60;
+      SELECT COUNT(*) 
+      FROM products p 
+      JOIN LATERAL (
+        SELECT 1
+        FROM product_variants pv
+        WHERE pv.product_id &#x3D; p.id 
+          AND pv.is_active &#x3D; true
+          AND pv.is_default &#x3D; true
+        LIMIT 1
+      ) v ON true
+      ${whereClause}
+    &#x60;;
+
+    const totalResult &#x3D; await this.dataSource.query&lt;{ count: string }[]&gt;(
+      countQuery,
+      values.slice(0, values.length - 4),
+    );
+
+    const total &#x3D; Number(totalResult[0].count);
+
+    return { items, total };
+  }
+
+  async findOneForStorefront(slug: string): Promise&lt;ProductDetailsRaw | null&gt; {
+    const result &#x3D; await this.dataSource.query&lt;ProductDetailsRaw[]&gt;(
+      &#x60;
+        SELECT 
+          p.id,
+          p.name,
+          p.slug,
+          p.short_description AS &quot;shortDescription&quot;,
+          p.long_description AS &quot;longDescription&quot;,
+
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(
+                &#x27;id&#x27;, pv.id, 
+                &#x27;name&#x27;, pv.name,
+                &#x27;price&#x27;, pv.price,
+                &#x27;salePrice&#x27;, pv.sale_price,
+                &#x27;stockQuantity&#x27;, pv.stock_quantity,
+                &#x27;isDefault&#x27;, pv.is_default,
+
+                &#x27;attributes&#x27;, (
+                  SELECT COALESCE(
+                    json_agg(
+                      jsonb_build_object(
+                        &#x27;id&#x27;, va.id,
+                        &#x27;productAttributeId&#x27;, va.product_attribute_id,
+                        &#x27;attributeValue&#x27;, va.attribute_value,
+                        &#x27;attributeValueDisplay&#x27;, va.attribute_value_display
+                      )
+                    ), &#x27;[]&#x27;
+                  )
+                  FROM variant_attributes va
+                  WHERE va.variant_id &#x3D; pv.id AND va.is_active &#x3D; true
+                )
+              )
+            ) FILTER (WHERE pv.id IS NOT NULL), &#x27;[]&#x27;
+          ) AS variants,
+
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(
+                &#x27;id&#x27;, pa.id, 
+                &#x27;attributeKey&#x27;, pa.attribute_key,
+                &#x27;attributeKeyDisplay&#x27;, pa.attribute_key_display,
+                &#x27;displayOrder&#x27;, pa.display_order
+              )
+            ) FILTER (WHERE pa.id IS NOT NULL), &#x27;[]&#x27;
+          ) AS attributes,
+
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(
+                &#x27;id&#x27;, ma.id, 
+                &#x27;url&#x27;, ma.url,
+                &#x27;imageType&#x27;, pi.image_type,
+                &#x27;displayOrder&#x27;, pi.display_order
+              )
+            ) FILTER (WHERE ma.id IS NOT NULL), &#x27;[]&#x27;
+          ) AS images
+
+        FROM products p
+        LEFT JOIN product_variants pv 
+          ON p.id &#x3D; pv.product_id AND pv.is_active &#x3D; true
+
+        LEFT JOIN product_images pi 
+          ON p.id &#x3D; pi.product_id AND pi.is_active &#x3D; true
+
+        LEFT JOIN media_assets ma 
+          ON ma.ref_type &#x3D; $1 
+          AND ma.ref_id &#x3D; pi.id::text 
+          AND ma.is_active &#x3D; true
+
+        LEFT JOIN product_attributes pa 
+          ON p.id &#x3D; pa.product_id AND pa.is_active &#x3D; true
+
+        WHERE 
+          p.slug &#x3D; $2
+          AND p.is_active &#x3D; true
+
+        GROUP BY p.id
+        LIMIT 1
+      &#x60;,
+      [MediaAssetRefType.PRODUCT, slug],
+    );
+
+    return result[0] ?? null;
   }
 }
 </code></pre>
