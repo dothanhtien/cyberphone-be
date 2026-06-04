@@ -9,7 +9,6 @@ import { getErrorStack } from '@/common/utils';
 import { CustomersService } from '@/customers/customers.service';
 import { Customer } from '@/customers/entities';
 import { User } from '@/users/entities';
-import { UserRole } from '@/users/enums';
 import { UsersService } from '@/users/users.service';
 
 @Injectable()
@@ -29,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload): Promise<AuthUser> {
-    const { sub: userId, type, identityId, roleName } = payload;
+    const { sub: userId, type, identityId } = payload;
 
     if (!userId || !type) {
       this.logger.debug(
@@ -64,8 +63,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         throw new UnauthorizedException('Account not found');
       }
 
-      const authUser = AuthMapper.mapToAuthUser({ ...account, identityId });
-      return { ...authUser, roleName: roleName as UserRole | undefined };
+      return AuthMapper.mapToAuthUser({ ...account, identityId });
     } catch (err) {
       if (err instanceof UnauthorizedException) {
         throw err;

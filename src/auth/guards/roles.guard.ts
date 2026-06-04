@@ -43,14 +43,17 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    if (requiredRoles.includes(UserRole.CUSTOMER)) {
-      if (user.type !== AuthUserType.CUSTOMER) {
-        throw new ForbiddenException('Access denied: customers only');
-      }
-      return true;
+    const userRoles: UserRole[] = [];
+
+    if (user.type === AuthUserType.CUSTOMER) {
+      userRoles.push(UserRole.CUSTOMER);
     }
 
-    if (!user.roleName || !requiredRoles.includes(user.roleName)) {
+    if (user.roleName) {
+      userRoles.push(user.roleName);
+    }
+
+    if (!requiredRoles.some((role) => userRoles.includes(role))) {
       throw new ForbiddenException(
         `Access denied: required role(s) — ${requiredRoles.join(', ')}`,
       );

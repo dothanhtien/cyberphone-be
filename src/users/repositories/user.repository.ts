@@ -71,6 +71,7 @@ export class UserRepository implements IUserRepository {
   findOneActiveById(id: string): Promise<User | null> {
     return this.userRepository.findOne({
       where: { id, isActive: true },
+      relations: ['role'],
     });
   }
 
