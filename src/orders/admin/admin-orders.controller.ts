@@ -1,7 +1,10 @@
 import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { AdminOrdersService } from './admin-orders.service';
 import { PaginationQueryDto } from '@/common/dto';
+import { Roles } from '@/auth/decorators';
+import { UserRole } from '@/users/enums';
 
+@Roles(UserRole.ADMIN, UserRole.STAFF)
 @Controller('admin/orders')
 export class AdminOrdersController {
   constructor(private readonly ordersService: AdminOrdersService) {}

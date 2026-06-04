@@ -99,13 +99,14 @@ export class AuthService {
 
   async login(user: AuthUser) {
     this.logger.debug(
-      `[login] Attemptinng login id=${user.id}, type=${user.type}`,
+      `[login] Attempting login id=${user.id}, type=${user.type}`,
     );
 
     const payload: JwtPayload = {
       sub: user.id,
       type: user.type,
       roleId: user.roleId,
+      roleName: user.roleName,
       identityId: user.identityId,
     };
 
@@ -145,6 +146,7 @@ export class AuthService {
         sub: authUser.id,
         type: authUser.type,
         roleId: authUser.roleId,
+        roleName: authUser.roleName,
         identityId: authUser.identityId,
       };
 

@@ -9,8 +9,10 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { SyncStorefrontSlidersDto } from './dto';
 import { StorefrontSlidersService } from './storefront-sliders.service';
-import { LoggedInUser, Public } from '@/auth/decorators';
+import { LoggedInUser, Public, Roles } from '@/auth/decorators';
+import { UserRole } from '@/users/enums';
 
+@Roles(UserRole.ADMIN, UserRole.STAFF)
 @Controller('storefront-configurations/sliders')
 export class StorefrontSlidersController {
   constructor(

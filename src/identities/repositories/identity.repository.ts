@@ -80,7 +80,7 @@ export class IdentityRepository implements IIdentityRepository {
 
     return repository.findOne({
       where: { type, value, provider },
-      relations: ['user', 'customer'],
+      relations: ['user', 'user.role', 'customer'],
     });
   }
 

@@ -40,7 +40,12 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
   findByTokenHash(tokenHash: string): Promise<RefreshToken | null> {
     return this.refreshTokenRepository.findOne({
       where: { tokenHash },
-      relations: ['identity', 'identity.user', 'identity.customer'],
+      relations: [
+        'identity',
+        'identity.user',
+        'identity.user.role',
+        'identity.customer',
+      ],
     });
   }
 

@@ -11,10 +11,12 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { UsersService } from './users.service';
-import { LoggedInUser } from '@/auth/decorators';
+import { LoggedInUser, Roles } from '@/auth/decorators';
 import { PaginationQueryDto } from '@/common/dto';
 import { NonEmptyBodyPipe } from '@/common/pipes';
+import { UserRole } from '@/users/enums';
 
+@Roles(UserRole.ADMIN)
 @Controller('admin/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
