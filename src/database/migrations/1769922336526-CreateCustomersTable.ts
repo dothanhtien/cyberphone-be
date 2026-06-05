@@ -8,8 +8,8 @@ export class CreateCustomersTable1769922336526 implements MigrationInterface {
       `
         CREATE TABLE "customers" (
           "id" uuid NOT NULL DEFAULT uuid_generate_v4(), 
-          "phone" character varying(30) NOT NULL, 
-          "email" character varying(320), 
+          "email" character varying(320) NOT NULL, 
+          "phone" character varying(30), 
           "first_name" character varying(255) NOT NULL, 
           "last_name" character varying(255) NOT NULL, 
           "date_of_birth" date, 
@@ -27,16 +27,16 @@ export class CreateCustomersTable1769922336526 implements MigrationInterface {
       `,
     );
     await queryRunner.query(
-      `CREATE UNIQUE INDEX "uq_customers_phone_active" ON "customers" ("phone") WHERE "is_active" = true`,
+      `CREATE UNIQUE INDEX "uq_customers_email_active" ON "customers" ("email") WHERE "is_active" = true`,
     );
     await queryRunner.query(
-      `CREATE UNIQUE INDEX "uq_customers_email_active" ON "customers" ("email") WHERE "is_active" = true`,
+      `CREATE UNIQUE INDEX "uq_customers_phone_active" ON "customers" ("phone") WHERE "is_active" = true`,
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP INDEX "public"."uq_customers_email_active"`);
     await queryRunner.query(`DROP INDEX "public"."uq_customers_phone_active"`);
+    await queryRunner.query(`DROP INDEX "public"."uq_customers_email_active"`);
     await queryRunner.query(`DROP TABLE "customers"`);
   }
 }

@@ -2,10 +2,10 @@ import { Expose } from 'class-transformer';
 
 export class UserUpdateEntityDto {
   @Expose()
-  phone?: string;
+  email?: string;
 
   @Expose()
-  email?: string | null;
+  phone?: string;
 
   @Expose()
   firstName?: string;

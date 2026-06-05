@@ -28,63 +28,63 @@ export class IdentitiesService {
   ) {}
 
   async create(data: CreateIdentityParams, tx: EntityManager) {
-    const maskedPhone = maskIdentifier(data.phone);
-    const maskedEmail = data.email ? maskIdentifier(data.email) : undefined;
+    const maskedEmail = maskIdentifier(data.email);
+    const maskedPhone = data.phone ? maskIdentifier(data.phone) : undefined;
 
     this.logger.debug(
-      `[create] Start phone=${maskedPhone}, email=${maskedEmail}, provider=${data.provider}`,
+      `[create] Start email=${maskedEmail}, phone=${maskedPhone}, provider=${data.provider}`,
     );
 
     try {
       const results: Identity[] = [];
 
-      const phoneEntity = sanitizeEntityInput(IdentityCreateEntity, {
-        value: data.phone,
-        type: IdentityType.PHONE,
+      const emailEntity = sanitizeEntityInput(IdentityCreateEntity, {
+        value: data.email,
+        type: IdentityType.EMAIL,
         provider: data.provider,
         passwordHash: data.passwordHash,
         customerId: data.customerId,
         userId: data.userId,
       });
 
-      const phoneIdentity = await this.identityRepository.save(phoneEntity, tx);
+      const emailIdentity = await this.identityRepository.save(emailEntity, tx);
 
-      results.push(phoneIdentity);
+      results.push(emailIdentity);
 
-      if (data.email) {
-        const emailEntity = sanitizeEntityInput(IdentityCreateEntity, {
-          value: data.email,
-          type: IdentityType.EMAIL,
+      if (data.phone) {
+        const phoneEntity = sanitizeEntityInput(IdentityCreateEntity, {
+          value: data.phone,
+          type: IdentityType.PHONE,
           provider: data.provider,
           passwordHash: data.passwordHash,
           customerId: data.customerId,
           userId: data.userId,
         });
 
-        const emailIdentity = await this.identityRepository.save(
-          emailEntity,
+        const phoneIdentity = await this.identityRepository.save(
+          phoneEntity,
           tx,
         );
 
-        results.push(emailIdentity);
+        results.push(phoneIdentity);
       }
 
       this.logger.debug(
-        `[create] Success phone=${maskedPhone}, email=${maskedEmail}, count=${results.length}`,
+        `[create] Success email=${maskedEmail}, phone=${maskedPhone}, count=${results.length}`,
       );
 
       return results;
     } catch (error) {
       if (isUniqueConstraintError(error)) {
         this.logger.warn(
-          `[create] Duplicate identity phone=${maskedPhone}, email=${maskedEmail}`,
+          `[create] Duplicate identity email=${maskedEmail}, phone=${maskedPhone}`,
         );
 
         throw new ConflictException('Identities already in use');
       }
 
       this.logger.error(
-        `[create] Failed phone=${maskedPhone}, email=${maskedEmail}`,
+        `[create] Failed email=${maskedEmail}, phone=${maskedPhone}`,
         getErrorStack(error),
       );
 
@@ -130,6 +130,34 @@ export class IdentitiesService {
     customerId?: string;
   }): Promise<Identity | null> {
     return this.identityRepository.findOneByAccountId({ userId, customerId });
+  }
+
+  async updatePassword({
+    userId,
+    customerId,
+    passwordHash,
+  }: {
+    userId?: string;
+    customerId?: string;
+    passwordHash: string;
+  }): Promise<void> {
+    const id = userId ?? customerId;
+    this.logger.debug(`[updatePassword] accountId=${id}`);
+
+    try {
+      await this.identityRepository.updatePassword({
+        userId,
+        customerId,
+        passwordHash,
+      });
+      this.logger.debug(`[updatePassword] Success accountId=${id}`);
+    } catch (error) {
+      this.logger.error(
+        `[updatePassword] Failed accountId=${id}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
   }
 
   async findOne(identifier: string, provider: AuthProvider) {

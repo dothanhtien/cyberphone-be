@@ -8,19 +8,14 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
+import {
+  MAX_EMAIL_LENGTH,
+  MAX_FIRST_NAME_LENGTH,
+  MAX_LAST_NAME_LENGTH,
+} from '@/common/constants';
 import { Gender } from '@/customers/enums';
 
-const MAX_EMAIL_LENGTH = 320;
-const MAX_NAME_LENGTH = 255;
-
 export class CreateCustomerDto {
-  @Matches(/^\+?[0-9](?:[0-9\s-]{6,18}[0-9])$/, {
-    message: 'Phone number format is invalid',
-  })
-  @IsString({ message: 'Phone must be a string' })
-  @IsNotEmpty({ message: 'Phone is required' })
-  phone: string;
-
   @MaxLength(MAX_EMAIL_LENGTH, {
     message: `Email must not exceed ${MAX_EMAIL_LENGTH} characters`,
   })
@@ -28,18 +23,25 @@ export class CreateCustomerDto {
     { ignore_max_length: true },
     { message: 'Email must be a valid email address' },
   )
-  @IsOptional()
-  email?: string;
+  @IsNotEmpty({ message: 'Email is required' })
+  email: string;
 
-  @MaxLength(MAX_NAME_LENGTH, {
-    message: `First name must not exceed ${MAX_NAME_LENGTH} characters`,
+  @Matches(/^\+?[0-9](?:[0-9\s-]{6,18}[0-9])$/, {
+    message: 'Phone number format is invalid',
+  })
+  @IsString({ message: 'Phone must be a string' })
+  @IsOptional()
+  phone?: string;
+
+  @MaxLength(MAX_FIRST_NAME_LENGTH, {
+    message: `First name must not exceed ${MAX_FIRST_NAME_LENGTH} characters`,
   })
   @IsString({ message: 'First name must be a string' })
   @IsNotEmpty({ message: 'First name is required' })
   firstName: string;
 
-  @MaxLength(MAX_NAME_LENGTH, {
-    message: `Last name must not exceed ${MAX_NAME_LENGTH} characters`,
+  @MaxLength(MAX_LAST_NAME_LENGTH, {
+    message: `Last name must not exceed ${MAX_LAST_NAME_LENGTH} characters`,
   })
   @IsString({ message: 'Last name must be a string' })
   @IsNotEmpty({ message: 'Last name is required' })

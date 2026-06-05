@@ -155,6 +155,25 @@ export class RefreshTokenService {
     this.logger.debug(`[revoke] Token revoked id=${token.id}`);
   }
 
+  async revokeAllByIdentityId(identityId: string): Promise<void> {
+    this.logger.debug(
+      `[revokeAllByIdentityId] Revoking all tokens identityId=${identityId}`,
+    );
+
+    try {
+      await this.refreshTokenRepository.revokeAllByIdentityId(identityId);
+      this.logger.debug(
+        `[revokeAllByIdentityId] Done identityId=${identityId}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `[revokeAllByIdentityId] Failed identityId=${identityId}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
+  }
+
   private hash(token: string): string {
     return createHash('sha256').update(token).digest('hex');
   }

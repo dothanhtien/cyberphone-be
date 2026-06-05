@@ -35,6 +35,15 @@ export interface IIdentityRepository {
     customerId?: string;
   }): Promise<Identity | null>;
   save(data: IdentityCreateEntity, tx: EntityManager): Promise<Identity>;
+  updatePassword({
+    userId,
+    customerId,
+    passwordHash,
+  }: {
+    userId?: string;
+    customerId?: string;
+    passwordHash: string;
+  }): Promise<void>;
 }
 
 export const IDENTITY_REPOSITORY = Symbol('IIdentityRepository');
@@ -106,5 +115,23 @@ export class IdentityRepository implements IIdentityRepository {
 
   async save(data: IdentityCreateEntity, tx: EntityManager): Promise<Identity> {
     return tx.getRepository(Identity).save(data);
+  }
+
+  async updatePassword({
+    userId,
+    customerId,
+    passwordHash,
+  }: {
+    userId?: string;
+    customerId?: string;
+    passwordHash: string;
+  }): Promise<void> {
+    if (!userId && !customerId) {
+      throw new Error(
+        'updatePassword requires exactly one of userId or customerId',
+      );
+    }
+    const where = userId ? { userId } : { customerId };
+    await this.identityRepository.update(where, { passwordHash });
   }
 }

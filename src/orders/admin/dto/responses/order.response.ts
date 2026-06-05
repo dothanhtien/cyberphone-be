@@ -42,8 +42,8 @@ export class OrderDetailsResponseDto {
   @Expose()
   customer: {
     id: string;
-    phone: string;
-    email: string | null;
+    email: string;
+    phone: string | null;
     firstName: string;
     lastName: string;
   } | null;

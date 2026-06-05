@@ -1,8 +1,8 @@
 import { AuthProvider } from '../enums';
 
 export interface CreateIdentityParams {
-  phone: string;
-  email?: string;
+  email: string;
+  phone?: string;
   passwordHash: string;
   provider: AuthProvider;
   customerId?: string;

@@ -13,11 +13,11 @@ import { Role } from './role.entity';
 import { Identity } from '../../identities/entities';
 
 @Entity('users')
-@Index('uq_users_phone_active', ['phone'], {
+@Index('uq_users_email_active', ['email'], {
   unique: true,
   where: `"is_active" = true`,
 })
-@Index('uq_users_email_active', ['email'], {
+@Index('uq_users_phone_active', ['phone'], {
   unique: true,
   where: `"is_active" = true`,
 })
@@ -27,11 +27,11 @@ export class User {
   })
   id: string;
 
-  @Column({ type: 'varchar', length: 30 })
-  phone: string;
+  @Column({ type: 'varchar', length: 320 })
+  email: string;
 
-  @Column({ type: 'varchar', length: 320, nullable: true })
-  email: string | null;
+  @Column({ type: 'varchar', length: 30, nullable: true })
+  phone: string | null;
 
   @Column({ name: 'first_name', type: 'varchar', length: 255 })
   firstName: string;

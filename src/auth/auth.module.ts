@@ -10,10 +10,11 @@ import {
   REFRESH_TOKEN_REPOSITORY,
   RefreshTokenRepository,
 } from './repositories';
-import { JwtAuthGuard, RolesGuard } from './guards';
+import { HybridThrottlerGuard, JwtAuthGuard, RolesGuard } from './guards';
 import { RefreshTokenService } from './refresh-token.service';
 import { LocalStrategy, JwtStrategy } from './strategies';
 import { CustomersModule } from '@/customers/customers.module';
+import { EmailModule } from '@/email/email.module';
 import { IdentitiesModule } from '@/identities/identities.module';
 import { UsersModule } from '@/users/users.module';
 
@@ -21,6 +22,7 @@ import { UsersModule } from '@/users/users.module';
   imports: [
     UsersModule,
     CustomersModule,
+    EmailModule,
     IdentitiesModule,
     TypeOrmModule.forFeature([RefreshToken]),
     JwtModule.registerAsync({
@@ -48,6 +50,10 @@ import { UsersModule } from '@/users/users.module';
     AuthService,
     LocalStrategy,
     JwtStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: HybridThrottlerGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
