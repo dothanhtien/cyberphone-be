@@ -23,7 +23,7 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Email is required' })
   email: string;
 
-  @Matches(/^[0-9+\-\s]{8,20}$/, {
+  @Matches(/^(?=.*\d)[0-9+\-\s]{8,20}$/, {
     message: 'Phone number format is invalid',
   })
   @IsString({ message: 'Phone must be a string' })

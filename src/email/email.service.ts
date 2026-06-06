@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import type { Transporter } from 'nodemailer';
 import { EMAIL_TRANSPORTER } from './email.client.provider';
 import { ForgotPasswordVars, forgotPasswordTemplate } from './templates';
-import { getErrorStack } from '@/common/utils';
+import { getErrorStack, maskIdentifier } from '@/common/utils';
 
 interface EmailTemplate {
   subject: string;
@@ -25,7 +25,10 @@ export class EmailService {
   }
 
   private async send(to: string, template: EmailTemplate): Promise<void> {
-    this.logger.debug(`[send] Sending to=${to} subject="${template.subject}"`);
+    const masked = maskIdentifier(to);
+    this.logger.debug(
+      `[send] Sending to=${masked} subject="${template.subject}"`,
+    );
     try {
       await this.transporter.sendMail({
         from: this.from,
@@ -34,9 +37,9 @@ export class EmailService {
         text: template.text,
         html: template.html,
       });
-      this.logger.log(`[send] Sent to=${to}`);
+      this.logger.log(`[send] Sent to=${masked}`);
     } catch (error) {
-      this.logger.error(`[send] Failed to=${to}`, getErrorStack(error));
+      this.logger.error(`[send] Failed to=${masked}`, getErrorStack(error));
       throw error;
     }
   }

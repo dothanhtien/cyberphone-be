@@ -132,14 +132,32 @@ export class IdentitiesService {
     return this.identityRepository.findOneByAccountId({ userId, customerId });
   }
 
+  async findAllIdsByAccountId({
+    userId,
+    customerId,
+    tx,
+  }: {
+    userId?: string;
+    customerId?: string;
+    tx?: EntityManager;
+  }): Promise<string[]> {
+    return this.identityRepository.findAllIdsByAccountId({
+      userId,
+      customerId,
+      tx,
+    });
+  }
+
   async updatePassword({
     userId,
     customerId,
     passwordHash,
+    tx,
   }: {
     userId?: string;
     customerId?: string;
     passwordHash: string;
+    tx?: EntityManager;
   }): Promise<void> {
     const id = userId ?? customerId;
     this.logger.debug(`[updatePassword] accountId=${id}`);
@@ -149,6 +167,7 @@ export class IdentitiesService {
         userId,
         customerId,
         passwordHash,
+        tx,
       });
       this.logger.debug(`[updatePassword] Success accountId=${id}`);
     } catch (error) {

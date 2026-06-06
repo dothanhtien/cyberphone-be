@@ -5,7 +5,7 @@ export class UserUpdateEntityDto {
   email?: string;
 
   @Expose()
-  phone?: string;
+  phone?: string | null;
 
   @Expose()
   firstName?: string;

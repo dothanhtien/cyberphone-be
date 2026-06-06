@@ -204,16 +204,27 @@ export class AuthService {
         return;
       }
 
-      const temporaryPassword = `Aa1${randomBytes(8).toString('hex')}`;
+      const temporaryPassword = `Aa1!${randomBytes(7).toString('hex')}`;
       const passwordHash = await hashPassword(temporaryPassword);
 
-      await this.identitiesService.updatePassword({
-        userId: identity.userId ?? undefined,
-        customerId: identity.customerId ?? undefined,
-        passwordHash,
+      const userId = identity.userId ?? undefined;
+      const customerId = identity.customerId ?? undefined;
+
+      const identityIds = await this.identitiesService.findAllIdsByAccountId({
+        userId,
+        customerId,
       });
 
-      await this.refreshTokenService.revokeAllByIdentityId(identity.id);
+      await this.dataSource.transaction(async (tx) => {
+        await this.identitiesService.updatePassword({
+          userId,
+          customerId,
+          passwordHash,
+          tx,
+        });
+
+        await this.refreshTokenService.revokeAllByIdentityIds(identityIds, tx);
+      });
 
       await this.emailService.sendForgotPassword(email, { temporaryPassword });
 

@@ -35,14 +35,25 @@ export interface IIdentityRepository {
     customerId?: string;
   }): Promise<Identity | null>;
   save(data: IdentityCreateEntity, tx: EntityManager): Promise<Identity>;
+  findAllIdsByAccountId({
+    userId,
+    customerId,
+    tx,
+  }: {
+    userId?: string;
+    customerId?: string;
+    tx?: EntityManager;
+  }): Promise<string[]>;
   updatePassword({
     userId,
     customerId,
     passwordHash,
+    tx,
   }: {
     userId?: string;
     customerId?: string;
     passwordHash: string;
+    tx?: EntityManager;
   }): Promise<void>;
 }
 
@@ -117,21 +128,48 @@ export class IdentityRepository implements IIdentityRepository {
     return tx.getRepository(Identity).save(data);
   }
 
+  async findAllIdsByAccountId({
+    userId,
+    customerId,
+    tx,
+  }: {
+    userId?: string;
+    customerId?: string;
+    tx?: EntityManager;
+  }): Promise<string[]> {
+    if (!userId && !customerId) return [];
+    const repo = tx ? tx.getRepository(Identity) : this.identityRepository;
+    const identities = await repo.find({
+      where: userId ? { userId } : { customerId },
+      select: ['id'],
+    });
+    return identities.map((i) => i.id);
+  }
+
   async updatePassword({
     userId,
     customerId,
     passwordHash,
+    tx,
   }: {
     userId?: string;
     customerId?: string;
     passwordHash: string;
+    tx?: EntityManager;
   }): Promise<void> {
-    if (!userId && !customerId) {
+    const hasUserId = Boolean(userId);
+    const hasCustomerId = Boolean(customerId);
+
+    if (hasUserId === hasCustomerId) {
       throw new Error(
         'updatePassword requires exactly one of userId or customerId',
       );
     }
-    const where = userId ? { userId } : { customerId };
-    await this.identityRepository.update(where, { passwordHash });
+
+    const where = hasUserId
+      ? { userId, provider: AuthProvider.LOCAL }
+      : { customerId, provider: AuthProvider.LOCAL };
+    const repo = tx ? tx.getRepository(Identity) : this.identityRepository;
+    await repo.update(where, { passwordHash });
   }
 }
