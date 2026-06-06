@@ -138,6 +138,11 @@ export class IdentityRepository implements IIdentityRepository {
     tx?: EntityManager;
   }): Promise<string[]> {
     if (!userId && !customerId) return [];
+    if (userId && customerId) {
+      throw new Error(
+        'findAllIdsByAccountId requires exactly one of userId or customerId',
+      );
+    }
     const repo = tx ? tx.getRepository(Identity) : this.identityRepository;
     const identities = await repo.find({
       where: userId ? { userId } : { customerId },
