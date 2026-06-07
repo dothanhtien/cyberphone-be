@@ -11,7 +11,7 @@ export class HybridThrottlerGuard extends ThrottlerGuard {
     if (context.getType<string>() === 'graphql') {
       const gqlCtx = GqlExecutionContext.create(context);
       const req = gqlCtx.getContext<{ req: Record<string, unknown> }>().req;
-      return { req, res: {} };
+      return { req, res: { header: () => undefined } };
     }
     const http = context.switchToHttp();
     return {
