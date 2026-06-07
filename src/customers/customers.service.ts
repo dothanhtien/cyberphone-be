@@ -21,11 +21,11 @@ export class CustomersService {
   async create(createCustomerDto: CreateCustomerDto, tx: EntityManager) {
     const { phone, email } = createCustomerDto;
 
-    const maskedPhone = maskIdentifier(phone);
-    const maskedEmail = email ? maskIdentifier(email) : undefined;
+    const maskedEmail = maskIdentifier(email);
+    const maskedPhone = phone ? maskIdentifier(phone) : undefined;
 
     this.logger.debug(
-      `[create] Creating customer phone=${maskedPhone}, email=${maskedEmail}`,
+      `[create] Creating customer email=${maskedEmail}, phone=${maskedPhone}`,
     );
 
     try {
@@ -37,17 +37,17 @@ export class CustomersService {
       const customer = await this.customerRepository.create(entity, tx);
 
       this.logger.log(
-        `[create] Customer created successfully id=${customer.id}, phone=${maskedPhone}, email=${maskedEmail}`,
+        `[create] Customer created successfully id=${customer.id}, email=${maskedEmail}, phone=${maskedPhone}`,
       );
 
       return customer;
     } catch (error) {
       if (isUniqueConstraintError(error)) {
-        throw new ConflictException('Phone or Email already in use');
+        throw new ConflictException('Email or phone already in use');
       }
 
       this.logger.error(
-        `[create] Failed to create customer phone=${maskedPhone}, email=${maskedEmail}`,
+        `[create] Failed to create customer email=${maskedEmail}, phone=${maskedPhone}`,
         getErrorStack(error),
       );
       throw error;
@@ -105,37 +105,37 @@ export class CustomersService {
     }
   }
 
-  async findActiveByPhoneOrEmail({
-    phone,
+  async findActiveByEmailOrPhone({
     email,
+    phone,
     tx,
   }: {
-    phone: string;
-    email?: string;
+    email: string;
+    phone?: string;
     tx: EntityManager;
   }) {
-    const maskedPhone = maskIdentifier(phone);
-    const maskedEmail = email ? maskIdentifier(email) : undefined;
+    const maskedEmail = maskIdentifier(email);
+    const maskedPhone = phone ? maskIdentifier(phone) : undefined;
 
     this.logger.debug(
-      `[findActiveByPhoneOrEmail] Finding phone=${maskedPhone}, email=${maskedEmail}`,
+      `[findActiveByEmailOrPhone] Finding email=${maskedEmail}, phone=${maskedPhone}`,
     );
 
     try {
-      const customers = await this.customerRepository.findActiveByPhoneOrEmail({
-        phone,
+      const customers = await this.customerRepository.findActiveByEmailOrPhone({
         email,
+        phone,
         tx,
       });
 
       this.logger.debug(
-        `[findActiveByPhoneOrEmail] Fetched success phone=${maskedPhone}, email=${maskedEmail}, count=${customers.length}`,
+        `[findActiveByEmailOrPhone] Fetched success email=${maskedEmail}, phone=${maskedPhone}, count=${customers.length}`,
       );
 
       return customers;
     } catch (error) {
       this.logger.error(
-        `[findActiveByPhoneOrEmail] Failed to fetch phone=${maskedPhone}, email=${maskedEmail}`,
+        `[findActiveByEmailOrPhone] Failed to fetch email=${maskedEmail}, phone=${maskedPhone}`,
         getErrorStack(error),
       );
       throw error;

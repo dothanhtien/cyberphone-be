@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, EntityManager, In, IsNull, Repository } from 'typeorm';
 import { RefreshToken } from '../entities';
 import { CreateRefreshTokenParams } from '../types';
 
@@ -9,6 +9,11 @@ export interface IRefreshTokenRepository {
   findById(id: string): Promise<RefreshToken | null>;
   findByTokenHash(tokenHash: string): Promise<RefreshToken | null>;
   revoke(id: string, replacedByTokenId?: string): Promise<void>;
+  revokeAllByIdentityId(identityId: string, tx?: EntityManager): Promise<void>;
+  revokeAllByIdentityIds(
+    identityIds: string[],
+    tx?: EntityManager,
+  ): Promise<void>;
   rotate(
     existingId: string,
     newTokenData: CreateRefreshTokenParams,
@@ -54,6 +59,33 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
       revokedAt: new Date(),
       replacedByToken: replacedByTokenId ?? null,
     });
+  }
+
+  async revokeAllByIdentityId(
+    identityId: string,
+    tx?: EntityManager,
+  ): Promise<void> {
+    const repo = tx
+      ? tx.getRepository(RefreshToken)
+      : this.refreshTokenRepository;
+    await repo.update(
+      { identityId, revokedAt: IsNull() },
+      { revokedAt: new Date() },
+    );
+  }
+
+  async revokeAllByIdentityIds(
+    identityIds: string[],
+    tx?: EntityManager,
+  ): Promise<void> {
+    if (!identityIds.length) return;
+    const repo = tx
+      ? tx.getRepository(RefreshToken)
+      : this.refreshTokenRepository;
+    await repo.update(
+      { identityId: In(identityIds), revokedAt: IsNull() },
+      { revokedAt: new Date() },
+    );
   }
 
   async rotate(

@@ -11,12 +11,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoggedInUser, Public } from './decorators';
-import { RegisterDto } from './dto';
-import { AuthMapper } from './mappers';
+import { ForgotPasswordDto, RegisterDto } from './dto';
 import { LocalAuthGuard, JwtAuthGuard } from './guards';
+import { AuthMapper } from './mappers';
 import { type AuthUser, type RequestWithUser } from './types';
 import { REFRESH_TOKEN_COOKIE } from '@/common/constants';
 
@@ -106,6 +107,14 @@ export class AuthController {
       maxAge: expiresInSeconds * 1000,
       ...(domain && { domain }),
     } as const;
+  }
+
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Public()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post('/forgot-password')
+  forgotPassword(@Body() dto: ForgotPasswordDto): Promise<void> {
+    return this.authService.forgotPassword(dto);
   }
 
   private setRefreshTokenCookie(res: Response, token: string) {

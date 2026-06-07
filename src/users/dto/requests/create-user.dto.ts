@@ -8,35 +8,37 @@ import {
   IsUUID,
   IsEmpty,
 } from 'class-validator';
-
-const MAX_NAME_LENGTH = 255;
-const MAX_EMAIL_LENGTH = 320;
+import {
+  MAX_EMAIL_LENGTH,
+  MAX_FIRST_NAME_LENGTH,
+  MAX_LAST_NAME_LENGTH,
+} from '@/common/constants';
 
 export class CreateUserDto {
-  @Matches(/^[0-9+\-\s]{8,20}$/, {
-    message: 'Phone number format is invalid',
-  })
-  @IsString({ message: 'Phone must be a string' })
-  @IsNotEmpty({ message: 'Phone is required' })
-  phone: string;
-
   @MaxLength(MAX_EMAIL_LENGTH, {
     message: `Email must not exceed ${MAX_EMAIL_LENGTH} characters`,
   })
   @IsEmail({}, { message: 'Email must be a valid email address' })
   @IsString({ message: 'Email must be a string' })
-  @IsOptional()
-  email?: string;
+  @IsNotEmpty({ message: 'Email is required' })
+  email: string;
 
-  @MaxLength(MAX_NAME_LENGTH, {
-    message: `First name must not exceed ${MAX_NAME_LENGTH} characters`,
+  @Matches(/^(?=.*\d)[0-9+\-\s]{8,20}$/, {
+    message: 'Phone number format is invalid',
+  })
+  @IsString({ message: 'Phone must be a string' })
+  @IsOptional()
+  phone?: string;
+
+  @MaxLength(MAX_FIRST_NAME_LENGTH, {
+    message: `First name must not exceed ${MAX_FIRST_NAME_LENGTH} characters`,
   })
   @IsString({ message: 'First name must be a string' })
   @IsNotEmpty({ message: 'First name is required' })
   firstName: string;
 
-  @MaxLength(MAX_NAME_LENGTH, {
-    message: `Last name must not exceed ${MAX_NAME_LENGTH} characters`,
+  @MaxLength(MAX_LAST_NAME_LENGTH, {
+    message: `Last name must not exceed ${MAX_LAST_NAME_LENGTH} characters`,
   })
   @IsString({ message: 'Last name must be a string' })
   @IsNotEmpty({ message: 'Last name is required' })

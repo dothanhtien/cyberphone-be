@@ -3,10 +3,10 @@ import { Gender } from '@/customers/enums';
 
 export class CustomerCreateEntityInput {
   @Expose()
-  phone: string;
+  email: string;
 
   @Expose()
-  email?: string | null;
+  phone?: string | null;
 
   @Expose()
   firstName: string;

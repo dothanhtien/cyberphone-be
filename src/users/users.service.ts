@@ -43,19 +43,19 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     const { phone, email } = createUserDto;
 
-    const maskedPhone = maskIdentifier(phone);
-    const maskedEmail = email ? maskIdentifier(email) : undefined;
+    const maskedEmail = maskIdentifier(email);
+    const maskedPhone = phone ? maskIdentifier(phone) : undefined;
 
     this.logger.log(
-      `[create] Creating user phone=${maskedPhone}, email=${maskedEmail}`,
+      `[create] Creating user email=${maskedEmail}, phone=${maskedPhone}`,
     );
 
     try {
       const [isPhoneExists, isEmailExist, isRoleExist] = await Promise.all([
-        this.userRepository.existsActiveByPhone(createUserDto.phone),
-        email
-          ? this.userRepository.existsActiveByEmail(email)
+        phone
+          ? this.userRepository.existsActiveByPhone(phone)
           : Promise.resolve(false),
+        this.userRepository.existsActiveByEmail(email),
         this.roleRepository.existsActiveById(createUserDto.roleId),
       ]);
 
@@ -81,14 +81,14 @@ export class UsersService {
     } catch (error) {
       if (isUniqueConstraintError(error)) {
         this.logger.warn(
-          `[create] Unique constraint violation phone=${maskedPhone}, email=${maskedEmail}`,
+          `[create] Unique constraint violation email=${maskedEmail}, phone=${maskedPhone}`,
         );
 
-        throw new ConflictException('Phone or Email already exists');
+        throw new ConflictException('Email or phone already exists');
       }
 
       this.logger.error(
-        `[create] Failed to create user phone=${maskedPhone}, email=${maskedEmail}`,
+        `[create] Failed to create user email=${maskedEmail}, phone=${maskedPhone}`,
         getErrorStack(error),
       );
 

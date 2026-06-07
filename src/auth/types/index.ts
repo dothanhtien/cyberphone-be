@@ -4,8 +4,8 @@ import { UserRole } from '@/users/enums';
 
 export interface AuthUser {
   id: string;
-  phone: string;
-  email: string | null;
+  email: string;
+  phone: string | null;
   firstName: string;
   lastName: string;
   isActive: boolean;

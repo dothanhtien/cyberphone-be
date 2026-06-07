@@ -1,7 +1,8 @@
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { randomBytes } from 'crypto';
 import { DataSource } from 'typeorm';
-import { RegisterDto } from './dto';
+import { ForgotPasswordDto, RegisterDto } from './dto';
 import { AuthUserType } from './enums';
 import { AuthMapper } from './mappers';
 import { RefreshTokenService } from './refresh-token.service';
@@ -13,6 +14,7 @@ import {
   maskIdentifier,
 } from '@/common/utils';
 import { CustomersService } from '@/customers/customers.service';
+import { EmailService } from '@/email/email.service';
 import { AuthProvider } from '@/identities/enums';
 import { IdentitiesService } from '@/identities/identities.service';
 import { UsersService } from '@/users/users.service';
@@ -24,10 +26,11 @@ export class AuthService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly customersService: CustomersService,
+    private readonly emailService: EmailService,
     private readonly identitiesService: IdentitiesService,
     private readonly jwtService: JwtService,
-    private readonly usersService: UsersService,
     private readonly refreshTokenService: RefreshTokenService,
+    private readonly usersService: UsersService,
   ) {}
 
   async validateUser(
@@ -183,19 +186,71 @@ export class AuthService {
     }
   }
 
+  async forgotPassword({ email }: ForgotPasswordDto): Promise<void> {
+    const maskedEmail = maskIdentifier(email);
+
+    this.logger.debug(`[forgotPassword] Start email=${maskedEmail}`);
+
+    try {
+      const identity = await this.identitiesService.findOne(
+        email,
+        AuthProvider.LOCAL,
+      );
+
+      if (!identity || !identity.passwordHash) {
+        this.logger.debug(
+          `[forgotPassword] Identity not found or has no password email=${maskedEmail}`,
+        );
+        return;
+      }
+
+      const temporaryPassword = `Aa1!${randomBytes(7).toString('hex')}`;
+      const passwordHash = await hashPassword(temporaryPassword);
+
+      const userId = identity.userId ?? undefined;
+      const customerId = identity.customerId ?? undefined;
+
+      const identityIds = await this.identitiesService.findAllIdsByAccountId({
+        userId,
+        customerId,
+      });
+
+      await this.dataSource.transaction(async (tx) => {
+        await this.identitiesService.updatePassword({
+          userId,
+          customerId,
+          passwordHash,
+          tx,
+        });
+
+        await this.refreshTokenService.revokeAllByIdentityIds(identityIds, tx);
+      });
+
+      await this.emailService.sendForgotPassword(email, { temporaryPassword });
+
+      this.logger.log(`[forgotPassword] Success email=${maskedEmail}`);
+    } catch (error) {
+      this.logger.error(
+        `[forgotPassword] Failed email=${maskedEmail}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
+  }
+
   async register(registerDto: RegisterDto) {
     const { phone, email, password } = registerDto;
 
-    const maskedPhone = maskIdentifier(phone);
-    const maskedEmail = email ? maskIdentifier(email) : undefined;
+    const maskedEmail = maskIdentifier(email);
+    const maskedPhone = phone ? maskIdentifier(phone) : undefined;
 
     this.logger.debug(
-      `[register] Registering phone=${maskedPhone}, email=${maskedEmail}`,
+      `[register] Registering email=${maskedEmail}, phone=${maskedPhone}`,
     );
 
     try {
       const result = await this.dataSource.transaction(async (tx) => {
-        const identifiers = [phone, ...(email ? [email] : [])];
+        const identifiers = [email, ...(phone ? [phone] : [])];
 
         this.logger.debug(`[register] Checking existing identities`);
 
@@ -205,36 +260,36 @@ export class AuthService {
         });
 
         if (existed) {
-          throw new ConflictException('Phone or email already exists');
+          throw new ConflictException('Email or phone already exists');
         }
 
         this.logger.debug(`[register] Resolving customer`);
 
-        const customers = await this.customersService.findActiveByPhoneOrEmail({
-          phone,
+        const customers = await this.customersService.findActiveByEmailOrPhone({
           email,
+          phone,
           tx,
         });
 
         if (customers.length > 1) {
           this.logger.warn(
-            `[register] Conflict: phone and email belong to different customers`,
+            `[register] Conflict: email and phone belong to different customers`,
           );
 
           throw new ConflictException(
-            'Phone and email belong to different accounts',
+            'Email and phone belong to different accounts',
           );
         }
 
         let customer = customers[0];
 
         if (customer) {
-          const matchesPhone = customer.phone === phone;
-          const matchesEmail = !email || customer.email === email;
+          const matchesEmail = customer.email === email;
+          const matchesPhone = !phone || customer.phone === phone;
 
-          if (!matchesPhone || !matchesEmail) {
+          if (!matchesEmail || !matchesPhone) {
             throw new ConflictException(
-              'Phone and email must match the same existing account',
+              'Email and phone must match the same existing account',
             );
           }
         } else {
@@ -247,8 +302,8 @@ export class AuthService {
 
         await this.identitiesService.create(
           {
-            phone,
             email,
+            phone,
             passwordHash,
             provider: AuthProvider.LOCAL,
             customerId: customer.id,
@@ -264,7 +319,7 @@ export class AuthService {
       return result;
     } catch (error) {
       this.logger.error(
-        `[register] Failed phone=${maskedPhone}, email=${maskedEmail}`,
+        `[register] Failed email=${maskedEmail}, phone=${maskedPhone}`,
         getErrorStack(error),
       );
 

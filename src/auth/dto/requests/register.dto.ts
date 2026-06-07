@@ -19,16 +19,6 @@ import { Match } from '@/common/validators';
 import { Gender } from '@/customers/enums';
 
 export class RegisterDto {
-  @Matches(/^\+?[0-9](?:[0-9\s-]{6,30}[0-9])$/, {
-    message: 'Phone number format is invalid',
-  })
-  @MaxLength(MAX_PHONE_LENGTH, {
-    message: `Phone must not exceed ${MAX_PHONE_LENGTH} characters`,
-  })
-  @IsString({ message: 'Phone must be a string' })
-  @IsNotEmpty({ message: 'Phone is required' })
-  phone: string;
-
   @MaxLength(MAX_EMAIL_LENGTH, {
     message: `Email must not exceed ${MAX_EMAIL_LENGTH} characters`,
   })
@@ -36,8 +26,18 @@ export class RegisterDto {
     { ignore_max_length: true },
     { message: 'Email must be a valid email address' },
   )
+  @IsNotEmpty({ message: 'Email is required' })
+  email: string;
+
+  @Matches(/^\+?[0-9](?:[0-9\s-]{6,30}[0-9])$/, {
+    message: 'Phone number format is invalid',
+  })
+  @MaxLength(MAX_PHONE_LENGTH, {
+    message: `Phone must not exceed ${MAX_PHONE_LENGTH} characters`,
+  })
+  @IsString({ message: 'Phone must be a string' })
   @IsOptional()
-  email?: string;
+  phone?: string;
 
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/, {
     message:

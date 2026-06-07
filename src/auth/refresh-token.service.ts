@@ -9,6 +9,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import type { EntityManager } from 'typeorm';
 import { RefreshToken } from './entities';
 import { AuthMapper } from './mappers';
 import {
@@ -153,6 +154,50 @@ export class RefreshTokenService {
     await this.refreshTokenRepository.revoke(token.id);
 
     this.logger.debug(`[revoke] Token revoked id=${token.id}`);
+  }
+
+  async revokeAllByIdentityId(
+    identityId: string,
+    tx?: EntityManager,
+  ): Promise<void> {
+    this.logger.debug(
+      `[revokeAllByIdentityId] Revoking all tokens identityId=${identityId}`,
+    );
+
+    try {
+      await this.refreshTokenRepository.revokeAllByIdentityId(identityId, tx);
+      this.logger.debug(
+        `[revokeAllByIdentityId] Done identityId=${identityId}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `[revokeAllByIdentityId] Failed identityId=${identityId}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
+  }
+
+  async revokeAllByIdentityIds(
+    identityIds: string[],
+    tx?: EntityManager,
+  ): Promise<void> {
+    this.logger.debug(
+      `[revokeAllByIdentityIds] Revoking all tokens count=${identityIds.length}`,
+    );
+
+    try {
+      await this.refreshTokenRepository.revokeAllByIdentityIds(identityIds, tx);
+      this.logger.debug(
+        `[revokeAllByIdentityIds] Done count=${identityIds.length}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `[revokeAllByIdentityIds] Failed count=${identityIds.length}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
   }
 
   private hash(token: string): string {

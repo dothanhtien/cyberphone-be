@@ -6,13 +6,13 @@ import { Customer } from '../entities';
 
 export interface ICustomerRepository {
   create(data: CustomerCreateEntityInput, tx: EntityManager): Promise<Customer>;
-  findActiveByPhoneOrEmail({
-    phone,
+  findActiveByEmailOrPhone({
     email,
+    phone,
     tx,
   }: {
-    phone: string;
-    email?: string;
+    email: string;
+    phone?: string;
     tx: EntityManager;
   }): Promise<Customer[]>;
   findOneActiveById(id: string): Promise<Customer | null>;
@@ -36,23 +36,23 @@ export class CustomerRepository implements ICustomerRepository {
     return tx.getRepository(Customer).save(data);
   }
 
-  findActiveByPhoneOrEmail({
-    phone,
+  findActiveByEmailOrPhone({
     email,
+    phone,
     tx,
   }: {
-    phone: string;
-    email?: string;
+    email: string;
+    phone?: string;
     tx: EntityManager;
   }): Promise<Customer[]> {
     const whereOptions: {
       phone?: string;
       email?: string;
       isActive: boolean;
-    }[] = [{ phone, isActive: true }];
+    }[] = [{ email, isActive: true }];
 
-    if (email) {
-      whereOptions.push({ email, isActive: true });
+    if (phone) {
+      whereOptions.push({ phone, isActive: true });
     }
 
     return tx.getRepository(Customer).find({ where: whereOptions });
