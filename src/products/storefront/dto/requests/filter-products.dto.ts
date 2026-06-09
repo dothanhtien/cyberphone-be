@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
-import { PaginationQueryDto } from '@/common/dto';
 import { ProductSortEnum } from '../../enums';
+import { PaginationQueryDto } from '@/common/dto';
 
 export class FilterProductsDto extends PaginationQueryDto {
   @IsString({
@@ -37,5 +37,9 @@ export class FilterProductsDto extends PaginationQueryDto {
 
   @IsString()
   @IsOptional()
-  categorySlug?: string;
+  category?: string;
+
+  @IsString()
+  @IsOptional()
+  brand?: string;
 }

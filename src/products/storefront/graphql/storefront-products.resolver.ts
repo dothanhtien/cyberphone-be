@@ -52,20 +52,43 @@ export class StorefrontProductsResolver {
     description: 'Products belonging to a category',
   })
   async categoryProducts(
-    @Args('categorySlug') categorySlug: string,
+    @Args('category') category: string,
     @Args('limit', { type: () => Int, defaultValue: 8 }) limit: number,
   ): Promise<StorefrontProductType[]> {
     const normalizedLimit = this.normalizeLimit(limit);
 
-    const normalizedSlug = categorySlug.trim();
+    const normalizedSlug = category.trim();
     if (!normalizedSlug) {
-      throw new BadRequestException('categorySlug must not be empty');
+      throw new BadRequestException('category must not be empty');
     }
 
     const { items } = await this.productsService.findAll({
       limit: normalizedLimit,
-      categorySlug,
+      category: normalizedSlug,
     });
+
+    return items;
+  }
+
+  @Query(() => [StorefrontProductType], {
+    description: 'Products belonging to a brand',
+  })
+  async brandProducts(
+    @Args('brand') brand: string,
+    @Args('limit', { type: () => Int, defaultValue: 8 }) limit: number,
+  ): Promise<StorefrontProductType[]> {
+    const normalizedLimit = this.normalizeLimit(limit);
+
+    const normalizedSlug = brand.trim();
+    if (!normalizedSlug) {
+      throw new BadRequestException('brand must not be empty');
+    }
+
+    const { items } = await this.productsService.findAll({
+      limit: normalizedLimit,
+      brand: normalizedSlug,
+    });
+
     return items;
   }
 }
