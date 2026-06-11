@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 import { OrderStatus } from '@/orders/enums';
-import { PaymentMethod, PaymentStatus } from '@/payment/enums';
+import { PaymentMethod, PaymentProvider, PaymentStatus } from '@/payment/enums';
 
 export class OrderResponseDto {
   @Expose()
@@ -94,5 +94,22 @@ export class OrderDetailsResponseDto {
     variantName: string;
     sku: string;
     attributes: Record<string, unknown> | null;
+  }[];
+
+  @Expose()
+  payments: {
+    id: string;
+    transactionId: string | null;
+    amount: string;
+    currency: string;
+    provider: PaymentProvider;
+    paymentMethod: string | null;
+    status: PaymentStatus;
+    failureReason: string | null;
+    paidAt: Date | null;
+    refundedAt: Date | null;
+    refundTransactionId: string | null;
+    checkoutUrl: string | null;
+    createdAt: Date;
   }[];
 }

@@ -62,7 +62,7 @@ export class OrderMapper {
       taxTotal: input.taxTotal,
       orderTotal: input.orderTotal,
       orderStatus: input.orderStatus,
-      items: input.items.map((i) => ({
+      items: (input.items ?? []).map((i) => ({
         id: i.id,
         variantName: i.variantName,
         sku: i.sku,
@@ -71,6 +71,21 @@ export class OrderMapper {
         salePrice: i.salePrice,
         quantity: i.quantity,
         itemTotal: i.itemTotal,
+      })),
+      payments: (input.payments ?? []).map((p) => ({
+        id: p.id,
+        transactionId: p.transactionId,
+        amount: p.amount,
+        currency: p.currency,
+        provider: p.provider,
+        paymentMethod: p.paymentMethod,
+        status: p.status,
+        failureReason: p.failureReason,
+        paidAt: p.paidAt,
+        refundedAt: p.refundedAt,
+        refundTransactionId: p.refundTransactionId,
+        checkoutUrl: p.checkoutUrl,
+        createdAt: p.createdAt,
       })),
     });
   }
