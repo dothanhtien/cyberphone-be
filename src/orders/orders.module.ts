@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminOrdersController } from './admin/admin-orders.controller';
 import { AdminOrdersService } from './admin/admin-orders.service';
+import { CustomerOrdersController } from './customer/customer-orders.controller';
+import { CustomerOrdersService } from './customer/customer-orders.service';
 import { Order, OrderItem } from './entities';
 import {
   ORDER_ITEM_REPOSITORY,
@@ -17,6 +19,7 @@ import { ProductsModule } from '@/products/products.module';
   imports: [TypeOrmModule.forFeature([Order, OrderItem]), ProductsModule],
   providers: [
     AdminOrdersService,
+    CustomerOrdersService,
     StorefrontOrdersService,
     {
       provide: ORDER_REPOSITORY,
@@ -27,7 +30,11 @@ import { ProductsModule } from '@/products/products.module';
       useClass: OrderItemRepository,
     },
   ],
-  controllers: [AdminOrdersController, StorefrontOrdersController],
+  controllers: [
+    AdminOrdersController,
+    CustomerOrdersController,
+    StorefrontOrdersController,
+  ],
   exports: [AdminOrdersService],
 })
 export class OrdersModule {}

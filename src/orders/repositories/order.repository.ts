@@ -10,9 +10,19 @@ import { CartStatus } from '@/carts/enums';
 
 export interface IOrderRepository {
   countActive(): Promise<number>;
+  countByCustomer(customerId: string): Promise<number>;
   findAllRaw(limit: number, offset: number): Promise<OrderRaw[]>;
+  findAllByCustomer(
+    customerId: string,
+    limit: number,
+    offset: number,
+  ): Promise<OrderRaw[]>;
   findOneActive(id: string, tx?: EntityManager): Promise<Order | null>;
   findOneActiveWithRelations(id: string): Promise<Order | null>;
+  findOneActiveWithRelationsByCustomer(
+    id: string,
+    customerId: string,
+  ): Promise<Order | null>;
   findCartForOrderCreation(
     cartId: string,
     tx: EntityManager,
@@ -52,6 +62,20 @@ export class OrderRepository implements IOrderRepository {
     return this.orderRepository.count({ where: { isActive: true } });
   }
 
+  async countByCustomer(customerId: string): Promise<number> {
+    const [{ count }] = await this.orderRepository.query<{ count: string }[]>(
+      `SELECT COUNT(*) AS count
+       FROM (
+         SELECT DISTINCT ON (cart_id) id
+         FROM orders
+         WHERE is_active = true AND customer_id = $1
+         ORDER BY cart_id, revision DESC
+       ) sub`,
+      [customerId],
+    );
+    return Number(count);
+  }
+
   async findAllRaw(limit: number, offset: number): Promise<OrderRaw[]> {
     return this.orderRepository.query<OrderRaw[]>(
       `
@@ -84,6 +108,42 @@ export class OrderRepository implements IOrderRepository {
     );
   }
 
+  async findAllByCustomer(
+    customerId: string,
+    limit: number,
+    offset: number,
+  ): Promise<OrderRaw[]> {
+    return this.orderRepository.query<OrderRaw[]>(
+      `
+        WITH latest_orders AS (
+          SELECT DISTINCT ON (cart_id) *
+          FROM orders
+          WHERE is_active = true AND customer_id = $1
+          ORDER BY cart_id, revision DESC
+        )
+        SELECT
+          o.id, o.code,
+          o.order_total AS "orderTotal",
+          o.payment_status AS "paymentStatus",
+          o.order_status AS "orderStatus",
+          o.created_at AS "createdAt",
+          o.updated_at AS "updatedAt",
+          CASE WHEN c.id IS NOT NULL THEN
+            json_build_object(
+              'id', c.id,
+              'firstName', c.first_name,
+              'lastName', c.last_name
+            )
+          END AS customer
+        FROM latest_orders o
+        LEFT JOIN customers c ON o.customer_id = c.id
+        ORDER BY COALESCE(o.updated_at, o.created_at) DESC
+        LIMIT $2 OFFSET $3
+      `,
+      [customerId, limit, offset],
+    );
+  }
+
   findOneActive(id: string, tx?: EntityManager): Promise<Order | null> {
     const repo = tx ? tx.getRepository(Order) : this.orderRepository;
     return repo.findOne({ where: { id, isActive: true } });
@@ -92,7 +152,17 @@ export class OrderRepository implements IOrderRepository {
   findOneActiveWithRelations(id: string): Promise<Order | null> {
     return this.orderRepository.findOne({
       where: { id, isActive: true },
-      relations: { items: true, customer: true },
+      relations: { items: true, customer: true, payments: true },
+    });
+  }
+
+  findOneActiveWithRelationsByCustomer(
+    id: string,
+    customerId: string,
+  ): Promise<Order | null> {
+    return this.orderRepository.findOne({
+      where: { id, isActive: true, customerId },
+      relations: { items: true, customer: true, payments: true },
     });
   }
 
