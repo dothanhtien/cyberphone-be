@@ -35,7 +35,7 @@ export class AdminOrdersController {
   updateStatus(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() dto: UpdateOrderStatusDto,
-    @LoggedInUser('email') updatedBy: string,
+    @LoggedInUser('identityId') updatedBy: string,
   ) {
     return this.ordersService.updateStatus(id, dto, updatedBy);
   }

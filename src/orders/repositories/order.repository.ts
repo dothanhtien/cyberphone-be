@@ -47,6 +47,12 @@ export interface IOrderRepository {
     data: OrderUpdateEntityInput,
     tx: EntityManager,
   ): Promise<boolean>;
+  updateStatus(
+    id: string,
+    currentStatus: OrderStatus,
+    data: OrderUpdateEntityInput,
+    tx: EntityManager,
+  ): Promise<boolean>;
 }
 
 export const ORDER_REPOSITORY = Symbol('IOrderRepository');
@@ -268,6 +274,18 @@ export class OrderRepository implements IOrderRepository {
     const result = await tx
       .getRepository(Order)
       .update({ id, isActive: true }, data);
+    return (result.affected ?? 0) > 0;
+  }
+
+  async updateStatus(
+    id: string,
+    currentStatus: OrderStatus,
+    data: OrderUpdateEntityInput,
+    tx: EntityManager,
+  ): Promise<boolean> {
+    const result = await tx
+      .getRepository(Order)
+      .update({ id, isActive: true, orderStatus: currentStatus }, data);
     return (result.affected ?? 0) > 0;
   }
 }

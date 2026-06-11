@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Inject,
   Injectable,
   Logger,
@@ -88,11 +89,18 @@ export class AdminOrdersService {
         `[updateStatus] id=${id} ${order.orderStatus} → ${dto.status} by=${updatedBy}`,
       );
 
-      await this.orderRepository.update(
+      const updated = await this.orderRepository.updateStatus(
         id,
+        order.orderStatus,
         { orderStatus: dto.status, updatedBy },
         manager,
       );
+
+      if (!updated) {
+        throw new ConflictException(
+          'Order status was modified concurrently; please retry',
+        );
+      }
     };
 
     if (tx) {
