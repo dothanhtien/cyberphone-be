@@ -103,6 +103,36 @@ chmod +x scripts/init-letsencrypt.sh
 ./scripts/init-letsencrypt.sh yourdomain.com admin@yourdomain.com
 ```
 
+**If certbot fails with "live directory exists":** The dummy cert directory was created manually by openssl and certbot refuses to overwrite it. Remove it and re-run certbot manually:
+
+```bash
+# Switch nginx to HTTP-only config so it can still serve the ACME challenge
+cp nginx/nginx.init.conf nginx/_active.conf
+docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
+
+# Remove the manually created dummy cert directory
+rm -rf certbot/conf/live/yourdomain.com
+
+# Issue the real certificate
+docker compose -f docker-compose.prod.yml run --rm --entrypoint certbot certbot certonly \
+  --webroot --webroot-path=/var/www/certbot \
+  --email "admin@yourdomain.com" --agree-tos --no-eff-email \
+  -d "yourdomain.com"
+
+# Restore the full nginx config
+sed "s/YOUR_DOMAIN/yourdomain.com/g" nginx/nginx.conf > nginx/_active.conf
+docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
+```
+
+**If nginx reload fails with "cert not found" after certbot succeeds:** Certbot may have stored the cert as `yourdomain.com-0001` to avoid the old dummy directory. Check and symlink:
+
+```bash
+ls certbot/conf/live/
+# If yourdomain.com-0001 exists:
+cd certbot/conf/live && ln -s yourdomain.com-0001 yourdomain.com && cd ~/cyberphone-be
+docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
+```
+
 ### 7. Start all services
 
 ```bash
