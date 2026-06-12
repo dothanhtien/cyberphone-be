@@ -72,6 +72,7 @@ jobs:
           script: |
             set -e
             cd ~/cyberphone-be
+            git restore .
             git pull origin deploy
 
             # Pull latest image
