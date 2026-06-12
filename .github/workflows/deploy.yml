@@ -77,8 +77,8 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ secrets.VPS_USER }} --password-stdin
             docker pull ghcr.io/${{ github.repository }}:latest
 
-            # Restart services with new image
-            docker compose -f docker-compose.prod.yml up -d --no-build
+            # Restart api service with new image
+            docker compose -f docker-compose.prod.yml up -d --no-build --force-recreate api
 
             # Run any pending migrations
             docker compose -f docker-compose.prod.yml exec -T api npm run migration:run:prod
