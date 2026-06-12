@@ -71,7 +71,7 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
             set -e
-            cd /root/cyberphone-be
+            cd ~/cyberphone-be
             git pull origin deploy
 
             # Pull latest image
