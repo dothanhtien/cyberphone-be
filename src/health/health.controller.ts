@@ -19,6 +19,6 @@ export class HealthController {
       throw new ServiceUnavailableException({ status: 'error', db });
     }
 
-    return { status: 'ok', db, message: 'try to see the fix is ok' };
+    return { status: 'ok', db };
   }
 }
