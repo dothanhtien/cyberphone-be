@@ -24,6 +24,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { CustomersModule } from './customers/customers.module';
 import { IdentitiesModule } from './identities/identities.module';
 import { StorefrontConfigurationsModule } from './storefront-configurations/storefront-configurations.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { StorefrontConfigurationsModule } from './storefront-configurations/stor
     CustomersModule,
     IdentitiesModule,
     StorefrontConfigurationsModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

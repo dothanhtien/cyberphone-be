@@ -21,8 +21,10 @@
     "migration:generate": "typeorm-ts-node-commonjs -d typeorm.config.ts migration:generate",
     "migration:create": "typeorm-ts-node-commonjs migration:create",
     "migration:run": "typeorm-ts-node-commonjs -d typeorm.config.ts migration:run",
+    "migration:run:prod": "typeorm -d dist/typeorm.config.js migration:run",
     "migration:revert": "typeorm-ts-node-commonjs -d typeorm.config.ts migration:revert",
-    "seed": "ts-node -r tsconfig-paths/register src/seeds/cli.ts"
+    "seed": "ts-node -r tsconfig-paths/register src/seeds/cli.ts",
+    "seed:prod": "node dist/src/seeds/cli.js"
   },
   "dependencies": {
     "@apollo/server": "^5.5.0",
