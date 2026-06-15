@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
-import { CustomerCreateEntityInput } from '../dtos';
+import { EntityManager, Not, Repository } from 'typeorm';
+import { CustomerCreateEntityInput, CustomerUpdateEntityInput } from '../dto';
 import { Customer } from '../entities';
+import { PaginatedEntity } from '@/common/types';
+import { buildPaginationParams } from '@/common/utils';
 
 export interface ICustomerRepository {
   create(data: CustomerCreateEntityInput, tx: EntityManager): Promise<Customer>;
@@ -17,6 +19,22 @@ export interface ICustomerRepository {
   }): Promise<Customer[]>;
   findOneActiveById(id: string): Promise<Customer | null>;
   findOneActiveByIdentifier(identifier: string): Promise<Customer | null>;
+  findAllActive(
+    page: number,
+    limit: number,
+  ): Promise<PaginatedEntity<Customer>>;
+  update(
+    id: string,
+    data: CustomerUpdateEntityInput,
+  ): Promise<{ id: string } | null>;
+  existsActiveByEmailExcludingId(
+    email: string,
+    excludeId: string,
+  ): Promise<boolean>;
+  existsActiveByPhoneExcludingId(
+    phone: string,
+    excludeId: string,
+  ): Promise<boolean>;
   updateLastLogin(id: string): Promise<void>;
 }
 
@@ -68,6 +86,54 @@ export class CustomerRepository implements ICustomerRepository {
         { phone: identifier, isActive: true },
         { email: identifier, isActive: true },
       ],
+    });
+  }
+
+  async findAllActive(
+    page: number,
+    limit: number,
+  ): Promise<PaginatedEntity<Customer>> {
+    const [items, totalCount] = await this.customerRepository.findAndCount({
+      where: { isActive: true },
+      ...buildPaginationParams(page, limit),
+      order: { createdAt: 'DESC' },
+    });
+
+    return {
+      items,
+      totalCount,
+      currentPage: page,
+      itemsPerPage: limit,
+    };
+  }
+
+  async update(
+    id: string,
+    data: CustomerUpdateEntityInput,
+  ): Promise<{ id: string } | null> {
+    const result = await this.customerRepository.update(
+      { id, isActive: true },
+      data,
+    );
+    if (result.affected === 0) return null;
+    return { id };
+  }
+
+  existsActiveByEmailExcludingId(
+    email: string,
+    excludeId: string,
+  ): Promise<boolean> {
+    return this.customerRepository.exists({
+      where: { email, isActive: true, id: Not(excludeId) },
+    });
+  }
+
+  existsActiveByPhoneExcludingId(
+    phone: string,
+    excludeId: string,
+  ): Promise<boolean> {
+    return this.customerRepository.exists({
+      where: { phone, isActive: true, id: Not(excludeId) },
     });
   }
 
