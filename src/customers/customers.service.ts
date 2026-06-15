@@ -1,8 +1,25 @@
-import { ConflictException, Inject, Injectable, Logger } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
-import { CreateCustomerDto, CustomerCreateEntityInput } from './dtos';
-import { CUSTOMER_REPOSITORY, type ICustomerRepository } from './repositories';
 import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { EntityManager } from 'typeorm';
+import {
+  CreateCustomerDto,
+  CustomerCreateEntityInput,
+  CustomerResponseDto,
+  CustomerUpdateEntityInput,
+  UpdateCustomerDto,
+} from './dto';
+import { CustomerMapper } from './mappers';
+import { CUSTOMER_REPOSITORY, type ICustomerRepository } from './repositories';
+import { PaginationQueryDto } from '@/common/dto';
+import { PaginatedEntity } from '@/common/types';
+import {
+  extractPaginationParams,
   getErrorStack,
   isUniqueConstraintError,
   maskIdentifier,
@@ -140,6 +157,105 @@ export class CustomersService {
       );
       throw error;
     }
+  }
+
+  async findAll(
+    paginationQueryDto: PaginationQueryDto,
+  ): Promise<PaginatedEntity<CustomerResponseDto>> {
+    const { page, limit } = extractPaginationParams(paginationQueryDto);
+    this.logger.debug(
+      `[findAll] Fetching customers page=${page}, limit=${limit}`,
+    );
+
+    const result = await this.customerRepository.findAllActive(page, limit);
+
+    this.logger.debug(`[findAll] Fetched ${result.items.length} customers`);
+
+    return {
+      ...result,
+      items: result.items.map((c) => CustomerMapper.mapToCustomerResponse(c)),
+    };
+  }
+
+  async findOne(id: string): Promise<CustomerResponseDto> {
+    this.logger.debug(`[findOne] Fetching customer id=${id}`);
+
+    const customer = await this.customerRepository.findOneActiveById(id);
+
+    if (!customer) {
+      this.logger.warn(`[findOne] Customer not found id=${id}`);
+      throw new NotFoundException('Customer not found');
+    }
+
+    return CustomerMapper.mapToCustomerResponse(customer);
+  }
+
+  async update(id: string, updateCustomerDto: UpdateCustomerDto) {
+    this.logger.debug(`[update] Updating customer id=${id}`);
+
+    const exists = await this.customerRepository.findOneActiveById(id);
+    if (!exists) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    if (updateCustomerDto.email) {
+      const emailTaken =
+        await this.customerRepository.existsActiveByEmailExcludingId(
+          updateCustomerDto.email,
+          id,
+        );
+      if (emailTaken) {
+        throw new BadRequestException('Email already in use');
+      }
+    }
+
+    if (updateCustomerDto.phone) {
+      const phoneTaken =
+        await this.customerRepository.existsActiveByPhoneExcludingId(
+          updateCustomerDto.phone,
+          id,
+        );
+      if (phoneTaken) {
+        throw new BadRequestException('Phone already in use');
+      }
+    }
+
+    try {
+      const result = await this.customerRepository.update(
+        id,
+        sanitizeEntityInput(CustomerUpdateEntityInput, updateCustomerDto),
+      );
+
+      if (!result) {
+        throw new NotFoundException('Customer not found');
+      }
+
+      this.logger.log(`[update] Customer updated successfully id=${id}`);
+      return result;
+    } catch (error) {
+      if (isUniqueConstraintError(error)) {
+        throw new ConflictException('Email or phone already in use');
+      }
+
+      this.logger.error(
+        `[update] Failed to update customer id=${id}`,
+        getErrorStack(error),
+      );
+      throw error;
+    }
+  }
+
+  async deactivate(id: string, updatedBy: string) {
+    this.logger.debug(`[deactivate] Deactivating customer id=${id}`);
+
+    const exists = await this.customerRepository.findOneActiveById(id);
+    if (!exists) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    await this.customerRepository.update(id, { isActive: false, updatedBy });
+
+    this.logger.log(`[deactivate] Customer deactivated id=${id}`);
   }
 
   async updateLastLogin(id: string) {
