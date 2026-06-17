@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { Gender } from '@/customers/enums';
+import { Gender } from '@/common/enums';
 
 export class CustomerCreateEntityInput {
   @Expose()

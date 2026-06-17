@@ -190,7 +190,11 @@ export class CustomersService {
     return CustomerMapper.mapToCustomerResponse(customer);
   }
 
-  async update(id: string, updateCustomerDto: UpdateCustomerDto) {
+  async update(
+    id: string,
+    updateCustomerDto: UpdateCustomerDto,
+    tx?: EntityManager,
+  ) {
     this.logger.debug(`[update] Updating customer id=${id}`);
 
     const exists = await this.customerRepository.findOneActiveById(id);
@@ -224,6 +228,7 @@ export class CustomersService {
       const result = await this.customerRepository.update(
         id,
         sanitizeEntityInput(CustomerUpdateEntityInput, updateCustomerDto),
+        tx,
       );
 
       if (!result) {
