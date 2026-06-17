@@ -36,29 +36,9 @@ export class ProfileService {
 
     if (isChangingPassword) {
       if (!dto.currentPassword || !dto.newPassword) {
-        throw new UnauthorizedException(
+        throw new BadRequestException(
           'Both currentPassword and newPassword are required to change password',
         );
-      }
-
-      const identity = await this.identitiesService.findOneByAccountId(
-        isUser ? { userId: authUser.id } : { customerId: authUser.id },
-      );
-
-      if (!identity) {
-        throw new UnauthorizedException('Current password is incorrect');
-      }
-
-      if (!identity.passwordHash) {
-        throw new BadRequestException(
-          'Account does not have a local password set',
-        );
-      }
-
-      if (
-        !(await comparePassword(dto.currentPassword, identity.passwordHash))
-      ) {
-        throw new UnauthorizedException('Current password is incorrect');
       }
     }
 
@@ -76,11 +56,47 @@ export class ProfileService {
       const passwordHash = await hashPassword(dto.newPassword!);
 
       return this.dataSource.transaction(async (tx) => {
-        await this.identitiesService.updatePassword(
+        const identity = await this.identitiesService.findOneByAccountId(
           isUser
-            ? { userId: authUser.id, passwordHash, tx }
-            : { customerId: authUser.id, passwordHash, tx },
+            ? { userId: authUser.id, tx }
+            : { customerId: authUser.id, tx },
         );
+
+        if (!identity) {
+          throw new UnauthorizedException('Current password is incorrect');
+        }
+
+        if (!identity.passwordHash) {
+          throw new BadRequestException(
+            'Account does not have a local password set',
+          );
+        }
+
+        if (
+          !(await comparePassword(dto.currentPassword!, identity.passwordHash))
+        ) {
+          throw new UnauthorizedException('Current password is incorrect');
+        }
+
+        const updated = await this.identitiesService.updatePassword(
+          isUser
+            ? {
+                userId: authUser.id,
+                passwordHash,
+                oldPasswordHash: identity.passwordHash,
+                tx,
+              }
+            : {
+                customerId: authUser.id,
+                passwordHash,
+                oldPasswordHash: identity.passwordHash,
+                tx,
+              },
+        );
+
+        if (!updated) {
+          throw new UnauthorizedException('Current password is incorrect');
+        }
 
         if (isUser) {
           return this.usersService.update(authUser.id, profileFields, tx);

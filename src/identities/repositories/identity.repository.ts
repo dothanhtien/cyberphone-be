@@ -30,9 +30,11 @@ export interface IIdentityRepository {
   findOneByAccountId({
     userId,
     customerId,
+    tx,
   }: {
     userId?: string;
     customerId?: string;
+    tx?: EntityManager;
   }): Promise<Identity | null>;
   save(data: IdentityCreateEntity, tx: EntityManager): Promise<Identity>;
   findAllIdsByAccountId({
@@ -48,13 +50,15 @@ export interface IIdentityRepository {
     userId,
     customerId,
     passwordHash,
+    oldPasswordHash,
     tx,
   }: {
     userId?: string;
     customerId?: string;
     passwordHash: string;
+    oldPasswordHash?: string;
     tx?: EntityManager;
-  }): Promise<void>;
+  }): Promise<boolean>;
 }
 
 export const IDENTITY_REPOSITORY = Symbol('IIdentityRepository');
@@ -107,9 +111,11 @@ export class IdentityRepository implements IIdentityRepository {
   findOneByAccountId({
     userId,
     customerId,
+    tx,
   }: {
     userId?: string;
     customerId?: string;
+    tx?: EntityManager;
   }): Promise<Identity | null> {
     if (!userId && !customerId) return Promise.resolve(null);
 
@@ -119,7 +125,8 @@ export class IdentityRepository implements IIdentityRepository {
       );
     }
 
-    return this.identityRepository.findOne({
+    const repo = tx ? tx.getRepository(Identity) : this.identityRepository;
+    return repo.findOne({
       where: userId ? { userId } : { customerId },
     });
   }
@@ -155,13 +162,15 @@ export class IdentityRepository implements IIdentityRepository {
     userId,
     customerId,
     passwordHash,
+    oldPasswordHash,
     tx,
   }: {
     userId?: string;
     customerId?: string;
     passwordHash: string;
+    oldPasswordHash?: string;
     tx?: EntityManager;
-  }): Promise<void> {
+  }): Promise<boolean> {
     const hasUserId = Boolean(userId);
     const hasCustomerId = Boolean(customerId);
 
@@ -171,10 +180,16 @@ export class IdentityRepository implements IIdentityRepository {
       );
     }
 
-    const where = hasUserId
+    const where: Record<string, unknown> = hasUserId
       ? { userId, provider: AuthProvider.LOCAL }
       : { customerId, provider: AuthProvider.LOCAL };
+
+    if (oldPasswordHash !== undefined) {
+      where.passwordHash = oldPasswordHash;
+    }
+
     const repo = tx ? tx.getRepository(Identity) : this.identityRepository;
-    await repo.update(where, { passwordHash });
+    const result = await repo.update(where, { passwordHash });
+    return (result.affected ?? 0) > 0;
   }
 }

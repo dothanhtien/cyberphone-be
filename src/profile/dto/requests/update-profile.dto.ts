@@ -72,6 +72,10 @@ export class UpdateProfileDto {
   currentPassword?: string;
 
   @ValidateIf((o: UpdateProfileDto) => o.currentPassword !== undefined)
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/, {
+    message:
+      'New password must contain at least one uppercase letter, one lowercase letter, and one number',
+  })
   @MinLength(8, { message: 'New password must be at least 8 characters long' })
   @IsString({ message: 'New password must be a string' })
   newPassword?: string;
