@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { Gender } from '@/common/enums';
 
 export class UserResponseDto {
   @Expose()
@@ -15,4 +16,25 @@ export class UserResponseDto {
 
   @Expose()
   lastName: string;
+
+  @Expose()
+  dateOfBirth: string | null;
+
+  @Expose()
+  gender: Gender | null;
+
+  @Expose()
+  lastLogin: Date | null;
+
+  @Expose()
+  emailVerified: boolean;
+
+  @Expose()
+  phoneVerified: boolean;
+
+  @Expose()
+  isActive: boolean;
+
+  @Expose()
+  createdAt: Date;
 }

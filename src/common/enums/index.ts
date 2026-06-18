@@ -1,3 +1,9 @@
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female',
+  OTHER = 'other',
+}
+
 export enum MediaAssetRefType {
   CATEGORY = 'category',
   BRAND = 'brand',

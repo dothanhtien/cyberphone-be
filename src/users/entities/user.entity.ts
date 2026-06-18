@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Role } from './role.entity';
+import { Gender } from '../../common/enums';
 import { Identity } from '../../identities/entities';
 
 @Entity('users')
@@ -38,6 +39,12 @@ export class User {
 
   @Column({ name: 'last_name', type: 'varchar', length: 255 })
   lastName: string;
+
+  @Column({ name: 'date_of_birth', type: 'date', nullable: true })
+  dateOfBirth: string | null;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  gender: Gender | null;
 
   @Column({ name: 'last_login', type: 'timestamptz', nullable: true })
   lastLogin: Date | null;

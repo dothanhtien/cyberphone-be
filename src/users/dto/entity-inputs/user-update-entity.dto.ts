@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { Gender } from '@/common/enums';
 
 export class UserUpdateEntityDto {
   @Expose()
@@ -12,6 +13,12 @@ export class UserUpdateEntityDto {
 
   @Expose()
   lastName?: string;
+
+  @Expose()
+  dateOfBirth?: string | null;
+
+  @Expose()
+  gender?: Gender | null;
 
   @Expose()
   lastLogin?: Date | null;

@@ -6,6 +6,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
 import {
   CreateUserDto,
   UserCreateEntityDto,
@@ -140,7 +141,7 @@ export class UsersService {
     return this.userRepository.findOneActiveByIdentifier(identifier);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto, tx?: EntityManager) {
     this.logger.debug(`[update] Updating user id=${id}`);
 
     const userExists = await this.userRepository.findOneActiveById(id);
@@ -188,7 +189,13 @@ export class UsersService {
       const result = await this.userRepository.update(
         id,
         sanitizeEntityInput(UserUpdateEntityDto, updateUserDto),
+        tx,
       );
+
+      if (!result) {
+        throw new NotFoundException('User not found');
+      }
+
       this.logger.log(`[update] User updated successfully id=${id}`);
       return result;
     } catch (error) {

@@ -13,7 +13,7 @@ import {
   MAX_FIRST_NAME_LENGTH,
   MAX_LAST_NAME_LENGTH,
 } from '@/common/constants';
-import { Gender } from '@/customers/enums';
+import { Gender } from '@/common/enums';
 
 export class UpdateCustomerDto {
   @MaxLength(MAX_EMAIL_LENGTH, {
@@ -51,6 +51,9 @@ export class UpdateCustomerDto {
     {},
     { message: 'Date of birth must be a valid ISO date (YYYY-MM-DD)' },
   )
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
+    message: 'Date of birth must be in YYYY-MM-DD format',
+  })
   @IsOptional()
   dateOfBirth?: string;
 

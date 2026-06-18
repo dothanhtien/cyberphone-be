@@ -125,11 +125,17 @@ export class IdentitiesService {
   async findOneByAccountId({
     userId,
     customerId,
+    tx,
   }: {
     userId?: string;
     customerId?: string;
+    tx?: EntityManager;
   }): Promise<Identity | null> {
-    return this.identityRepository.findOneByAccountId({ userId, customerId });
+    return this.identityRepository.findOneByAccountId({
+      userId,
+      customerId,
+      tx,
+    });
   }
 
   async findAllIdsByAccountId({
@@ -152,24 +158,28 @@ export class IdentitiesService {
     userId,
     customerId,
     passwordHash,
+    oldPasswordHash,
     tx,
   }: {
     userId?: string;
     customerId?: string;
     passwordHash: string;
+    oldPasswordHash?: string;
     tx?: EntityManager;
-  }): Promise<void> {
+  }): Promise<boolean> {
     const id = userId ?? customerId;
     this.logger.debug(`[updatePassword] accountId=${id}`);
 
     try {
-      await this.identityRepository.updatePassword({
+      const updated = await this.identityRepository.updatePassword({
         userId,
         customerId,
         passwordHash,
+        oldPasswordHash,
         tx,
       });
       this.logger.debug(`[updatePassword] Success accountId=${id}`);
+      return updated;
     } catch (error) {
       this.logger.error(
         `[updatePassword] Failed accountId=${id}`,
