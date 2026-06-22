@@ -11,14 +11,15 @@ import {
   IsArray,
   ValidateNested,
 } from 'class-validator';
-import { plainToInstance, Transform } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { CreateProductAttributeDto } from './create-product-attribute.dto';
 import { CreateProductImageDto } from './create-product-image.dto';
 import { ProductStatus } from '@/common/enums';
 import {
   normalizeSlug,
-  safeJsonParse,
   toOptionalBoolean,
+  transformJsonArray,
+  transformJsonString,
 } from '@/common/utils';
 import { ArrayUniqueBy } from '@/common/validators';
 
@@ -76,17 +77,7 @@ export class UpdateProductDto {
   })
   @ArrayNotEmpty({ message: 'categoryIds must not be empty' })
   @IsArray({ message: 'categoryIds must be an array' })
-  @Transform(({ value }) => {
-    let result: unknown;
-
-    if (typeof value === 'string') {
-      result = safeJsonParse<string[]>(value);
-    } else {
-      result = value;
-    }
-
-    return result;
-  })
+  @Transform(transformJsonString)
   @IsOptional()
   categoryIds?: string[];
 
@@ -98,39 +89,13 @@ export class UpdateProductDto {
   @ArrayUniqueBy<CreateProductAttributeDto>('displayOrder', {
     message: 'Display order must not be duplicated',
   })
-  @Transform(({ value }) => {
-    let parsed: unknown = value;
-
-    if (typeof value === 'string') {
-      parsed = safeJsonParse<unknown>(value);
-    }
-
-    if (!Array.isArray(parsed)) {
-      return parsed;
-    }
-
-    return parsed.map((item) =>
-      plainToInstance(CreateProductAttributeDto, item),
-    );
-  })
+  @Transform(transformJsonArray(CreateProductAttributeDto))
   @IsOptional()
   attributes?: CreateProductAttributeDto[];
 
   @ValidateNested({ each: true })
   @IsArray({ message: 'imageMetas must be an array' })
-  @Transform(({ value }) => {
-    let parsed: unknown = value;
-
-    if (typeof value === 'string') {
-      parsed = safeJsonParse<unknown>(value);
-    }
-
-    if (!Array.isArray(parsed)) {
-      return parsed;
-    }
-
-    return parsed.map((item) => plainToInstance(CreateProductImageDto, item));
-  })
+  @Transform(transformJsonArray(CreateProductImageDto))
   @IsOptional()
   imageMetas?: CreateProductImageDto[];
 

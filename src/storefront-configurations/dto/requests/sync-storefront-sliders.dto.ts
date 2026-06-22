@@ -11,8 +11,8 @@ import {
   IsArray,
   ArrayNotEmpty,
 } from 'class-validator';
-import { plainToInstance, Transform, Type } from 'class-transformer';
-import { safeJsonParse, toOptionalBoolean } from '@/common/utils';
+import { Transform, Type } from 'class-transformer';
+import { toOptionalBoolean, transformJsonArray } from '@/common/utils';
 
 export class SyncStorefrontSliderItemDto {
   @IsUUID('4', { message: 'id must be a valid UUID' })
@@ -57,20 +57,6 @@ export class SyncStorefrontSlidersDto {
   @ValidateNested({ each: true })
   @ArrayNotEmpty({ message: 'items must not be empty' })
   @IsArray({ message: 'items must be an array' })
-  @Transform(({ value }) => {
-    let parsed: unknown = value;
-
-    if (typeof value === 'string') {
-      parsed = safeJsonParse<unknown>(value);
-    }
-
-    if (!Array.isArray(parsed)) {
-      return parsed;
-    }
-
-    return parsed.map((item) =>
-      plainToInstance(SyncStorefrontSliderItemDto, item),
-    );
-  })
+  @Transform(transformJsonArray(SyncStorefrontSliderItemDto))
   items: SyncStorefrontSliderItemDto[];
 }
