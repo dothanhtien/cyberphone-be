@@ -76,8 +76,10 @@ export class AdminProductVariantsService {
       ? await this.imageUploadService.upload(images)
       : [];
 
+    let savedVariantId: string;
+
     try {
-      const savedVariantId = await this.dataSource.transaction(async (tx) => {
+      savedVariantId = await this.dataSource.transaction(async (tx) => {
         const hasActiveVariants =
           await this.productVariantRepository.existsActiveByProductId(
             productId,
@@ -155,8 +157,6 @@ export class AdminProductVariantsService {
 
         return savedVariant.id;
       });
-
-      return await this.findOneById(savedVariantId);
     } catch (error) {
       if (uploadResults.length) {
         await this.imageUploadService.cleanup(uploadResults).catch((err) => {
@@ -168,6 +168,8 @@ export class AdminProductVariantsService {
       }
       throw error;
     }
+
+    return this.findOneById(savedVariantId);
   }
 
   async findAllByProductId(
@@ -239,8 +241,10 @@ export class AdminProductVariantsService {
       ? await this.imageUploadService.upload(images)
       : [];
 
+    let savedVariantId: string;
+
     try {
-      const savedVariantId = await this.dataSource.transaction(async (tx) => {
+      savedVariantId = await this.dataSource.transaction(async (tx) => {
         const existing = await this.productVariantRepository.findOneActiveById(
           id,
           tx,
@@ -359,8 +363,6 @@ export class AdminProductVariantsService {
 
         return savedVariant.id;
       });
-
-      return await this.findOneById(savedVariantId);
     } catch (error) {
       if (uploadResults.length) {
         await this.imageUploadService.cleanup(uploadResults).catch((err) => {
@@ -372,6 +374,8 @@ export class AdminProductVariantsService {
       }
       throw error;
     }
+
+    return this.findOneById(savedVariantId);
   }
 
   async delete(id: string): Promise<void> {

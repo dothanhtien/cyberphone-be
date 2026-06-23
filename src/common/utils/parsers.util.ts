@@ -37,3 +37,8 @@ export function toOptionalBoolean(value: unknown): unknown {
   if (value === false || value === 'false') return false;
   return value;
 }
+
+export function toOptionalNumber(value: unknown): number | undefined {
+  if (value === undefined || value === null || value === '') return undefined;
+  return Number(value);
+}

@@ -16,7 +16,11 @@ import {
 import { CreateProductImageDto } from './create-product-image.dto';
 import { SyncVariantAttributeDto } from './sync-variant-attribute.dto';
 import { ProductVariantStockStatus } from '@/common/enums';
-import { toOptionalBoolean, transformJsonArray } from '@/common/utils';
+import {
+  toOptionalBoolean,
+  toOptionalNumber,
+  transformJsonArray,
+} from '@/common/utils';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SKU_LENGTH = 100;
@@ -65,7 +69,7 @@ export class UpdateProductVariantDto {
 
   @IsInt({ message: 'Stock quantity must be an integer' })
   @Min(0, { message: 'Stock quantity must be greater than or equal to 0' })
-  @Type(() => Number)
+  @Transform(({ value }) => toOptionalNumber(value))
   @IsOptional()
   stockQuantity?: number;
 
@@ -81,7 +85,7 @@ export class UpdateProductVariantDto {
   @Min(0, {
     message: 'Low stock threshold must be greater than or equal to 0',
   })
-  @Type(() => Number)
+  @Transform(({ value }) => toOptionalNumber(value))
   @IsOptional()
   lowStockThreshold?: number;
 
