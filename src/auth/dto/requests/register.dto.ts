@@ -15,8 +15,8 @@ import {
   MAX_LAST_NAME_LENGTH,
   MAX_PHONE_LENGTH,
 } from '@/common/constants';
+import { Gender } from '@/common/enums';
 import { Match } from '@/common/validators';
-import { Gender } from '@/customers/enums';
 
 export class RegisterDto {
   @MaxLength(MAX_EMAIL_LENGTH, {

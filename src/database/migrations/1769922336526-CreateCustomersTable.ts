@@ -13,7 +13,7 @@ export class CreateCustomersTable1769922336526 implements MigrationInterface {
           "first_name" character varying(255) NOT NULL, 
           "last_name" character varying(255) NOT NULL, 
           "date_of_birth" date, 
-          "gender" character varying(100) DEFAULT 'other', 
+          "gender" character varying(50), 
           "last_login" TIMESTAMP WITH TIME ZONE, 
           "phone_verified" boolean NOT NULL DEFAULT false, 
           "email_verified" boolean NOT NULL DEFAULT false, 

@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayUnique,
   IsArray,
@@ -13,7 +13,9 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { CreateProductImageDto } from './create-product-image.dto';
 import { SyncVariantAttributeDto } from './sync-variant-attribute.dto';
+import { toOptionalBoolean, transformJsonArray } from '@/common/utils';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_SKU_LENGTH = 100;
@@ -61,6 +63,7 @@ export class CreateProductVariantDto {
 
   @IsInt({ message: 'Stock quantity must be an integer' })
   @Min(0, { message: 'Stock quantity must be greater than or equal to 0' })
+  @Type(() => Number)
   @IsOptional()
   stockQuantity?: number;
 
@@ -68,10 +71,12 @@ export class CreateProductVariantDto {
   @Min(0, {
     message: 'Low stock threshold must be greater than or equal to 0',
   })
+  @Type(() => Number)
   @IsOptional()
   lowStockThreshold?: number;
 
   @IsBoolean({ message: 'isDefault must be a boolean' })
+  @Transform(({ value }) => toOptionalBoolean(value))
   @IsOptional()
   isDefault?: boolean;
 
@@ -81,8 +86,16 @@ export class CreateProductVariantDto {
   })
   @Type(() => SyncVariantAttributeDto)
   @IsArray({ message: 'Attributes must be an array' })
+  @Transform(transformJsonArray(SyncVariantAttributeDto))
   @IsOptional()
   attributes?: SyncVariantAttributeDto[];
+
+  @ValidateNested({ each: true })
+  @Type(() => CreateProductImageDto)
+  @IsArray({ message: 'imageMetas must be an array' })
+  @Transform(transformJsonArray(CreateProductImageDto))
+  @IsOptional()
+  imageMetas?: CreateProductImageDto[];
 
   @IsEmpty()
   createdBy: string;

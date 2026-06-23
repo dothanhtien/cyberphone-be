@@ -26,6 +26,7 @@ export interface ICustomerRepository {
   update(
     id: string,
     data: CustomerUpdateEntityInput,
+    tx?: EntityManager,
   ): Promise<{ id: string } | null>;
   existsActiveByEmailExcludingId(
     email: string,
@@ -110,11 +111,10 @@ export class CustomerRepository implements ICustomerRepository {
   async update(
     id: string,
     data: CustomerUpdateEntityInput,
+    tx?: EntityManager,
   ): Promise<{ id: string } | null> {
-    const result = await this.customerRepository.update(
-      { id, isActive: true },
-      data,
-    );
+    const repo = tx ? tx.getRepository(Customer) : this.customerRepository;
+    const result = await repo.update({ id, isActive: true }, data);
     if (result.affected === 0) return null;
     return { id };
   }

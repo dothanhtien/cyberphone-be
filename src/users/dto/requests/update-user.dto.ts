@@ -6,7 +6,10 @@ import {
   Matches,
   IsUUID,
   IsEmpty,
+  IsDateString,
+  IsEnum,
 } from 'class-validator';
+import { Gender } from '@/common/enums';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_EMAIL_LENGTH = 320;
@@ -40,6 +43,22 @@ export class UpdateUserDto {
   @IsString({ message: 'Last name must be a string' })
   @IsOptional()
   lastName?: string;
+
+  @IsDateString(
+    {},
+    { message: 'Date of birth must be a valid ISO date (YYYY-MM-DD)' },
+  )
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
+    message: 'Date of birth must be in YYYY-MM-DD format',
+  })
+  @IsOptional()
+  dateOfBirth?: string;
+
+  @IsEnum(Gender, {
+    message: `Gender must be one of: ${Object.values(Gender).join(', ')}`,
+  })
+  @IsOptional()
+  gender?: Gender;
 
   @IsUUID('4', { message: 'roleId must be a valid UUID' })
   @IsOptional()

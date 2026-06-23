@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import {
   CreateProductImageDto,
@@ -27,11 +27,13 @@ export class AdminProductImagesService {
 
   async create({
     productId,
+    variantId,
     imageMetas,
     actor,
     tx,
   }: {
     productId: string;
+    variantId?: string | null;
     imageMetas: CreateProductImageDto[];
     actor: string;
     tx: EntityManager;
@@ -51,6 +53,7 @@ export class AdminProductImagesService {
       sanitizeEntityInput(ProductImageCreateEntityDto, {
         ...meta,
         productId,
+        variantId: variantId ?? null,
         createdBy: actor,
       }),
     );
@@ -67,11 +70,13 @@ export class AdminProductImagesService {
   async sync({
     imageMetas,
     productId,
+    variantId,
     actor,
     tx,
   }: {
     imageMetas: CreateProductImageDto[];
     productId: string;
+    variantId?: string | null;
     actor: string;
     tx: EntityManager;
   }): Promise<ProductImage[]> {
@@ -84,8 +89,9 @@ export class AdminProductImagesService {
       `[sync] Syncing ${imageMetas.length} image(s) productId=${productId}`,
     );
 
-    const existing =
-      await this.productImageRepository.findActiveByProductId(productId);
+    const existing = variantId
+      ? await this.productImageRepository.findActiveByVariantId(variantId, tx)
+      : await this.productImageRepository.findActiveByProductId(productId, tx);
 
     this.logger.log(
       `[sync] Found ${existing.length} existing image(s) productId=${productId}`,
@@ -95,6 +101,7 @@ export class AdminProductImagesService {
       imageMetas: imageMetas,
       productImages: existing,
       productId: productId,
+      variantId: variantId,
       actor: actor,
     });
 
@@ -119,11 +126,13 @@ export class AdminProductImagesService {
     imageMetas,
     productImages,
     productId,
+    variantId,
     actor,
   }: {
     imageMetas: CreateProductImageDto[];
     productImages: ProductImage[];
     productId: string;
+    variantId?: string | null;
     actor: string;
   }): {
     toInsert: ProductImageCreateEntityDto[];
@@ -144,7 +153,7 @@ export class AdminProductImagesService {
           sanitizeEntityInput(ProductImageCreateEntityDto, {
             id: item.id,
             productId: productId,
-            variantId: null,
+            variantId: variantId ?? null,
             imageType: item.imageType,
             altText: item.altText,
             title: item.title,
@@ -177,6 +186,14 @@ export class AdminProductImagesService {
     return { toInsert, toUpdate, toDelete };
   }
 
+  async deactivateByVariantId(
+    variantId: string,
+    tx: EntityManager,
+  ): Promise<void> {
+    this.logger.debug(`[deactivateByVariantId] variantId=${variantId}`);
+    await this.productImageRepository.softDeleteByVariantId(variantId, tx);
+  }
+
   buildMediaAssets({
     productImages,
     imageMetas,
@@ -186,13 +203,6 @@ export class AdminProductImagesService {
     imageMetas: CreateProductImageDto[];
     uploadResults: StorageUploadResult[];
   }): MediaAssetCreateEntityDto[] {
-    if (productImages.length !== uploadResults.length) {
-      const msg = `Image count mismatch productImages=${productImages.length}, uploadResults=${uploadResults.length}`;
-      this.logger.error(`[buildMediaAssets] ${msg}`);
-
-      throw new ConflictException(msg);
-    }
-
     const metaMap = new Map(imageMetas.map((m) => [m.id, m]));
 
     const assets = productImages.flatMap((pi) => {

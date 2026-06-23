@@ -12,6 +12,8 @@ export class CreateUsersTable1769922336525 implements MigrationInterface {
           "phone" character varying(30), 
           "first_name" character varying(255) NOT NULL, 
           "last_name" character varying(255) NOT NULL, 
+          "date_of_birth" date, 
+          "gender" character varying(50), 
           "last_login" TIMESTAMP WITH TIME ZONE, 
           "phone_verified" boolean NOT NULL DEFAULT false, 
           "email_verified" boolean NOT NULL DEFAULT false, 

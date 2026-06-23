@@ -4,12 +4,6 @@ import { toDto } from '@/common/utils';
 
 export class UserMapper {
   static mapToUserResponse(input: User): UserResponseDto {
-    return toDto(UserResponseDto, {
-      id: input.id,
-      phone: input.phone,
-      email: input.email,
-      firstName: input.firstName,
-      lastName: input.lastName,
-    });
+    return toDto(UserResponseDto, input);
   }
 }
