@@ -1,8 +1,8 @@
-name: cyberphone-be
+name: upphone-be
 
 services:
   api:
-    image: ghcr.io/dothanhtien/cyberphone-be:latest
+    image: ghcr.io/dothanhtien/upphone-be:latest
     container_name: api
     env_file:
       - .env

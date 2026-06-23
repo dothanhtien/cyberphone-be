@@ -119,6 +119,14 @@ export class AdminVariantAttributesService {
     );
   }
 
+  async deactivateByVariantId(
+    variantId: string,
+    tx: EntityManager,
+  ): Promise<void> {
+    this.logger.debug(`[deactivateByVariantId] variantId=${variantId}`);
+    await this.variantAttributeRepository.deactivateByVariantId(variantId, tx);
+  }
+
   private async validate(
     tx: EntityManager,
     productId: string,

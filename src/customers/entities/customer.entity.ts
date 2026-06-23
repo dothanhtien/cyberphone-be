@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Gender } from '../enums';
 import { Cart } from '../../carts/entities';
+import { Gender } from '../../common/enums';
 import { Identity } from '../../identities/entities';
 import { Order } from '../../orders/entities';
 
@@ -42,13 +42,8 @@ export class Customer {
   @Column({ name: 'date_of_birth', type: 'date', nullable: true })
   dateOfBirth: string | null;
 
-  @Column({
-    type: 'varchar',
-    length: 100,
-    nullable: true,
-    default: Gender.OTHER,
-  })
-  gender: Gender | null = Gender.OTHER;
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  gender: Gender | null;
 
   @Column({ name: 'last_login', type: 'timestamptz', nullable: true })
   lastLogin: Date | null;

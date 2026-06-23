@@ -25,6 +25,7 @@ import { CustomersModule } from './customers/customers.module';
 import { IdentitiesModule } from './identities/identities.module';
 import { StorefrontConfigurationsModule } from './storefront-configurations/storefront-configurations.module';
 import { HealthModule } from './health/health.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { HealthModule } from './health/health.module';
     IdentitiesModule,
     StorefrontConfigurationsModule,
     HealthModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

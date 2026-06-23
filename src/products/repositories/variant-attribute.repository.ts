@@ -21,6 +21,7 @@ export interface IVariantAttributeRepository {
     data: VariantAttributeUpdateEntityDto,
     tx?: EntityManager,
   ): Promise<void>;
+  deactivateByVariantId(variantId: string, tx: EntityManager): Promise<void>;
 }
 
 export const VARIANT_ATTRIBUTE_REPOSITORY = Symbol(
@@ -60,5 +61,12 @@ export class VariantAttributeRepository implements IVariantAttributeRepository {
     const repo = tx ? tx.getRepository(VariantAttribute) : this.repository;
 
     await repo.update(id, data);
+  }
+
+  async deactivateByVariantId(
+    variantId: string,
+    tx: EntityManager,
+  ): Promise<void> {
+    await tx.update(VariantAttribute, { variantId }, { isActive: false });
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsWhere, Not } from 'typeorm';
+import { Repository, FindOptionsWhere, Not, EntityManager } from 'typeorm';
 import { UserCreateEntityDto, UserUpdateEntityDto } from '../dto';
 import { User } from '../entities';
 import { buildPaginationParams } from '@/common/utils';
@@ -25,6 +25,7 @@ export interface IUserRepository {
   update(
     id: string,
     updateUserDto: UserUpdateEntityDto,
+    tx?: EntityManager,
   ): Promise<{ id: string } | null>;
   updateLastLogin(id: string): Promise<void>;
 }
@@ -134,8 +135,10 @@ export class UserRepository implements IUserRepository {
   async update(
     id: string,
     updateUserDto: UserUpdateEntityDto,
+    tx?: EntityManager,
   ): Promise<{ id: string } | null> {
-    const result = await this.userRepository.update(id, updateUserDto);
+    const repo = tx ? tx.getRepository(User) : this.userRepository;
+    const result = await repo.update(id, updateUserDto);
 
     if (result.affected === 0) return null;
 

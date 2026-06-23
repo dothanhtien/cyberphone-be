@@ -8,21 +8,29 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
-import { AdminProductValidatorsService } from './admin-product-validators.service';
 import { AdminVariantAttributesService } from './admin-variant-attributes.service';
+import { AdminProductImagesService } from './admin-product-images.service';
+import { AdminProductImageUploadService } from './admin-product-image-upload.service';
+import { AdminProductValidatorsService } from './admin-product-validators.service';
 import {
   CreateProductVariantDto,
   ProductVariantCreateEntityDto,
+  ProductVariantListResponseDto,
+  ProductVariantResponseDto,
   ProductVariantUpdateEntityDto,
   UpdateProductVariantDto,
 } from './dto';
-import { ProductVariant } from '../entities';
+import {
+  mapToProductVariantListResponse,
+  mapToProductVariantResponse,
+} from './mappers';
 import {
   type IProductVariantRepository,
   PRODUCT_VARIANT_REPOSITORY,
 } from '../repositories';
 import { ProductVariantStockStatus } from '@/common/enums';
-import { sanitizeEntityInput } from '@/common/utils';
+import { getErrorStack, sanitizeEntityInput } from '@/common/utils';
+import { MediaAssetsService } from '@/media/media-assets.service';
 
 @Injectable()
 export class AdminProductVariantsService {
@@ -34,11 +42,15 @@ export class AdminProductVariantsService {
     private readonly productVariantRepository: IProductVariantRepository,
     private readonly variantAttributesService: AdminVariantAttributesService,
     private readonly productValidatorsService: AdminProductValidatorsService,
+    private readonly productImagesService: AdminProductImagesService,
+    private readonly imageUploadService: AdminProductImageUploadService,
+    private readonly mediaAssetsService: MediaAssetsService,
   ) {}
 
   async create(
     productId: string,
     createProductVariantDto: CreateProductVariantDto,
+    images: Express.Multer.File[] = [],
   ) {
     const { sku } = createProductVariantDto;
 
@@ -51,65 +63,118 @@ export class AdminProductVariantsService {
       createProductVariantDto.salePrice,
     );
 
+    const imageMetas = createProductVariantDto.imageMetas ?? [];
+
+    this.productValidatorsService.validateImagesMetadata({
+      imageMetas,
+      images,
+    });
+
     await this.productValidatorsService.ensureProductExists(productId);
 
-    return this.dataSource.transaction(async (tx) => {
-      const hasActiveVariants =
-        await this.productVariantRepository.existsActiveByProductId(
+    const uploadResults = images.length
+      ? await this.imageUploadService.upload(images)
+      : [];
+
+    let savedVariantId: string;
+
+    try {
+      savedVariantId = await this.dataSource.transaction(async (tx) => {
+        const hasActiveVariants =
+          await this.productVariantRepository.existsActiveByProductId(
+            productId,
+            tx,
+          );
+
+        let isDefault = createProductVariantDto.isDefault;
+
+        if (!hasActiveVariants) {
+          this.logger.debug(
+            `[create] No active variants - force default productId=${productId}, sku=${sku}`,
+          );
+          isDefault = true;
+        }
+
+        if (isDefault) {
+          this.logger.debug(
+            `[create] Unsetting previous default variants productId=${productId}, sku=${sku}`,
+          );
+          await this.productVariantRepository.unsetDefaultVariant(
+            productId,
+            tx,
+          );
+        }
+
+        const stockStatus = this.calculateStockStatus(
+          createProductVariantDto.stockQuantity,
+          createProductVariantDto.lowStockThreshold,
+        );
+
+        const entityInput = sanitizeEntityInput(ProductVariantCreateEntityDto, {
+          ...createProductVariantDto,
           productId,
+          stockStatus,
+          isDefault,
+        });
+
+        const savedVariant = await this.productVariantRepository.save(
+          entityInput,
           tx,
         );
 
-      let isDefault = createProductVariantDto.isDefault;
+        const [, productImages] = await Promise.all([
+          this.variantAttributesService.sync({
+            productId,
+            variantId: savedVariant.id,
+            attributes: createProductVariantDto.attributes,
+            actor: createProductVariantDto.createdBy,
+            tx,
+          }),
+          this.productImagesService.create({
+            productId,
+            variantId: savedVariant.id,
+            imageMetas,
+            actor: createProductVariantDto.createdBy,
+            tx,
+          }),
+        ]);
 
-      if (!hasActiveVariants) {
+        if (productImages.length) {
+          const mediaAssets = this.productImagesService.buildMediaAssets({
+            productImages,
+            imageMetas,
+            uploadResults,
+          });
+
+          if (mediaAssets.length) {
+            await this.mediaAssetsService.create(mediaAssets, tx);
+          }
+        }
+
         this.logger.debug(
-          `[create] No active variants - force default productId=${productId}, sku=${sku}`,
+          `[create] Created variant successful id=${savedVariant.id}, productId=${productId}, sku=${sku}`,
         );
-        isDefault = true;
-      }
 
-      if (isDefault) {
-        this.logger.debug(
-          `[create] Unsetting previous default variants productId=${productId}, sku=${sku}`,
-        );
-        await this.productVariantRepository.unsetDefaultVariant(productId, tx);
-      }
-
-      const stockStatus = this.calculateStockStatus(
-        createProductVariantDto.stockQuantity,
-        createProductVariantDto.lowStockThreshold,
-      );
-
-      const entityInput = sanitizeEntityInput(ProductVariantCreateEntityDto, {
-        ...createProductVariantDto,
-        productId,
-        stockStatus,
-        isDefault,
+        return savedVariant.id;
       });
+    } catch (error) {
+      if (uploadResults.length) {
+        await this.imageUploadService.cleanup(uploadResults).catch((err) => {
+          this.logger.error(
+            `[create] Failed cleanup after error`,
+            getErrorStack(err),
+          );
+        });
+      }
+      throw error;
+    }
 
-      const savedVariant = await this.productVariantRepository.save(
-        entityInput,
-        tx,
-      );
-
-      await this.variantAttributesService.sync({
-        productId,
-        variantId: savedVariant.id,
-        attributes: createProductVariantDto.attributes,
-        actor: createProductVariantDto.createdBy,
-        tx,
-      });
-
-      this.logger.debug(
-        `[create] Created variant successful id=${savedVariant.id}, productId=${productId}, sku=${sku}`,
-      );
-
-      return savedVariant;
-    });
+    return this.findOneById(savedVariantId);
   }
 
-  async findAllByProductId(productId: string): Promise<ProductVariant[]> {
+  async findAllByProductId(
+    productId: string,
+  ): Promise<ProductVariantListResponseDto[]> {
     this.logger.debug(
       `[findAllByProductId] Fetching variants productId=${productId}`,
     );
@@ -117,13 +182,28 @@ export class AdminProductVariantsService {
     await this.productValidatorsService.ensureProductExists(productId);
 
     const result =
-      await this.productVariantRepository.findAllByProductId(productId);
+      await this.productVariantRepository.findAllRawByProductId(productId);
 
     this.logger.log(
       `[findAllByProductId] Found ${result.length} variants for productId=${productId}`,
     );
 
-    return result;
+    return result.map(mapToProductVariantListResponse);
+  }
+
+  async findOneById(id: string): Promise<ProductVariantResponseDto> {
+    this.logger.debug(`[findOneById] Fetching variant id=${id}`);
+
+    const variant = await this.productVariantRepository.findOneRawById(id);
+
+    if (!variant) {
+      this.logger.warn(`[findOneById] Variant not found id=${id}`);
+      throw new NotFoundException('Variant not found');
+    }
+
+    this.logger.debug(`[findOneById] Fetched variant id=${id}`);
+
+    return mapToProductVariantResponse(variant);
   }
 
   async findOneActiveById(id: string, tx?: EntityManager) {
@@ -143,106 +223,196 @@ export class AdminProductVariantsService {
     return variant;
   }
 
-  async update(id: string, updateProductVariantDto: UpdateProductVariantDto) {
+  async update(
+    id: string,
+    updateProductVariantDto: UpdateProductVariantDto,
+    images: Express.Multer.File[] = [],
+  ) {
     this.logger.debug(`[update] Updating variant id=${id}`);
 
-    return this.dataSource.transaction(async (tx) => {
+    const imageMetas = updateProductVariantDto.imageMetas ?? [];
+
+    this.productValidatorsService.validateImagesMetadata({
+      imageMetas,
+      images,
+    });
+
+    const uploadResults = images.length
+      ? await this.imageUploadService.upload(images)
+      : [];
+
+    let savedVariantId: string;
+
+    try {
+      savedVariantId = await this.dataSource.transaction(async (tx) => {
+        const existing = await this.productVariantRepository.findOneActiveById(
+          id,
+          tx,
+        );
+
+        if (!existing) {
+          this.logger.warn(`[update] Variant not found id=${id}`);
+          throw new NotFoundException('Variant not found');
+        }
+
+        if (
+          updateProductVariantDto.price !== undefined ||
+          updateProductVariantDto.salePrice !== undefined
+        ) {
+          const nextPrice =
+            updateProductVariantDto.price ?? Number(existing.price);
+
+          const nextSalePrice =
+            updateProductVariantDto.salePrice === undefined
+              ? existing.salePrice === null
+                ? null
+                : Number(existing.salePrice)
+              : updateProductVariantDto.salePrice;
+
+          this.logger.debug(
+            `[update] Validate prices id=${id}, price=${nextPrice}, salePrice=${nextSalePrice}`,
+          );
+
+          this.validatePrices(nextPrice, nextSalePrice);
+        }
+
+        let isDefault = existing.isDefault;
+
+        if (updateProductVariantDto.isDefault === true && !existing.isDefault) {
+          this.logger.debug(
+            `[update] Set as default - unset others id=${id}, productId=${existing.productId}`,
+          );
+
+          await this.productVariantRepository.unsetDefaultVariant(
+            existing.productId,
+            tx,
+          );
+
+          isDefault = true;
+        }
+
+        if (updateProductVariantDto.isDefault === false && existing.isDefault) {
+          this.logger.warn(
+            `[update] Attempt to unset default without replacement id=${id}`,
+          );
+
+          throw new ConflictException(
+            'Cannot unset default variant without assigning another one.',
+          );
+        }
+
+        let stockStatus: ProductVariantStockStatus | undefined;
+
+        if (
+          updateProductVariantDto.stockQuantity !== undefined ||
+          updateProductVariantDto.lowStockThreshold !== undefined
+        ) {
+          stockStatus = this.calculateStockStatus(
+            updateProductVariantDto.stockQuantity ?? existing.stockQuantity,
+            updateProductVariantDto.lowStockThreshold ??
+              existing.lowStockThreshold,
+          );
+
+          this.logger.debug(
+            `[update] Recalculated id=${id}, stockStatus=${stockStatus}`,
+          );
+        }
+
+        const updatePayload = sanitizeEntityInput(
+          ProductVariantUpdateEntityDto,
+          {
+            ...updateProductVariantDto,
+            ...(stockStatus && { stockStatus }),
+            isDefault,
+          },
+        );
+
+        const [savedVariant, , productImages] = await Promise.all([
+          this.productVariantRepository.update(existing, updatePayload, tx),
+          this.variantAttributesService.sync({
+            productId: existing.productId,
+            variantId: id,
+            attributes: updateProductVariantDto.attributes,
+            actor: updateProductVariantDto.updatedBy,
+            tx,
+          }),
+          imageMetas.length
+            ? this.productImagesService.sync({
+                productId: existing.productId,
+                variantId: id,
+                imageMetas,
+                actor: updateProductVariantDto.updatedBy,
+                tx,
+              })
+            : Promise.resolve([]),
+        ]);
+
+        if (productImages.length) {
+          const mediaAssets = this.productImagesService.buildMediaAssets({
+            productImages,
+            imageMetas,
+            uploadResults,
+          });
+
+          if (mediaAssets.length) {
+            await this.mediaAssetsService.create(mediaAssets, tx);
+          }
+        }
+
+        this.logger.log(`[update] Updated variant id=${id}`);
+
+        return savedVariant.id;
+      });
+    } catch (error) {
+      if (uploadResults.length) {
+        await this.imageUploadService.cleanup(uploadResults).catch((err) => {
+          this.logger.error(
+            `[update] Failed cleanup after error`,
+            getErrorStack(err),
+          );
+        });
+      }
+      throw error;
+    }
+
+    return this.findOneById(savedVariantId);
+  }
+
+  async delete(id: string): Promise<void> {
+    this.logger.debug(`[delete] Deleting variant id=${id}`);
+
+    await this.dataSource.transaction(async (tx) => {
       const existing = await this.productVariantRepository.findOneActiveById(
         id,
         tx,
       );
 
       if (!existing) {
-        this.logger.warn(`[update] Variant not found id=${id}`);
+        this.logger.warn(`[delete] Variant not found id=${id}`);
         throw new NotFoundException('Variant not found');
       }
 
-      if (
-        updateProductVariantDto.price !== undefined ||
-        updateProductVariantDto.salePrice !== undefined
-      ) {
-        const nextPrice =
-          updateProductVariantDto.price ?? Number(existing.price);
+      if (existing.isDefault) {
+        const activeCount =
+          await this.productVariantRepository.countActiveByProductId(
+            existing.productId,
+            tx,
+          );
 
-        const nextSalePrice =
-          updateProductVariantDto.salePrice === undefined
-            ? existing.salePrice === null
-              ? null
-              : Number(existing.salePrice)
-            : updateProductVariantDto.salePrice;
-
-        this.logger.debug(
-          `[update] Validate prices id=${id}, price=${nextPrice}, salePrice=${nextSalePrice}`,
-        );
-
-        this.validatePrices(nextPrice, nextSalePrice);
+        if (activeCount > 1) {
+          throw new ConflictException(
+            'Cannot delete the default variant while other variants exist. Assign a new default first.',
+          );
+        }
       }
 
-      let isDefault = existing.isDefault;
+      await Promise.all([
+        this.productVariantRepository.softDelete(id, tx),
+        this.productImagesService.deactivateByVariantId(id, tx),
+        this.variantAttributesService.deactivateByVariantId(id, tx),
+      ]);
 
-      if (updateProductVariantDto.isDefault === true && !existing.isDefault) {
-        this.logger.debug(
-          `[update] Set as default - unset others id=${id}, productId=${existing.productId}`,
-        );
-
-        await this.productVariantRepository.unsetDefaultVariant(
-          existing.productId,
-          tx,
-        );
-
-        isDefault = true;
-      }
-
-      if (updateProductVariantDto.isDefault === false && existing.isDefault) {
-        this.logger.warn(
-          `[update] Attempt to unset default without replacement id=${id}`,
-        );
-
-        throw new ConflictException(
-          'Cannot unset default variant without assigning another one.',
-        );
-      }
-
-      let stockStatus: ProductVariantStockStatus | undefined;
-
-      if (
-        updateProductVariantDto.stockQuantity !== undefined ||
-        updateProductVariantDto.lowStockThreshold !== undefined
-      ) {
-        stockStatus = this.calculateStockStatus(
-          updateProductVariantDto.stockQuantity ?? existing.stockQuantity,
-          updateProductVariantDto.lowStockThreshold ??
-            existing.lowStockThreshold,
-        );
-
-        this.logger.debug(
-          `[update] Recalculated id=${id}, stockStatus=${stockStatus}`,
-        );
-      }
-
-      const updatePayload = sanitizeEntityInput(ProductVariantUpdateEntityDto, {
-        ...updateProductVariantDto,
-        ...(stockStatus && { stockStatus }),
-        isDefault,
-      });
-
-      const savedVariant = await this.productVariantRepository.update(
-        existing,
-        updatePayload,
-        tx,
-      );
-
-      await this.variantAttributesService.sync({
-        productId: existing.productId,
-        variantId: id,
-        attributes: updateProductVariantDto.attributes,
-        actor: updateProductVariantDto.updatedBy,
-        tx,
-      });
-
-      this.logger.log(`[update] Updated variant id=${id}`);
-
-      return savedVariant;
+      this.logger.log(`[delete] Deleted variant id=${id}`);
     });
   }
 
