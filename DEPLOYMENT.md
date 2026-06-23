@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This guide covers deploying the CyberPhone backend to a Linux VPS using Docker Compose, Nginx, Let's Encrypt SSL, and GitHub Actions for CI/CD.
+This guide covers deploying the UpPhone backend to a Linux VPS using Docker Compose, Nginx, Let's Encrypt SSL, and GitHub Actions for CI/CD.
 
 ## Architecture
 
@@ -11,7 +11,7 @@ Internet
 Nginx (80/443)          ← reverse proxy + SSL termination
    │
    ▼
-NestJS API (:3000)      ← Docker container (ghcr.io/dothanhtien/cyberphone-be)
+NestJS API (:3000)      ← Docker container (ghcr.io/dothanhtien/upphone-be)
    │
    ▼
 PostgreSQL (:5432)      ← Docker container (internal network only)
@@ -70,8 +70,8 @@ sudo ufw enable
 As the `deploy` user:
 
 ```bash
-git clone https://github.com/dothanhtien/cyberphone-be
-cd cyberphone-be
+git clone https://github.com/dothanhtien/upphone-be
+cd upphone-be
 git checkout deploy
 ```
 
@@ -129,7 +129,7 @@ docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
 ```bash
 ls certbot/conf/live/
 # If yourdomain.com-0001 exists:
-cd certbot/conf/live && ln -s yourdomain.com-0001 yourdomain.com && cd ~/cyberphone-be
+cd certbot/conf/live && ln -s yourdomain.com-0001 yourdomain.com && cd ~/upphone-be
 docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
 ```
 
@@ -165,13 +165,13 @@ curl https://yourdomain.com/api/health
 On your **local machine**:
 
 ```bash
-ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/cyberphone_deploy
+ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/upphone_deploy
 ```
 
 Copy the public key to the VPS **deploy user**:
 
 ```bash
-ssh-copy-id -i ~/.ssh/cyberphone_deploy.pub deploy@YOUR_VPS_IP
+ssh-copy-id -i ~/.ssh/upphone_deploy.pub deploy@YOUR_VPS_IP
 ```
 
 ### 2. Add secrets to GitHub
@@ -182,7 +182,7 @@ Go to **GitHub → repo → Settings → Secrets and variables → Actions** and
 | ------------- | -------------------------------------------------------------- |
 | `VPS_HOST`    | VPS IP address or hostname                                     |
 | `VPS_USER`    | `deploy` (the dedicated non-root user created in setup step 1) |
-| `VPS_SSH_KEY` | Contents of `~/.ssh/cyberphone_deploy` (private key)           |
+| `VPS_SSH_KEY` | Contents of `~/.ssh/upphone_deploy` (private key)           |
 | `VPS_PORT`    | SSH port — `22` unless customized                              |
 
 ### 3. About the `latest` tag
@@ -200,7 +200,7 @@ git push origin deploy
 The workflow will:
 
 1. Build the Docker image targeting the `runner` stage
-2. Push `ghcr.io/dothanhtien/cyberphone-be:latest` (and `:sha-<commit>`) to GHCR
+2. Push `ghcr.io/dothanhtien/upphone-be:latest` (and `:sha-<commit>`) to GHCR
 3. SSH into the VPS and pull the new image
 4. Restart services with `docker compose up -d --no-build`
 5. Run any pending database migrations
@@ -254,11 +254,11 @@ docker compose -f docker-compose.prod.yml down
 
 ## Rollback
 
-Each deploy is also tagged by commit SHA (`ghcr.io/dothanhtien/cyberphone-be:sha-<commit>`). To roll back:
+Each deploy is also tagged by commit SHA (`ghcr.io/dothanhtien/upphone-be:sha-<commit>`). To roll back:
 
 ```bash
 # On the VPS
 docker compose -f docker-compose.prod.yml stop api
-docker tag ghcr.io/dothanhtien/cyberphone-be:sha-<previous-sha> ghcr.io/dothanhtien/cyberphone-be:latest
+docker tag ghcr.io/dothanhtien/upphone-be:sha-<previous-sha> ghcr.io/dothanhtien/upphone-be:latest
 docker compose -f docker-compose.prod.yml up -d api
 ```
