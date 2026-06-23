@@ -119,7 +119,12 @@ export class ProductRepository implements IProductRepository {
           ) AS categories,
           COALESCE(
             json_agg(
-              DISTINCT jsonb_build_object('id', pi.id, 'imageType', pi.image_type, 'altText', pi.alt_text, 'url', m.url)
+              DISTINCT jsonb_build_object(
+                'id', pi.id, 
+                'imageType', pi.image_type, 
+                'altText', pi.alt_text, 
+                'url', m.url
+              )
             ) FILTER (WHERE pi.id IS NOT NULL), '[]'
           ) AS images,
           COUNT(DISTINCT pv.id) AS "variantCount"
@@ -127,8 +132,15 @@ export class ProductRepository implements IProductRepository {
         LEFT JOIN brands b ON b.id = p.brand_id AND b.is_active = true
         LEFT JOIN product_categories pc ON pc.product_id = p.id
         LEFT JOIN categories c ON c.id = pc.category_id AND c.is_active = true
-        LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.image_type = $1 AND pi.is_active = true
-        LEFT JOIN media_assets m ON m.ref_type = $2 AND m.ref_id::uuid = pi.id AND m.is_active = true
+        LEFT JOIN product_images pi 
+          ON pi.product_id = p.id 
+            AND pi.image_type = $1 
+            AND pi.variant_id IS NULL 
+            AND pi.is_active = true 
+        LEFT JOIN media_assets m 
+          ON m.ref_type = $2 
+            AND m.ref_id::uuid = pi.id 
+            AND m.is_active = true
         LEFT JOIN product_variants pv ON pv.product_id = p.id AND pv.is_active = true
         WHERE p.is_active = true
         GROUP BY p.id, b.id
@@ -161,8 +173,13 @@ export class ProductRepository implements IProductRepository {
           ) AS categories,
           COALESCE(
             json_agg(
-              DISTINCT jsonb_build_object('id', pi.id, 'imageType', pi.image_type, 'altText', pi.alt_text, 'url', m.url)
-            ) FILTER (WHERE pi.id IS NOT NULL), '[]'
+              DISTINCT jsonb_build_object(
+                'id', pi.id, 
+                'imageType', pi.image_type, 
+                'altText', pi.alt_text, 
+                'url', m.url
+              )
+            ) FILTER (WHERE pi.id IS NOT NULL AND pi.variant_id IS NULL), '[]'
           ) AS images,
           COALESCE(
             json_agg(
@@ -274,16 +291,31 @@ export class ProductRepository implements IProductRepository {
         v.price,
         v.sale_price,
         CASE WHEN v.stock_quantity > 0 THEN 1 ELSE 0 END AS in_stock,
-        (
-          SELECT ma.url 
-          FROM product_images pi
-          JOIN media_assets ma ON ma.ref_type = $${mediaAssetRefTypeParamIndex} 
-            AND ma.ref_id = pi.id::text
-            AND ma.is_active = true
-          WHERE pi.product_id = p.id 
-            AND pi.is_active = true 
-          ORDER BY pi.image_type = $${mainImageTypeParamIndex} DESC, pi.display_order ASC
-          LIMIT 1
+        COALESCE(
+          (
+            SELECT ma.url
+            FROM product_images pi
+            JOIN media_assets ma ON ma.ref_type = $${mediaAssetRefTypeParamIndex}
+              AND ma.ref_id = pi.id::text
+              AND ma.is_active = true
+            WHERE pi.product_id = p.id
+              AND pi.variant_id = v.id
+              AND pi.is_active = true
+            ORDER BY pi.image_type = $${mainImageTypeParamIndex} DESC, pi.display_order ASC
+            LIMIT 1
+          ),
+          (
+            SELECT ma.url
+            FROM product_images pi
+            JOIN media_assets ma ON ma.ref_type = $${mediaAssetRefTypeParamIndex}
+              AND ma.ref_id = pi.id::text
+              AND ma.is_active = true
+            WHERE pi.product_id = p.id
+              AND pi.variant_id IS NULL
+              AND pi.is_active = true
+            ORDER BY pi.image_type = $${mainImageTypeParamIndex} DESC, pi.display_order ASC
+            LIMIT 1
+          )
         ) AS main_image
       FROM products p
       JOIN LATERAL (

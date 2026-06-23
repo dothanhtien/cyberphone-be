@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, IsNull, Repository } from 'typeorm';
 import {
   ProductImageCreateEntityDto,
   ProductImageUpdateEntityDto,
@@ -8,7 +8,15 @@ import {
 import { ProductImage } from '@/products/entities';
 
 export interface IProductImageRepository {
-  findActiveByProductId(productId: string): Promise<ProductImage[]>;
+  findActiveByProductId(
+    productId: string,
+    tx?: EntityManager,
+  ): Promise<ProductImage[]>;
+  findActiveByVariantId(
+    variantId: string,
+    tx?: EntityManager,
+  ): Promise<ProductImage[]>;
+  softDeleteByVariantId(variantId: string, tx: EntityManager): Promise<void>;
   create(
     tx: EntityManager,
     data: ProductImageCreateEntityDto[],
@@ -33,8 +41,29 @@ export class ProductImageRepository implements IProductImageRepository {
     private readonly repository: Repository<ProductImage>,
   ) {}
 
-  findActiveByProductId(productId: string): Promise<ProductImage[]> {
-    return this.repository.find({ where: { productId, isActive: true } });
+  findActiveByProductId(
+    productId: string,
+    tx?: EntityManager,
+  ): Promise<ProductImage[]> {
+    const repo = tx ? tx.getRepository(ProductImage) : this.repository;
+    return repo.find({
+      where: { productId, variantId: IsNull(), isActive: true },
+    });
+  }
+
+  findActiveByVariantId(
+    variantId: string,
+    tx?: EntityManager,
+  ): Promise<ProductImage[]> {
+    const repo = tx ? tx.getRepository(ProductImage) : this.repository;
+    return repo.find({ where: { variantId, isActive: true } });
+  }
+
+  async softDeleteByVariantId(
+    variantId: string,
+    tx: EntityManager,
+  ): Promise<void> {
+    await tx.update(ProductImage, { variantId }, { isActive: false });
   }
 
   async create(
