@@ -1,13 +1,13 @@
 {
   "Servers": {
     "1": {
-      "Name": "Cyberphone",
+      "Name": "UpPhone",
       "Group": "Servers",
       "Host": "postgresql",
       "Port": 5432,
       "Username": "postgres",
       "SSLMode": "prefer",
-      "MaintenanceDB": "cyberphone"
+      "MaintenanceDB": "upphone"
     }
   }
 }

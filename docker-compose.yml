@@ -1,4 +1,4 @@
-name: cyberphone-be
+name: upphone-be
 
 services:
   api:

@@ -1,8 +1,8 @@
-name: cyberphone-be
+name: upphone-be
 
 services:
   api:
-    image: cyberphone-api
+    image: upphone-api
     build:
       context: .
       dockerfile: Dockerfile
